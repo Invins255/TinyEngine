@@ -27,8 +27,6 @@ namespace Engine
 
 		Ref<Scene> m_ActiveScene;
 
-		glm::vec4 m_Color = { 1.0f, 1.0f, 1.0f, 1.0f };
-
 		//Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 	};
