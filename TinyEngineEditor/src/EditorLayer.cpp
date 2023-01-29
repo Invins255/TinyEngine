@@ -22,6 +22,7 @@ namespace Engine
         m_ActiveScene = CreateRef<Scene>();
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
+        //Temp
         auto& camera = m_ActiveScene->CreateEntity("Camera");
         camera.AddComponent<CameraComponent>();
         auto& square = m_ActiveScene->CreateEntity("Square");
@@ -40,9 +41,8 @@ namespace Engine
         if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
         {
             m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-            ENGINE_INFO("Viewport window size: ({0}, {1}), Sepc ({2}, {3})", (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y, (uint32_t)spec.Width, (uint32_t)spec.Height);
-
             m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+            ENGINE_INFO("Viewport window size: ({0}, {1})", (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         }
         
         //Render--------------------------------------------------------------------- 		

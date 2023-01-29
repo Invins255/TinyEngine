@@ -144,12 +144,6 @@
     <ClInclude Include="src\Engine\Renderer\RendererContext.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Renderer\OrthographicCamera.h">
-      <Filter>src\Engine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Engine\Renderer\OrthographicCameraController.h">
-      <Filter>src\Engine\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\Engine\Renderer\RenderCommand.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
@@ -954,6 +948,8 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\OrthographicCamera.h" />
+    <ClInclude Include="src\Engine\Renderer\OrthographicCameraController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -1010,12 +1006,6 @@
     <ClCompile Include="src\Engine\Renderer\FrameBuffer.cpp">
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Renderer\OrthographicCamera.cpp">
-      <Filter>src\Engine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Engine\Renderer\OrthographicCameraController.cpp">
-      <Filter>src\Engine\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\Engine\Renderer\RenderCommand.cpp">
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
@@ -1057,5 +1047,7 @@
     </ClCompile>
     <ClCompile Include="src\Engine\Renderer\RendererContext.cpp" />
     <ClCompile Include="src\Engine\Renderer\Camera.cpp" />
+    <ClCompile Include="src\Engine\Renderer\OrthographicCamera.cpp" />
+    <ClCompile Include="src\Engine\Renderer\OrthographicCameraController.cpp" />
   </ItemGroup>
 </Project>

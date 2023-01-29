@@ -5,21 +5,37 @@
 
 namespace Engine
 {
-	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
+	static GLenum OpenGLVertexBufferUsage(VertexBufferUsage usage)
+	{
+		switch (usage)
+		{
+		case Engine::VertexBufferUsage::Static:
+			return GL_STATIC_DRAW;
+		case Engine::VertexBufferUsage::Dynamic:
+			return GL_DYNAMIC_DRAW;
+		default:
+			ENGINE_ASSERT(false, "Unknown vertex buffer usage!");
+			return 0;
+		}
+	}
+
+	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size, VertexBufferUsage usage)
+		:m_Size(size), m_Usage(usage)
 	{
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, m_Size, nullptr, OpenGLVertexBufferUsage(m_Usage));
 	}
 
 	//----------------------------------------------------------------------
 	//OpenGLVertexBuffer
 	//----------------------------------------------------------------------
-	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
+	OpenGLVertexBuffer::OpenGLVertexBuffer(void* data, uint32_t size, VertexBufferUsage usage)
+		:m_Size(size), m_Usage(usage)
 	{
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, m_Size, data, OpenGLVertexBufferUsage(m_Usage));
 	}
 
 	OpenGLVertexBuffer::~OpenGLVertexBuffer()
@@ -37,21 +53,22 @@ namespace Engine
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	void OpenGLVertexBuffer::SetData(const void* data, uint32_t size)
+	void OpenGLVertexBuffer::SetData(const void* data, uint32_t size, uint32_t offset)
 	{
+		m_Size = size;
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+		glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
 	}
 
 	//----------------------------------------------------------------------
 	//OpenGLIndexBuffer
 	//----------------------------------------------------------------------
-	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count):
-		m_Count(count)
+	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* data, uint32_t size):
+		m_Size(size)
 	{
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Size, data, GL_STATIC_DRAW);
 	}
 
 	OpenGLIndexBuffer::~OpenGLIndexBuffer()
@@ -67,5 +84,12 @@ namespace Engine
 	void OpenGLIndexBuffer::Unbind() const
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+
+	void OpenGLIndexBuffer::SetData(void* data, uint32_t size, uint32_t offset)
+	{
+		m_Size = size;
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, m_Size, offset, data);
 	}
 }

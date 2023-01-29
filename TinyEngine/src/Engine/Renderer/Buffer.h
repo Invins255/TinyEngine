@@ -3,7 +3,7 @@
 namespace Engine
 {
 	//-------------------------------------------------------------------------
-	//Buffer Layout
+	//VertexBuffer
 	//-------------------------------------------------------------------------
 	enum class ShaderDataType
 	{
@@ -123,9 +123,11 @@ namespace Engine
 		uint32_t m_Stride = 0;
 	};
 
-	//-------------------------------------------------------------------------
-	//VertexBuffer
-	//-------------------------------------------------------------------------	
+	enum class VertexBufferUsage 
+	{
+		None = 0, Static = 1, Dynamic = 2
+	};
+	
 	/// <summary>
 	/// VertexBuffer用于存储一个顶点数组的各类数据，通过布局对各类数据的范围进行标识。
 	/// </summary>
@@ -140,8 +142,8 @@ namespace Engine
 
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
-
-		virtual void SetData(const void* data, uint32_t size) = 0;
+		virtual void SetData(const void* data, uint32_t size, uint32_t offset = 0) = 0;
+		virtual uint32_t GetSize() const = 0;
 
 		/// <summary>
 		/// VertexBuffer工厂函数
@@ -171,7 +173,9 @@ namespace Engine
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
+		virtual void SetData(void* data, uint32_t size, uint32_t offset = 0) = 0;
 		virtual uint32_t GetCount() const = 0;
+		virtual uint32_t GetSize() const = 0;
 
 		/// <summary>
 		/// IndexBuffer工厂函数

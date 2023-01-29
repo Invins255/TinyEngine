@@ -22,8 +22,6 @@
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Renderer/SubTexture2D.h"
-#include "Engine/Renderer/OrthographicCamera.h"
-#include "Engine/Renderer/OrthographicCameraController.h"
 
 //ECS
 #include "Engine/Scene/Scene.h"
