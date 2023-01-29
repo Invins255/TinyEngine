@@ -213,9 +213,9 @@ namespace Engine
 
 				if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
 				{
-					float fov = camera.GetPerspectiveFOV();
+					float fov = camera.GetDegPerspectiveFOV();
 					if (ImGui::DragFloat("FOV", &fov))
-						camera.SetPerspectiveFOV(fov);
+						camera.SetDegPerspectiveFOV(fov);
 
 					float perspectiveNear = camera.GetPerspectiveNearClip();
 					if (ImGui::DragFloat("Near", &perspectiveNear))

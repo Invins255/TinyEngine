@@ -19,6 +19,10 @@ namespace Engine
 		{
 			m_Projection = glm::perspectiveFov(radFov, width, height, nearClip, farClip);
 		}
+		void SetPerspectiveProjection(float radFov, float aspectRatio, float nearClip, float farClip)
+		{
+			m_Projection = glm::perspective(radFov, aspectRatio, nearClip, farClip);
+		}
 		void SetOrthographicProjection(float width, float height, float nearClip, float farClip)
 		{
 			m_Projection = glm::ortho(-width * 0.5f, width * 0.5f, -height * 0.5f, height * 0.5f, nearClip, farClip);
