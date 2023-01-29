@@ -25,8 +25,8 @@ namespace Engine
 
 	private:
 		uint32_t m_RendererID = 0;
-		BufferLayout m_Layout;
 		uint32_t m_Size;
+		BufferLayout m_Layout;	
 		VertexBufferUsage m_Usage;
 	};
 
