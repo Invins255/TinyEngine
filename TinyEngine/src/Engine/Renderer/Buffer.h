@@ -149,13 +149,13 @@ namespace Engine
 		/// VertexBuffer工厂函数
 		/// </summary>
 		/// <param name="size">数组总长度</param>
-		static Ref<VertexBuffer> Create(uint32_t size);
+		static Ref<VertexBuffer> Create(uint32_t size, VertexBufferUsage usage = VertexBufferUsage::Dynamic);
 		/// <summary>
 		/// VertexBuffer工厂函数
 		/// </summary>
-		/// <param name="vertices">顶点数据数组</param>
+		/// <param name="data">顶点数据数组</param>
 		/// <param name="size">数组总长度</param>
-		static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
+		static Ref<VertexBuffer> Create(void* data, uint32_t size, VertexBufferUsage usage = VertexBufferUsage::Static);
 	};
 
 	//-------------------------------------------------------------------------
@@ -180,8 +180,8 @@ namespace Engine
 		/// <summary>
 		/// IndexBuffer工厂函数
 		/// </summary>
-		/// <param name="vertices">顶点下标数组</param>
+		/// <param name="data">顶点下标数组</param>
 		/// <param name="size">数组总长度</param>
-		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
+		static Ref<IndexBuffer> Create(uint32_t* data, uint32_t size);
 	};
 }

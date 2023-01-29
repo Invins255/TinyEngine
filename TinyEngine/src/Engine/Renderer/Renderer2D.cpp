@@ -72,7 +72,7 @@ namespace Engine
 			indices[i + 5] = offset + 0;
 			offset += 4;
 		}
-		Ref<IndexBuffer> indexBuffer = IndexBuffer::Create(indices, s_Data.MaxIndices);
+		Ref<IndexBuffer> indexBuffer = IndexBuffer::Create(indices, s_Data.MaxIndices * sizeof(uint32_t));
 		s_Data.QuadVertexArray->SetIndexBuffer(indexBuffer);
 		delete[] indices;
 
