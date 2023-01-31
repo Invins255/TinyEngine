@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine\Core\Application.h" />
+    <ClInclude Include="src\Engine\Core\Buffer.h" />
     <ClInclude Include="src\Engine\Core\Core.h" />
     <ClInclude Include="src\Engine\Core\EntryPoint.h" />
     <ClInclude Include="src\Engine\Core\Input.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLFrameBuffer.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLRendererAPI.h" />
+    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLRenderPass.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLTexture.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLVertexArray.h" />
@@ -171,13 +173,16 @@
     <ClInclude Include="src\Engine\Renderer\Buffer.h" />
     <ClInclude Include="src\Engine\Renderer\Camera.h" />
     <ClInclude Include="src\Engine\Renderer\FrameBuffer.h" />
+    <ClInclude Include="src\Engine\Renderer\Mesh.h" />
+    <ClInclude Include="src\Engine\Renderer\RenderCommandQueue.h" />
+    <ClInclude Include="src\Engine\Renderer\Renderer2D.h" />
     <ClInclude Include="src\Engine\Renderer\RendererContext.h" />
     <ClInclude Include="src\Engine\Renderer\RenderCommand.h" />
     <ClInclude Include="src\Engine\Renderer\Renderer.h" />
-    <ClInclude Include="src\Engine\Renderer\Renderer2D.h" />
     <ClInclude Include="src\Engine\Renderer\RendererAPI.h" />
+    <ClInclude Include="src\Engine\Renderer\RenderPass.h" />
+    <ClInclude Include="src\Engine\Renderer\SceneRenderer.h" />
     <ClInclude Include="src\Engine\Renderer\Shader.h" />
-    <ClInclude Include="src\Engine\Renderer\SubTexture2D.h" />
     <ClInclude Include="src\Engine\Renderer\Texture.h" />
     <ClInclude Include="src\Engine\Renderer\VertexArray.h" />
     <ClInclude Include="src\Engine\Scene\Component.h" />
@@ -453,6 +458,7 @@
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLFrameBuffer.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLRendererAPI.cpp" />
+    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLRenderPass.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLTexture.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLVertexArray.cpp" />
@@ -461,13 +467,16 @@
     <ClCompile Include="src\Engine\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Engine\Renderer\Camera.cpp" />
     <ClCompile Include="src\Engine\Renderer\FrameBuffer.cpp" />
+    <ClCompile Include="src\Engine\Renderer\Mesh.cpp" />
     <ClCompile Include="src\Engine\Renderer\RenderCommand.cpp" />
+    <ClCompile Include="src\Engine\Renderer\RenderCommandQueue.cpp" />
     <ClCompile Include="src\Engine\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Engine\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\Engine\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\Engine\Renderer\RendererContext.cpp" />
+    <ClCompile Include="src\Engine\Renderer\RenderPass.cpp" />
+    <ClCompile Include="src\Engine\Renderer\SceneRenderer.cpp" />
     <ClCompile Include="src\Engine\Renderer\Shader.cpp" />
-    <ClCompile Include="src\Engine\Renderer\SubTexture2D.cpp" />
     <ClCompile Include="src\Engine\Renderer\Texture.cpp" />
     <ClCompile Include="src\Engine\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Engine\Scene\Entity.cpp" />

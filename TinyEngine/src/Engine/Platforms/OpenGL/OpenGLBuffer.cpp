@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "OpenGLBuffer.h"
+#include "Engine/Renderer/Renderer.h"
 
 #include <glad/glad.h>
 
@@ -22,9 +23,13 @@ namespace Engine
 	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size, VertexBufferUsage usage)
 		:m_Size(size), m_Usage(usage)
 	{
-		glCreateBuffers(1, &m_RendererID);
-		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ARRAY_BUFFER, m_Size, nullptr, OpenGLVertexBufferUsage(m_Usage));
+		Renderer::Submit([this]()
+			{
+				glCreateBuffers(1, &m_RendererID);
+				glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+				glBufferData(GL_ARRAY_BUFFER, m_Size, nullptr, OpenGLVertexBufferUsage(m_Usage));
+			}
+		);
 	}
 
 	//----------------------------------------------------------------------
@@ -33,31 +38,55 @@ namespace Engine
 	OpenGLVertexBuffer::OpenGLVertexBuffer(void* data, uint32_t size, VertexBufferUsage usage)
 		:m_Size(size), m_Usage(usage)
 	{
-		glCreateBuffers(1, &m_RendererID);
-		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ARRAY_BUFFER, m_Size, data, OpenGLVertexBufferUsage(m_Usage));
+		m_LocalData = Buffer::Copy(data, size);
+
+		Renderer::Submit([this]()
+			{
+				glCreateBuffers(1, &m_RendererID);
+				glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+				glBufferData(GL_ARRAY_BUFFER, m_Size, m_LocalData.Data, OpenGLVertexBufferUsage(m_Usage));
+			}
+		);
 	}
 
 	OpenGLVertexBuffer::~OpenGLVertexBuffer()
 	{
-		glDeleteBuffers(1, &m_RendererID);
+		uint32_t rendererID = m_RendererID;
+		Renderer::Submit([rendererID]()
+			{
+				glDeleteBuffers(1, &rendererID);
+			}
+		);
 	}
 
 	void OpenGLVertexBuffer::Bind() const
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+		Renderer::Submit([this]()
+			{
+				glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+			}
+		);
 	}
 
 	void OpenGLVertexBuffer::Unbind() const
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		Renderer::Submit([this]()
+			{
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+			}
+		);
 	}
 
-	void OpenGLVertexBuffer::SetData(const void* data, uint32_t size, uint32_t offset)
+	void OpenGLVertexBuffer::SetData(void* data, uint32_t size, uint32_t offset)
 	{
+		m_LocalData = Buffer::Copy(data, size);
 		m_Size = size;
-		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-		glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
+		Renderer::Submit([this, offset]()
+			{
+				glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+				glBufferSubData(GL_ARRAY_BUFFER, offset, m_Size, m_LocalData.Data);
+			}
+		);
 	}
 
 	//----------------------------------------------------------------------
@@ -66,30 +95,54 @@ namespace Engine
 	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* data, uint32_t size):
 		m_Size(size)
 	{
-		glCreateBuffers(1, &m_RendererID);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Size, data, GL_STATIC_DRAW);
+		m_LocalData = Buffer::Copy(data, size);
+
+		Renderer::Submit([this]()
+			{
+				glCreateBuffers(1, &m_RendererID);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Size, m_LocalData.Data, GL_STATIC_DRAW);
+			}
+		);
 	}
 
 	OpenGLIndexBuffer::~OpenGLIndexBuffer()
 	{
-		glDeleteBuffers(1, &m_RendererID);
+		uint32_t rendererID = m_RendererID;
+		Renderer::Submit([rendererID]()
+			{
+				glDeleteBuffers(1, &rendererID);
+			}
+		);
 	}
 
 	void OpenGLIndexBuffer::Bind() const
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+		Renderer::Submit([this]()
+			{
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+			}
+		);
 	}
 
 	void OpenGLIndexBuffer::Unbind() const
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		Renderer::Submit([this]()
+			{
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			}
+		);
 	}
 
 	void OpenGLIndexBuffer::SetData(void* data, uint32_t size, uint32_t offset)
 	{
+		m_LocalData = Buffer::Copy(data, size);
 		m_Size = size;
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, m_Size, offset, data);
+		Renderer::Submit([this, offset]()
+			{
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+				glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, m_Size, offset, m_LocalData.Data);
+			}
+		);
 	}
 }

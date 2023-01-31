@@ -11,9 +11,9 @@ namespace Engine
 		{
 			s_RendererAPI->Init();
 		}
-		static void SetClearColor(const glm::vec4& color)
+		static void SetClearColor(float r, float g, float b, float a)
 		{
-			s_RendererAPI->SetClearColor(color);
+			s_RendererAPI->SetClearColor(r, g, b, a);
 		}
 		static void Clear()
 		{

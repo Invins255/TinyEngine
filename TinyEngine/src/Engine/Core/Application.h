@@ -28,9 +28,10 @@ namespace Engine
 		/// </summary>
 		void Run();
 		void Close();
+		void RenderImGui();
 
-		virtual void OnInit() {}
-		virtual void OnShutdown() {}
+		virtual void OnInit() {};
+		virtual void OnShutdown() {};
 
 		void OnEvent(Event& e);
 

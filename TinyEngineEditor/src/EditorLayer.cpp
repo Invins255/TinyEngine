@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <chrono>
+#include "Engine/Renderer/SceneRenderer.h"
 
 namespace Engine
 {
@@ -17,7 +18,6 @@ namespace Engine
         Engine::FrameBufferSpecification spec;
         spec.Width = 1280;
         spec.Height = 720;
-        m_FrameBuffer = Engine::FrameBuffer::Create(spec);
 
         m_ActiveScene = CreateRef<Scene>();
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
@@ -25,9 +25,6 @@ namespace Engine
         //Temp
         auto& camera = m_ActiveScene->CreateEntity("Camera");
         camera.AddComponent<CameraComponent>();
-        auto& square = m_ActiveScene->CreateEntity("Square");
-        square.AddComponent<SpriteRendererComponent>();
-
     }
 
     void EditorLayer::OnDetach()
@@ -37,26 +34,16 @@ namespace Engine
     void EditorLayer::OnUpdate(Timestep ts)
     {    
         //Resize
-        auto spec = m_FrameBuffer->GetSpecification();
+        auto spec = SceneRenderer::GetFinalFrameBuffer()->GetSpecification();
         if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
         {
-            m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+            SceneRenderer::SetViewportSize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
             m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
             ENGINE_INFO("Viewport window size: ({0}, {1})", (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         }
-        
-        //Render--------------------------------------------------------------------- 		
-        m_FrameBuffer->Bind();
-        //Clear frameBuffer
-        Engine::Renderer2D::ResetStats();
-
-		Engine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-		Engine::RenderCommand::Clear();	          
+               
         //Update scene
         m_ActiveScene->OnUpdate(ts);
-
-        m_FrameBuffer->Unbind();
-        //---------------------------------------------------------------------------	    
     }
 
     void EditorLayer::OnEvent(Engine::Event& e)
@@ -123,12 +110,7 @@ namespace Engine
             //Settings----------------------------------------------------------------------
             ImGui::Begin("Stats");
             {
-                auto& stats = Engine::Renderer2D::GetStats();
-                ImGui::Text("Renderer2D Stats:");
-                ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-                ImGui::Text("Quads: %d", stats.QuadCounts);
-                ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-                ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+
             }
             ImGui::End();
 
@@ -143,7 +125,7 @@ namespace Engine
                 ImVec2 viewportSize = ImGui::GetContentRegionAvail();
                 m_ViewportSize = glm::vec2(viewportSize.x, viewportSize.y);
 
-                uint32_t textureID = m_FrameBuffer->GetColorAttachmentID();
+                uint32_t textureID = SceneRenderer::GetFinalColorBufferRendererID();
                 ImGui::Image((void*)textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), { 0, 1 }, { 1, 0 });
             }
             ImGui::End();

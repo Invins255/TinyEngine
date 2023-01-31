@@ -23,7 +23,7 @@ namespace Engine
 		bool m_ViewportFocused = false;
 		bool m_ViewportHovered = false;
 
-		Ref<FrameBuffer> m_FrameBuffer;
+		//Ref<FrameBuffer> m_FrameBuffer;
 
 		Ref<Scene> m_ActiveScene;
 

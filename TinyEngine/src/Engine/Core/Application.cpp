@@ -25,15 +25,17 @@ namespace Engine
 		PushOverlay(m_ImGuiLayer);
 
 		Renderer::Init();
+		Renderer::WaitAndRender();
 	}
 
 	Application::~Application()
 	{
+		Renderer::Shutdown();
 	}
 
 	void Application::Run()
 	{		
-		OnInit();
+		this->OnInit();
 		while (m_Running)
 		{
 			float time = glfwGetTime();
@@ -46,21 +48,34 @@ namespace Engine
 				for (auto layer : m_LayerStack)
 					layer->OnUpdate(timestep);
 
-				//由底至顶对各个Layer涉及的GUI进行更新
-				m_ImGuiLayer->Begin();
-				for (auto layer : m_LayerStack)
-					layer->OnImGuiRender();
-				m_ImGuiLayer->End();
-			}
+				Application* app = this;
+				Renderer::Submit([app]() 
+					{ 
+						ENGINE_INFO("RenderCommand: Render ImGui");
+						app->RenderImGui(); 
+					}
+				);
 
+				//执行RenderCommand
+				Renderer::WaitAndRender();
+			}
 			m_Window->OnUpdate();
 		}
-		OnShutdown();
+		this->OnShutdown();
 	}
 
 	void Application::Close()
 	{
 		m_Running = false;
+	}
+
+	void Application::RenderImGui()
+	{
+		//由底至顶对各个Layer涉及的GUI进行更新
+		m_ImGuiLayer->Begin();
+		for (auto layer : m_LayerStack)
+			layer->OnImGuiRender();
+		m_ImGuiLayer->End();
 	}
 
 	void Application::OnEvent(Event& e)

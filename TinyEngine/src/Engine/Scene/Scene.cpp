@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Scene.h"
 #include "Engine/Renderer/Renderer2D.h"
+#include "Engine/Renderer/SceneRenderer.h"
 #include "Engine/Scene/Component.h"
 #include "Engine/Scene/Entity.h"
 
@@ -25,7 +26,7 @@ namespace Engine
 	{
 		Entity entity { m_Registry.create(), this };
 		entity.AddComponent<TransformComponent>();
-		entity.AddComponent< TagComponent>(name.empty() ? "Entity" : name);
+		entity.AddComponent<TagComponent>(name.empty() ? "Entity" : name);
 		return entity;
 	}
 
@@ -50,7 +51,7 @@ namespace Engine
 			}
 		);
 
-		//Render 2D
+		//Get main camera
 		Camera* mainCamera = nullptr;
 		glm::mat4 cameraTransform;
 		auto view = m_Registry.view<TransformComponent, CameraComponent>();
@@ -68,6 +69,7 @@ namespace Engine
 
 		if(mainCamera)
 		{
+			/*
 			Renderer2D::BeginScene(mainCamera->GetProjection(), cameraTransform);
 			
 			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
@@ -79,6 +81,13 @@ namespace Engine
 			}
 
 			Renderer2D::EndScene();
+			*/
+
+			SceneRenderer::BeginScene(this);
+
+
+
+			SceneRenderer::EndScene();
 		}
 		
 	}

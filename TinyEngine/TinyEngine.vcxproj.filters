@@ -150,16 +150,10 @@
     <ClInclude Include="src\Engine\Renderer\Renderer.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Renderer\Renderer2D.h">
-      <Filter>src\Engine\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\Engine\Renderer\RendererAPI.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Renderer\Shader.h">
-      <Filter>src\Engine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Engine\Renderer\SubTexture2D.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Renderer\Texture.h">
@@ -948,6 +942,13 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\RenderCommandQueue.h" />
+    <ClInclude Include="src\Engine\Renderer\Renderer2D.h" />
+    <ClInclude Include="src\Engine\Renderer\RenderPass.h" />
+    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLRenderPass.h" />
+    <ClInclude Include="src\Engine\Renderer\SceneRenderer.h" />
+    <ClInclude Include="src\Engine\Core\Buffer.h" />
+    <ClInclude Include="src\Engine\Renderer\Mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -1019,9 +1020,6 @@
     <ClCompile Include="src\Engine\Renderer\Shader.cpp">
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Renderer\SubTexture2D.cpp">
-      <Filter>src\Engine\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\Engine\Renderer\Texture.cpp">
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
@@ -1045,5 +1043,10 @@
     </ClCompile>
     <ClCompile Include="src\Engine\Renderer\RendererContext.cpp" />
     <ClCompile Include="src\Engine\Renderer\Camera.cpp" />
+    <ClCompile Include="src\Engine\Renderer\RenderCommandQueue.cpp" />
+    <ClCompile Include="src\Engine\Renderer\RenderPass.cpp" />
+    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLRenderPass.cpp" />
+    <ClCompile Include="src\Engine\Renderer\SceneRenderer.cpp" />
+    <ClCompile Include="src\Engine\Renderer\Mesh.cpp" />
   </ItemGroup>
 </Project>

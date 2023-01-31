@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include "Engine/Core/Core.h"
 
 namespace Engine
@@ -7,6 +8,7 @@ namespace Engine
 	struct  FrameBufferSpecification
 	{
 		uint32_t Width, Height;
+		glm::vec4 ClearColor;
 		uint32_t Samples = 1;
 
 		bool SwapChainTarget = false;

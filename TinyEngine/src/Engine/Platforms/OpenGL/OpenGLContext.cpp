@@ -10,7 +10,7 @@ namespace Engine
     OpenGLContext::OpenGLContext(GLFWwindow* windowHandle):
         m_WindowHandle(windowHandle)
     {
-        ENGINE_ASSERT(windowHandle, "WindowHandle is nullptr");
+        ENGINE_ASSERT(windowHandle, "WindowHandle is nullptr!");
     }
 
     void OpenGLContext::Init()
@@ -21,10 +21,12 @@ namespace Engine
         int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
         ENGINE_ASSERT(status, "Initialize Glad failed!");
 
+        ENGINE_INFO("-------------------------------------------------------------------");
         ENGINE_INFO("OpenGL Info:");
         ENGINE_INFO("  Vendor: {0}", (char*)glGetString(GL_VENDOR));
         ENGINE_INFO("  Renderer: {0}", (char*)glGetString(GL_RENDERER));
         ENGINE_INFO("  Version: {0}", (char*)glGetString(GL_VERSION));
+        ENGINE_INFO("-------------------------------------------------------------------");
     }
 
     void OpenGLContext::SwapBuffers()

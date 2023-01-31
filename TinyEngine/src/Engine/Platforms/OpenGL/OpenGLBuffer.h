@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Core/Buffer.h"
 #include "Engine/Renderer/Buffer.h"
 
 namespace Engine
@@ -21,13 +22,15 @@ namespace Engine
 		virtual const BufferLayout& GetLayout() const override { return m_Layout; }
 		virtual void SetLayout(const BufferLayout& layout) override { m_Layout = layout; }
 		virtual uint32_t GetSize() const override { return m_Size; }
-		virtual void SetData(const void* data, uint32_t size, uint32_t offset = 0) override;
+		virtual void SetData(void* data, uint32_t size, uint32_t offset = 0) override;
 
 	private:
 		uint32_t m_RendererID = 0;
 		uint32_t m_Size;
 		BufferLayout m_Layout;	
 		VertexBufferUsage m_Usage;
+
+		Buffer m_LocalData;
 	};
 
 	//-------------------------------------------------------------------------
@@ -49,5 +52,7 @@ namespace Engine
 	private:
 		uint32_t m_RendererID = 0;
 		uint32_t m_Size;
+
+		Buffer m_LocalData;
 	};
 }

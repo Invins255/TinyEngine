@@ -8,12 +8,12 @@ namespace Engine
 {
 	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 	{
-		switch (Renderer::GetAPI())
+		switch (Renderer::GetAPIType())
 		{
-		case RendererAPI::API::None:
+		case RendererAPI::RendererAPIType::None:
 			ENGINE_ASSERT(false, "RendererAPI::None is currently not supported!");
 			return nullptr;
-		case RendererAPI::API::OpenGL:
+		case RendererAPI::RendererAPIType::OpenGL:
 			return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
 		default:
 			ENGINE_ASSERT(false, "Unknown RendererAPI!");
@@ -23,12 +23,12 @@ namespace Engine
 
 	Ref<Shader> Shader::Create(const std::string& filepath)
 	{
-		switch (Renderer::GetAPI())
+		switch (Renderer::GetAPIType())
 		{
-		case RendererAPI::API::None:
+		case RendererAPI::RendererAPIType::None:
 			ENGINE_ASSERT(false, "RendererAPI::None is currently not supported!");
 			return nullptr;
-		case RendererAPI::API::OpenGL:
+		case RendererAPI::RendererAPIType::OpenGL:
 			return CreateRef<OpenGLShader>(filepath);
 		default:
 			ENGINE_ASSERT(false, "Unknown RendererAPI!");

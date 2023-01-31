@@ -24,9 +24,9 @@ namespace Engine
 		virtual bool operator==(const Texture& other) override 
 		{ return m_RendererID == ((OpenGLTexture2D&)other).m_RendererID; };
 	private:
+		uint32_t m_RendererID = 0;
 		std::string m_Path;
 		uint32_t m_Width, m_Height;
-		uint32_t m_RendererID;
 		GLenum m_InternalFormat, m_DataFormat;
 	};
 }
