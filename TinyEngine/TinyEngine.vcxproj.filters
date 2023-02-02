@@ -949,6 +949,9 @@
     <ClInclude Include="src\Engine\Renderer\SceneRenderer.h" />
     <ClInclude Include="src\Engine\Core\Buffer.h" />
     <ClInclude Include="src\Engine\Renderer\Mesh.h" />
+    <ClInclude Include="src\Engine\Renderer\Material.h" />
+    <ClInclude Include="src\Engine\Renderer\ShaderUniform.h" />
+    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLShaderUniform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -1048,5 +1051,7 @@
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLRenderPass.cpp" />
     <ClCompile Include="src\Engine\Renderer\SceneRenderer.cpp" />
     <ClCompile Include="src\Engine\Renderer\Mesh.cpp" />
+    <ClCompile Include="src\Engine\Renderer\Material.cpp" />
+    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLShaderUniform.cpp" />
   </ItemGroup>
 </Project>

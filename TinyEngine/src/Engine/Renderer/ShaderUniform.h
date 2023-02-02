@@ -30,7 +30,7 @@ namespace Engine
 		friend class ShaderStruct;
 	};
 
-	using ShaderUniformList = std::vector<ShaderUniformDeclaration>;
+	using ShaderUniformList = std::vector<ShaderUniformDeclaration*>;
 
 	class ShaderUniformBufferDeclaration
 	{
@@ -64,6 +64,7 @@ namespace Engine
 		}
 		
 		const std::string& GetName() const { return m_Name; }
+		const std::vector<ShaderUniformDeclaration*>& GetFields() const { return m_Fields; }
 		uint32_t GetSize() const { return m_Size; }
 		void SetOffset(uint32_t offset) { m_Offset = offset; }
 		uint32_t GetOffset() const { return m_Offset; }

@@ -3,6 +3,7 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Renderer/RenderPass.h"
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Renderer/Shader.h"
 
 namespace Engine
 {
@@ -10,6 +11,8 @@ namespace Engine
 	{
 		Scene* m_ActiveScene = nullptr;
 		Ref<RenderPass> m_RenderPass;
+
+		Ref<Shader> m_Shader;
 	};
 	static Scope<SceneRendererData> s_Data;
 
@@ -24,6 +27,8 @@ namespace Engine
 		RenderPassSpecification geoRenderPassSpec;
 		geoRenderPassSpec.TargetFramebuffer = FrameBuffer::Create(geoFrameBufferSpec);
 		s_Data->m_RenderPass = RenderPass::Create(geoRenderPassSpec);
+
+		s_Data->m_Shader = Shader::Create("assets/Shaders/Test.glsl");
 	}
 
 	void SceneRenderer::Shutdown()

@@ -6,34 +6,25 @@
 
 namespace Engine
 {
-	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
-	{
-		switch (Renderer::GetAPIType())
-		{
-		case RendererAPI::RendererAPIType::None:
-			ENGINE_ASSERT(false, "RendererAPI::None is currently not supported!");
-			return nullptr;
-		case RendererAPI::RendererAPIType::OpenGL:
-			return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
-		default:
-			ENGINE_ASSERT(false, "Unknown RendererAPI!");
-			return nullptr;
-		}
-	}
+	std::vector<Ref<Shader>> Shader::s_AllShaders;
 
 	Ref<Shader> Shader::Create(const std::string& filepath)
 	{
+		Ref<Shader> result = nullptr;
 		switch (Renderer::GetAPIType())
 		{
 		case RendererAPI::RendererAPIType::None:
 			ENGINE_ASSERT(false, "RendererAPI::None is currently not supported!");
 			return nullptr;
 		case RendererAPI::RendererAPIType::OpenGL:
-			return CreateRef<OpenGLShader>(filepath);
+			result = CreateRef<OpenGLShader>(filepath);
+			break;
 		default:
 			ENGINE_ASSERT(false, "Unknown RendererAPI!");
 			return nullptr;
 		}
+		s_AllShaders.push_back(result); //s_AllShaders导致shader在RendererCommandQueue析构后仍未被释放
+		return result;
 	}
 
 	void ShaderLibrary::Add(const Ref<Shader>& shader)

@@ -28,8 +28,8 @@ namespace Engine
 
 	private:
 		Ref<Shader> m_Shader;
-		std::unordered_set<MaterialInstance*> m_MaterialInstances;
 		uint32_t m_MaterialFlags;
+		//std::unordered_set<MaterialInstance*> m_MaterialInstances;
 	};
 
 	class MaterialInstance

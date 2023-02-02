@@ -10,16 +10,6 @@
 
 namespace Engine
 {
-	struct ShaderUniform
-	{
-
-	};
-
-	struct ShaderUniformCollection
-	{
-
-	};
-
 	enum class UniformType
 	{
 		None = 0,
@@ -28,7 +18,7 @@ namespace Engine
 		Matrix3x3, Matrix4x4,
 	};
 
-	struct UniformDecl
+	struct Uniform
 	{
 		UniformType Type;
 		std::ptrdiff_t Offset;
@@ -38,13 +28,13 @@ namespace Engine
 	struct UniformBuffer
 	{
 		uint8_t* Buffer;
-		std::vector<UniformDecl> Uniforms;
+		std::vector<Uniform> Uniforms;
 	};
 
 	struct UniformBufferBase
 	{
 		virtual const uint8_t* GetBuffer() const = 0;
-		virtual const UniformDecl* GetUniforms() const = 0;
+		virtual const Uniform* GetUniforms() const = 0;
 		virtual uint32_t GetUniformCount() const = 0;
 	};
 
@@ -52,15 +42,15 @@ namespace Engine
 	struct UniformBufferDeclaration : public UniformBufferBase
 	{
 		uint8_t Buffer[N];
-		UniformDecl Uniforms[U];
+		Uniform Uniforms[U];
 		std::ptrdiff_t Cursor = 0;
 		int Index = 0;
 
 		virtual const uint8_t* GetBuffer() const override { return Buffer; };
-		virtual const UniformDecl* GetUniforms() const override { return Uniforms; };
+		virtual const Uniform* GetUniforms() const override { return Uniforms; };
 		virtual uint32_t GetUniformCount() const override { return U; };
 
-		//Push uniform value-----------------------------------------------------------------
+		//Push Uniform
 		template<typename T>
 		void Push(const std::string& name, const T& data) {}
 		
@@ -111,18 +101,29 @@ namespace Engine
 			memcpy(Buffer + Cursor, glm::value_ptr(data), sizeof(glm::mat4));
 			Cursor += sizeof(glm::mat4);
 		}
-		//-----------------------------------------------------------------------------------
 	};
 
 	class Shader
 	{
 	public:
+		static std::vector<Ref<Shader>> s_AllShaders;
+	
+	public:
+		static Ref<Shader> Create(const std::string& filepath);
+
+	public:
+		using ShaderReloadedCallback = std::function<void()>;
+
 		virtual ~Shader() = default;
+
+		virtual void Reload() = 0;
 
 		virtual uint32_t GetRendererID() const = 0;
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
+		virtual void UploadUniformBuffer(const UniformBufferBase& uniformBuffer) = 0;
 
+		//Temp
 		virtual void SetInt(const std::string& name, int value) = 0;
 		virtual void SetIntArray(const std::string& name, int value[], uint32_t count) = 0;
 		virtual void SetFloat(const std::string& name, float value) = 0;
@@ -134,8 +135,18 @@ namespace Engine
 
 		virtual std::string GetName() = 0;
 
-		static Ref<Shader> Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
-		static Ref<Shader> Create(const std::string& filepath);
+		virtual void SetVSMaterialUniformBuffer(Buffer buffer) = 0;
+		virtual void SetPSMaterialUniformBuffer(Buffer buffer) = 0;
+		virtual bool HasVSMaterialUniformBuffer() const = 0;
+		virtual bool HasPSMaterialUniformBuffer() const = 0;
+		virtual const ShaderUniformBufferDeclaration& GetVSMaterialUniformBuffer() const = 0;
+		virtual const ShaderUniformBufferDeclaration& GetPSMaterialUniformBuffer() const = 0;
+		virtual const ShaderUniformList& GetVSRendererUniforms() const = 0;
+		virtual const ShaderUniformList& GetPSRendererUniforms() const = 0;
+
+		virtual const ShaderResourceList& GetResources() const = 0;
+
+		virtual void AddShaderReloadedCallback(const ShaderReloadedCallback& callback) = 0;
 	};
 
 	class ShaderLibrary
