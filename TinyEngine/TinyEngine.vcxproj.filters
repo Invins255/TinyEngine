@@ -952,6 +952,8 @@
     <ClInclude Include="src\Engine\Renderer\Material.h" />
     <ClInclude Include="src\Engine\Renderer\ShaderUniform.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLShaderUniform.h" />
+    <ClInclude Include="src\Engine\Renderer\Pipeline.h" />
+    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLPipeline.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -1053,5 +1055,7 @@
     <ClCompile Include="src\Engine\Renderer\Mesh.cpp" />
     <ClCompile Include="src\Engine\Renderer\Material.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLShaderUniform.cpp" />
+    <ClCompile Include="src\Engine\Renderer\Pipeline.cpp" />
+    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLPipeline.cpp" />
   </ItemGroup>
 </Project>

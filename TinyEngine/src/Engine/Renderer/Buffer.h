@@ -180,8 +180,13 @@ namespace Engine
 		/// <summary>
 		/// IndexBuffer工厂函数
 		/// </summary>
+		/// <param name="size">数组总长度</param>
+		static Ref<IndexBuffer> IndexBuffer::Create(uint32_t size);
+		/// <summary>
+		/// IndexBuffer工厂函数
+		/// </summary>
 		/// <param name="data">顶点下标数组</param>
 		/// <param name="size">数组总长度</param>
-		static Ref<IndexBuffer> Create(uint32_t* data, uint32_t size);
+		static Ref<IndexBuffer> Create(void* data, uint32_t size);
 	};
 }

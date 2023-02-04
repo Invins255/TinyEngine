@@ -1,14 +1,29 @@
 #pragma once
 
 #include <string>
+#include <functional>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <functional>
+#include <glm/gtx/quaternion.hpp>
+
 #include "Engine/Scene/ScriptableEntity.h"
 #include "Engine/Scene/SceneCamera.h"
+#include "Engine/Renderer/Mesh.h"
 
 namespace Engine
 {
+	struct TagComponent
+	{
+		std::string Tag;
+
+		TagComponent() = default;
+		TagComponent(const std::string& tag) :
+			Tag(tag) {}
+
+		operator std::string& () { return Tag; }
+		operator const std::string& () const { return Tag; }
+	};
+
 	struct TransformComponent
 	{
 		glm::vec3 Translation = { 0.0f, 0.0f, 0.0f };
@@ -21,15 +36,18 @@ namespace Engine
 
 		glm::mat4 GetTransform()
 		{
-			glm::mat4 rotation =
-				glm::rotate(glm::mat4(1.0f), Rotation.x, { 1, 0, 0 }) *
-				glm::rotate(glm::mat4(1.0f), Rotation.y, { 0, 1, 0 }) *
-				glm::rotate(glm::mat4(1.0f), Rotation.z, { 0, 0, 1 });
-
 			return	glm::translate(glm::mat4(1.0f), Translation) *
-					rotation *
+					glm::toMat4(glm::quat(Rotation)) *
 					glm::scale(glm::mat4(1.0f), Scale);
 		}
+	};
+
+	struct MeshComponent
+	{
+		Ref<Engine::Mesh> Mesh;
+		MeshComponent() = default;
+		MeshComponent(const Ref<Engine::Mesh>& mesh)
+			:Mesh(mesh) {}
 	};
 
 	struct SpriteRendererComponent
@@ -41,15 +59,6 @@ namespace Engine
 			Color(color) {} 
 	};
 
-	struct TagComponent
-	{
-		std::string Tag;
-
-		TagComponent() = default;
-		TagComponent(const std::string& tag) :
-			Tag(tag) {}
-	};
-
 	struct CameraComponent
 	{
 		SceneCamera Camera;
@@ -57,21 +66,8 @@ namespace Engine
 		bool FixedAspectRatio = false;
 
 		CameraComponent() = default;
+
+		operator SceneCamera& () { return Camera; }
+		operator const SceneCamera& () const { return Camera; }
 	};
-
-	struct NativeScriptComponent
-	{
-		ScriptableEntity* Instance = nullptr;
-
-		ScriptableEntity* (*InstantiateScript)();
-		void (*DestroyScript)(NativeScriptComponent*);
-
-		template<typename T>
-		void Bind()
-		{
-			InstantiateScript = []() {return static_cast<ScriptableEntity*>(new T()); };
-			DestroyScript = [](NativeScriptComponent* nsc) {delete nsc->Instance; nsc->Instance = nullptr; }
-		}
-	};
-
 }

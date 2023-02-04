@@ -32,8 +32,8 @@ namespace Engine{
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
 		//Blend
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA); 
+		//glEnable(GL_BLEND);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA); 
 
 		//Depth Test
 		glEnable(GL_DEPTH_TEST);

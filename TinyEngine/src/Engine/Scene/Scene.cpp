@@ -6,6 +6,9 @@
 #include "Engine/Scene/Entity.h"
 
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Engine
 {
@@ -14,7 +17,8 @@ namespace Engine
 
 	}
 
-	Scene::Scene()
+	Scene::Scene(const std::string& name)
+		:m_Name(name)
 	{
 	}
 
@@ -37,58 +41,28 @@ namespace Engine
 
 	void Scene::OnUpdate(Timestep ts)
 	{
-		//Update script
-		m_Registry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& nsc)
-			{
-				if (!nsc.Instance)
-				{
-					nsc.Instance = nsc.InstantiateScript();
-					nsc.Instance->m_Entity = Entity{ entity, this };
-					nsc.Instance->OnCreate();
-				}
-
-				nsc.Instance->OnUpdate(ts);
-			}
-		);
-
 		//Get main camera
-		Camera* mainCamera = nullptr;
-		glm::mat4 cameraTransform;
-		auto view = m_Registry.view<TransformComponent, CameraComponent>();
-		for (auto entity : view)
+		Entity cameraEntity = GetMainCameraEntity();
+		if (!cameraEntity)
 		{
-			auto& [transform, camera] = m_Registry.get<TransformComponent, CameraComponent>(entity);
-
-			if (camera.Primary)
-			{
-				mainCamera = &camera.Camera;
-				cameraTransform = transform.GetTransform();
-				break;
-			}
+			ENGINE_WARN("Scene {0} does not have main camera!", m_Name);
+			return;
 		}
 
-		if(mainCamera)
+		SceneCamera& camera = cameraEntity.GetComponent<CameraComponent>();
+		glm::mat4 cameraViewMatrix = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+
+		SceneRenderer::BeginScene(this, {camera, cameraViewMatrix});
+		auto group = m_Registry.group<MeshComponent>(entt::get<TransformComponent>);
+		for (auto entity : group)
 		{
-			/*
-			Renderer2D::BeginScene(mainCamera->GetProjection(), cameraTransform);
-			
-			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-			for (auto entity : group)
+			auto& [meshComponent, transformComponent] = group.get<MeshComponent, TransformComponent>(entity);
+			if (meshComponent.Mesh)
 			{
-				auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-
-				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+				SceneRenderer::SubmitMesh(meshComponent.Mesh, transformComponent.GetTransform());
 			}
-
-			Renderer2D::EndScene();
-			*/
-
-			SceneRenderer::BeginScene(this);
-
-
-
-			SceneRenderer::EndScene();
 		}
+		SceneRenderer::EndScene();
 		
 	}
 
@@ -109,14 +83,31 @@ namespace Engine
 		}
 	}
 
+	Entity Scene::GetMainCameraEntity()
+	{
+		auto view = m_Registry.view<CameraComponent>();
+		for (auto entity : view)
+		{
+			auto& camera = view.get<CameraComponent>(entity);
+			if (camera.Primary)
+				return { entity, this };
+		}
+		ENGINE_WARN("Conld not find main camera!");
+		return {};
+	}
+
 	template<typename T>
 	void Scene::OnComponentAdded(Entity entity, T& component)
 	{
-		static_assert(false);
 	}
 
 	template<>
 	void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
+	{
+	}
+
+	template<>
+	void Scene::OnComponentAdded<MeshComponent>(Entity entity, MeshComponent& component)
 	{
 	}
 
@@ -133,11 +124,6 @@ namespace Engine
 
 	template<>
 	void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
 	{
 	}
 }

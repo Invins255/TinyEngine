@@ -1,28 +1,40 @@
 #pragma once
 
 #include "Engine/Scene/Scene.h"
+#include "Engine/Renderer/Camera.h"
 #include "Engine/Renderer/FrameBuffer.h"
 #include "Engine/Renderer/Mesh.h"
+#include "Engine/Renderer/Material.h"
 
 namespace Engine
 {
+	struct SceneRendererCamera
+	{
+		Camera Camera;
+		glm::mat4 ViewMatrix;
+		float Near, Far;
+		float FOV;
+	};
+
 	class SceneRenderer
 	{
+		friend class Scene;
+
 	public:
 		static void Init();
 		static void Shutdown();
 
-		static void BeginScene(Scene* scene);
+		static void BeginScene(const Scene* scene, const SceneRendererCamera& camera);
 		static void EndScene();
 
 		static void SetViewportSize(uint32_t width, uint32_t height);
-		static void SubmitMesh(Ref<Mesh>& mesh, const glm::mat4& transform = glm::mat4(1.0f));
+		static void SubmitMesh(Ref<Mesh>& mesh, const glm::mat4& transform = glm::mat4(1.0f), Ref<MaterialInstance> overrideMaterial = nullptr);
 
 		static uint32_t GetFinalColorBufferRendererID();
 		static Ref<FrameBuffer> GetFinalFrameBuffer();
 	private:
 		static void RenderPass();
 
-		friend class Scene;
+		static void FlushDrawList();
 	};
 }

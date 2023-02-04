@@ -92,7 +92,19 @@ namespace Engine
 	//----------------------------------------------------------------------
 	//OpenGLIndexBuffer
 	//----------------------------------------------------------------------
-	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* data, uint32_t size):
+	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t size)
+		:m_Size(size)
+	{
+		Renderer::Submit([this]()
+			{
+				glCreateBuffers(1, &m_RendererID);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Size, nullptr, GL_DYNAMIC_DRAW);
+			}
+		);
+	}
+
+	OpenGLIndexBuffer::OpenGLIndexBuffer(void* data, uint32_t size):
 		m_Size(size)
 	{
 		m_LocalData = Buffer::Copy(data, size);

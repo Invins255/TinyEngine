@@ -39,7 +39,8 @@ namespace Engine
 	class OpenGLIndexBuffer : public IndexBuffer
 	{
 	public:
-		OpenGLIndexBuffer(uint32_t* data, uint32_t size);
+		OpenGLIndexBuffer(uint32_t size);
+		OpenGLIndexBuffer(void* data, uint32_t size);
 		virtual ~OpenGLIndexBuffer();
 
 		virtual uint32_t GetRendererID() const override { return m_RendererID; }

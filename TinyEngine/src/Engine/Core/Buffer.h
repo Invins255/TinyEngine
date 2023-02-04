@@ -45,6 +45,12 @@ namespace Engine
 				memset(Data, 0, Size);
 		}
 
+		template<typename T>
+		T& Read(uint32_t offset = 0)
+		{
+			return *(T*)(Data + offset);
+		}
+
 		void Write(uint8_t* data, uint32_t size, uint32_t offset = 0)
 		{
 			ENGINE_ASSERT(offset + size <= Size, "Buffer overflow!");

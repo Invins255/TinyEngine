@@ -25,12 +25,6 @@ namespace Engine
 		std::string Name;
 	};
 
-	struct UniformBuffer
-	{
-		uint8_t* Buffer;
-		std::vector<Uniform> Uniforms;
-	};
-
 	struct UniformBufferBase
 	{
 		virtual const uint8_t* GetBuffer() const = 0;
@@ -39,7 +33,7 @@ namespace Engine
 	};
 
 	template<uint32_t N, uint32_t U>
-	struct UniformBufferDeclaration : public UniformBufferBase
+	struct UniformBuffer : public UniformBufferBase
 	{
 		uint8_t Buffer[N];
 		Uniform Uniforms[U];
@@ -139,8 +133,8 @@ namespace Engine
 		virtual void SetPSMaterialUniformBuffer(Buffer buffer) = 0;
 		virtual bool HasVSMaterialUniformBuffer() const = 0;
 		virtual bool HasPSMaterialUniformBuffer() const = 0;
-		virtual const ShaderUniformBufferDeclaration& GetVSMaterialUniformBuffer() const = 0;
-		virtual const ShaderUniformBufferDeclaration& GetPSMaterialUniformBuffer() const = 0;
+		virtual const ShaderUniformBuffer& GetVSMaterialUniformBuffer() const = 0;
+		virtual const ShaderUniformBuffer& GetPSMaterialUniformBuffer() const = 0;
 		virtual const ShaderUniformList& GetVSRendererUniforms() const = 0;
 		virtual const ShaderUniformList& GetPSRendererUniforms() const = 0;
 

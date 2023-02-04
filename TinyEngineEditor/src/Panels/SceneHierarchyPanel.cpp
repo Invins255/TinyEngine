@@ -186,6 +186,16 @@ namespace Engine
 			}
 		}
 
+		if (entity.HasComponent<MeshComponent>())
+		{
+			if (ImGui::TreeNodeEx((void*)typeid(MeshComponent).hash_code(), treeNodeFlags, "Mesh"))
+			{
+				ImGui::Text("Mesh component");
+
+				ImGui::TreePop();
+			}
+		}
+
 		if (entity.HasComponent<CameraComponent>())
 		{
 			if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), treeNodeFlags, "Camera"))

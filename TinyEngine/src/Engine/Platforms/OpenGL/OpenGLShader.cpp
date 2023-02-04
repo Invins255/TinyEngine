@@ -330,12 +330,12 @@ namespace Engine
 		glUniformMatrix4fv(location, count, GL_FALSE, glm::value_ptr(matrix));
 	}
 
-	void OpenGLShader::UploadUniformStruct(OpenGLShaderUniformDeclaration* uniform, uint8_t* buffer, uint32_t offset)
+	void OpenGLShader::UploadUniformStruct(OpenGLShaderUniform* uniform, uint8_t* buffer, uint32_t offset)
 	{
 		const auto& fields = uniform->GetShaderUniformStruct().GetFields();
 		for (size_t k = 0; k < fields.size(); k++)
 		{
-			OpenGLShaderUniformDeclaration* field = (OpenGLShaderUniformDeclaration*)fields[k];
+			OpenGLShaderUniform* field = (OpenGLShaderUniform*)fields[k];
 			ResolveAndSetUniformField(*field, buffer, offset);
 			offset += field->m_Size;
 		}
@@ -602,47 +602,47 @@ namespace Engine
 		if (IsTypeStringResource(typeString))
 		{
 			//sampler
-			ShaderResourceDeclaration* shaderResource = new OpenGLShaderResourceDeclaration(OpenGLShaderResourceDeclaration::StringToType(typeString), name, count);
+			ShaderResource* shaderResource = new OpenGLShaderResource(OpenGLShaderResource::StringToType(typeString), name, count);
 			m_Resources.push_back(shaderResource);
 		}
 		else
 		{
 			//other types
-			OpenGLShaderUniformDeclaration::Type t = OpenGLShaderUniformDeclaration::StringToType(typeString);
-			OpenGLShaderUniformDeclaration* uniform = nullptr;
+			OpenGLShaderUniform::Type t = OpenGLShaderUniform::StringToType(typeString);
+			OpenGLShaderUniform* uniform = nullptr;
 
-			if (t == OpenGLShaderUniformDeclaration::Type::None)
+			if (t == OpenGLShaderUniform::Type::None)
 			{
 				//struct
 				ShaderStruct* s = FindStruct(typeString);
 				ENGINE_ASSERT(s, "");
-				uniform = new OpenGLShaderUniformDeclaration(domain, s, name, count);
+				uniform = new OpenGLShaderUniform(domain, s, name, count);
 			}
 			else
 			{
 				//basic type
-				uniform = new OpenGLShaderUniformDeclaration(domain, t, name, count);
+				uniform = new OpenGLShaderUniform(domain, t, name, count);
 			}
 
 			if (StartsWith(name, "r_"))
 			{
 				if (domain == ShaderDomain::Vertex)
-					((OpenGLShaderUniformBufferDeclaration*)m_VSRendererUniformBuffers.front())->PushUniform(uniform);
+					((OpenGLShaderUniformBuffer*)m_VSRendererUniformBuffers.front())->PushUniform(uniform);
 				else if (domain == ShaderDomain::Pixel)
-					((OpenGLShaderUniformBufferDeclaration*)m_PSRendererUniformBuffers.front())->PushUniform(uniform);
+					((OpenGLShaderUniformBuffer*)m_PSRendererUniformBuffers.front())->PushUniform(uniform);
 			}
 			else
 			{
 				if (domain == ShaderDomain::Vertex)
 				{
 					if (!m_VSMaterialUniformBuffer)
-						m_VSMaterialUniformBuffer = CreateRef<OpenGLShaderUniformBufferDeclaration>("VertexMaterialUniformBuffer", domain);
+						m_VSMaterialUniformBuffer = CreateRef<OpenGLShaderUniformBuffer>("VertexMaterialUniformBuffer", domain);
 					m_VSMaterialUniformBuffer->PushUniform(uniform);
 				}
 				else if (domain == ShaderDomain::Pixel)
 				{
 					if (!m_PSMaterialUniformBuffer)
-						m_PSMaterialUniformBuffer = CreateRef<OpenGLShaderUniformBufferDeclaration>("FragmentMaterialUniformBuffer", domain);
+						m_PSMaterialUniformBuffer = CreateRef<OpenGLShaderUniformBuffer>("FragmentMaterialUniformBuffer", domain);
 					m_PSMaterialUniformBuffer->PushUniform(uniform);
 				}
 			}
@@ -685,7 +685,7 @@ namespace Engine
 				std::string c(s + 1, end - s);
 				count = atoi(c.c_str());
 			}
-			ShaderUniformDeclaration* field = new OpenGLShaderUniformDeclaration(domain, OpenGLShaderUniformDeclaration::StringToType(type), name, count);
+			ShaderUniform* field = new OpenGLShaderUniform(domain, OpenGLShaderUniform::StringToType(type), name, count);
 			uniformStruct->AddField(field);
 		}
 		m_Structs.push_back(uniformStruct);
@@ -705,7 +705,7 @@ namespace Engine
 	{
 		int32_t result = glGetUniformLocation(m_RendererID, name.c_str());
 		if (result == -1)
-			ENGINE_WARN("Uniform({0}) connot be found or unused in shader({1})", name, m_Name);
+			ENGINE_WARN("Shader({0}): Uniform({1}) connot be found or unused", m_Name, name);
 		return result;
 	}
 
@@ -716,17 +716,17 @@ namespace Engine
 		//Vertex Shader
 		for (uint32_t i = 0; i < m_VSRendererUniformBuffers.size(); i++)
 		{
-			const ShaderUniformList& uniforms = ((OpenGLShaderUniformBufferDeclaration*)m_VSRendererUniformBuffers[i])->GetUniformDeclarations();
+			const ShaderUniformList& uniforms = ((OpenGLShaderUniformBuffer*)m_VSRendererUniformBuffers[i])->GetUniforms();
 			for (uint32_t j = 0; j < uniforms.size(); j++)
 			{
-				OpenGLShaderUniformDeclaration* uniform = (OpenGLShaderUniformDeclaration*)uniforms[j];
-				if (uniform->GetType() == OpenGLShaderUniformDeclaration::Type::Struct)
+				OpenGLShaderUniform* uniform = (OpenGLShaderUniform*)uniforms[j];
+				if (uniform->GetType() == OpenGLShaderUniform::Type::Struct)
 				{
 					const ShaderStruct& s = uniform->GetShaderUniformStruct();
 					const auto& fields = s.GetFields();
 					for (size_t k = 0; k < fields.size(); k++)
 					{
-						OpenGLShaderUniformDeclaration* field = (OpenGLShaderUniformDeclaration*)fields[k];
+						OpenGLShaderUniform* field = (OpenGLShaderUniform*)fields[k];
 						field->m_Location = GetUniformLocation(uniform->m_Name + "." + field->m_Name);
 					}
 				}
@@ -740,17 +740,17 @@ namespace Engine
 		//Fragment Shader
 		for (uint32_t i = 0; i < m_PSRendererUniformBuffers.size(); i++)
 		{
-			const ShaderUniformList& uniforms = ((OpenGLShaderUniformBufferDeclaration*)m_PSRendererUniformBuffers[i])->GetUniformDeclarations();
+			const ShaderUniformList& uniforms = ((OpenGLShaderUniformBuffer*)m_PSRendererUniformBuffers[i])->GetUniforms();
 			for (uint32_t j = 0; j < uniforms.size(); j++)
 			{
-				OpenGLShaderUniformDeclaration* uniform = (OpenGLShaderUniformDeclaration*)uniforms[j];
-				if (uniform->GetType() == OpenGLShaderUniformDeclaration::Type::Struct)
+				OpenGLShaderUniform* uniform = (OpenGLShaderUniform*)uniforms[j];
+				if (uniform->GetType() == OpenGLShaderUniform::Type::Struct)
 				{
 					const ShaderStruct& s = uniform->GetShaderUniformStruct();
 					const auto& fields = s.GetFields();
 					for (size_t k = 0; k < fields.size(); k++)
 					{
-						OpenGLShaderUniformDeclaration* field = (OpenGLShaderUniformDeclaration*)fields[k];
+						OpenGLShaderUniform* field = (OpenGLShaderUniform*)fields[k];
 						field->m_Location = GetUniformLocation(uniform->m_Name + "." + field->m_Name);
 					}
 				}
@@ -766,17 +766,17 @@ namespace Engine
 			const auto& uniformBuffer = m_VSMaterialUniformBuffer;
 			if (uniformBuffer)
 			{
-				const ShaderUniformList& uniforms = uniformBuffer->GetUniformDeclarations();
+				const ShaderUniformList& uniforms = uniformBuffer->GetUniforms();
 				for (uint32_t j = 0; j < uniforms.size(); j++)
 				{
-					OpenGLShaderUniformDeclaration* uniform = (OpenGLShaderUniformDeclaration*)uniforms[j];
-					if (uniform->GetType() == OpenGLShaderUniformDeclaration::Type::Struct)
+					OpenGLShaderUniform* uniform = (OpenGLShaderUniform*)uniforms[j];
+					if (uniform->GetType() == OpenGLShaderUniform::Type::Struct)
 					{
 						const ShaderStruct& s = uniform->GetShaderUniformStruct();
 						const auto& fields = s.GetFields();
 						for (size_t k = 0; k < fields.size(); k++)
 						{
-							OpenGLShaderUniformDeclaration* field = (OpenGLShaderUniformDeclaration*)fields[k];
+							OpenGLShaderUniform* field = (OpenGLShaderUniform*)fields[k];
 							field->m_Location = GetUniformLocation(uniform->m_Name + "." + field->m_Name);
 						}
 					}
@@ -793,17 +793,17 @@ namespace Engine
 			const auto& uniformBuffer = m_PSMaterialUniformBuffer;
 			if (uniformBuffer)
 			{
-				const ShaderUniformList& uniforms = uniformBuffer->GetUniformDeclarations();
+				const ShaderUniformList& uniforms = uniformBuffer->GetUniforms();
 				for (uint32_t j = 0; j < uniforms.size(); j++)
 				{
-					OpenGLShaderUniformDeclaration* uniform = (OpenGLShaderUniformDeclaration*)uniforms[j];
-					if (uniform->GetType() == OpenGLShaderUniformDeclaration::Type::Struct)
+					OpenGLShaderUniform* uniform = (OpenGLShaderUniform*)uniforms[j];
+					if (uniform->GetType() == OpenGLShaderUniform::Type::Struct)
 					{
 						const ShaderStruct& s = uniform->GetShaderUniformStruct();
 						const auto& fields = s.GetFields();
 						for (size_t k = 0; k < fields.size(); k++)
 						{
-							OpenGLShaderUniformDeclaration* field = (OpenGLShaderUniformDeclaration*)fields[k];
+							OpenGLShaderUniform* field = (OpenGLShaderUniform*)fields[k];
 							field->m_Location = GetUniformLocation(uniform->m_Name + "." + field->m_Name);
 						}
 					}
@@ -819,7 +819,7 @@ namespace Engine
 		uint32_t sampler = 0;
 		for (uint32_t i = 0; i < m_Resources.size(); i++)
 		{
-			OpenGLShaderResourceDeclaration* resource = (OpenGLShaderResourceDeclaration*)m_Resources[i];
+			OpenGLShaderResource* resource = (OpenGLShaderResource*)m_Resources[i];
 
 			if (resource->GetCount() == 1)
 			{
@@ -840,12 +840,12 @@ namespace Engine
 		}
 	}
 
-	void OpenGLShader::ResolveAndSetUniforms(const Ref<OpenGLShaderUniformBufferDeclaration>& uniformBuffer, Buffer buffer)
+	void OpenGLShader::ResolveAndSetUniforms(const Ref<OpenGLShaderUniformBuffer>& uniformBuffer, Buffer buffer)
 	{
-		const ShaderUniformList& uniforms = uniformBuffer->GetUniformDeclarations();
+		const ShaderUniformList& uniforms = uniformBuffer->GetUniforms();
 		for (uint32_t i = 0; i < uniforms.size(); i++)
 		{
-			OpenGLShaderUniformDeclaration* uniform = (OpenGLShaderUniformDeclaration*)uniforms[i];
+			OpenGLShaderUniform* uniform = (OpenGLShaderUniform*)uniforms[i];
 			if (uniform->IsArray())
 				ResolveAndSetUniformArray(uniform, buffer);
 			else
@@ -853,7 +853,7 @@ namespace Engine
 		}
 	}
 
-	void OpenGLShader::ResolveAndSetUniform(OpenGLShaderUniformDeclaration* uniform, Buffer buffer)
+	void OpenGLShader::ResolveAndSetUniform(OpenGLShaderUniform* uniform, Buffer buffer)
 	{
 		if (uniform->GetLocation() == -1)
 			return;
@@ -862,31 +862,31 @@ namespace Engine
 		uint32_t offset = uniform->GetOffset();
 		switch (uniform->GetType())
 		{
-		case OpenGLShaderUniformDeclaration::Type::Bool:
+		case OpenGLShaderUniform::Type::Bool:
 			UploadUniformFloat(uniform->GetLocation(), *(bool*)&buffer.Data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Float:
+		case OpenGLShaderUniform::Type::Float:
 			UploadUniformFloat(uniform->GetLocation(), *(float*)&buffer.Data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Int:
+		case OpenGLShaderUniform::Type::Int:
 			UploadUniformInt(uniform->GetLocation(), *(int*)&buffer.Data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Vec2:
+		case OpenGLShaderUniform::Type::Vec2:
 			UploadUniformFloat2(uniform->GetLocation(), *(glm::vec2*)&buffer.Data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Vec3:
+		case OpenGLShaderUniform::Type::Vec3:
 			UploadUniformFloat3(uniform->GetLocation(), *(glm::vec3*)&buffer.Data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Vec4:
+		case OpenGLShaderUniform::Type::Vec4:
 			UploadUniformFloat4(uniform->GetLocation(), *(glm::vec4*)&buffer.Data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Mat3:
+		case OpenGLShaderUniform::Type::Mat3:
 			UploadUniformMat3(uniform->GetLocation(), *(glm::mat3*)&buffer.Data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Mat4:
+		case OpenGLShaderUniform::Type::Mat4:
 			UploadUniformMat4(uniform->GetLocation(), *(glm::mat4*)&buffer.Data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Struct:
+		case OpenGLShaderUniform::Type::Struct:
 			UploadUniformStruct(uniform, buffer.Data, offset);
 			break;
 		default:
@@ -894,7 +894,7 @@ namespace Engine
 		}
 	}
 
-	void OpenGLShader::ResolveAndSetUniformArray(OpenGLShaderUniformDeclaration* uniform, Buffer buffer)
+	void OpenGLShader::ResolveAndSetUniformArray(OpenGLShaderUniform* uniform, Buffer buffer)
 	{
 		if (uniform->GetLocation() == -1)
 			return;
@@ -903,32 +903,32 @@ namespace Engine
 		uint32_t offset = uniform->GetOffset();
 		switch (uniform->GetType())
 		{
-		case OpenGLShaderUniformDeclaration::Type::Bool:
+		case OpenGLShaderUniform::Type::Bool:
 			UploadUniformFloat(uniform->GetLocation(), *(bool*)&buffer.Data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Float:
+		case OpenGLShaderUniform::Type::Float:
 			UploadUniformFloat(uniform->GetLocation(), *(float*)&buffer.Data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Int: 
+		case OpenGLShaderUniform::Type::Int: 
 			UploadUniformInt(uniform->GetLocation(), *(int*)&buffer.Data[offset]);
 			//Maybe UploadUniformIntArray
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Vec2:
+		case OpenGLShaderUniform::Type::Vec2:
 			UploadUniformFloat2(uniform->GetLocation(), *(glm::vec2*)&buffer.Data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Vec3:
+		case OpenGLShaderUniform::Type::Vec3:
 			UploadUniformFloat3(uniform->GetLocation(), *(glm::vec3*)&buffer.Data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Vec4:
+		case OpenGLShaderUniform::Type::Vec4:
 			UploadUniformFloat4(uniform->GetLocation(), *(glm::vec4*)&buffer.Data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Mat3:
+		case OpenGLShaderUniform::Type::Mat3:
 			UploadUniformMat3(uniform->GetLocation(), *(glm::mat3*)&buffer.Data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Mat4:
+		case OpenGLShaderUniform::Type::Mat4:
 			UploadUniformMat4Array(uniform->GetLocation(), *(glm::mat4*)&buffer.Data[offset], uniform->GetCount());
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Struct:
+		case OpenGLShaderUniform::Type::Struct:
 			UploadUniformStruct(uniform, buffer.Data, offset);
 			break;
 		default:
@@ -936,32 +936,32 @@ namespace Engine
 		}
 	}
 
-	void OpenGLShader::ResolveAndSetUniformField(const OpenGLShaderUniformDeclaration& field, uint8_t* data, int32_t offset)
+	void OpenGLShader::ResolveAndSetUniformField(const OpenGLShaderUniform& field, uint8_t* data, int32_t offset)
 	{
 		switch (field.GetType())
 		{
-		case OpenGLShaderUniformDeclaration::Type::Bool:
+		case OpenGLShaderUniform::Type::Bool:
 			UploadUniformFloat(field.GetLocation(), *(bool*)&data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Float:
+		case OpenGLShaderUniform::Type::Float:
 			UploadUniformFloat(field.GetLocation(), *(float*)&data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Int:
+		case OpenGLShaderUniform::Type::Int:
 			UploadUniformInt(field.GetLocation(), *(int*)&data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Vec2:
+		case OpenGLShaderUniform::Type::Vec2:
 			UploadUniformFloat2(field.GetLocation(), *(glm::vec2*)&data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Vec3:
+		case OpenGLShaderUniform::Type::Vec3:
 			UploadUniformFloat3(field.GetLocation(), *(glm::vec3*)&data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Vec4:
+		case OpenGLShaderUniform::Type::Vec4:
 			UploadUniformFloat4(field.GetLocation(), *(glm::vec4*)&data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Mat3:
+		case OpenGLShaderUniform::Type::Mat3:
 			UploadUniformMat3(field.GetLocation(), *(glm::mat3*)&data[offset]);
 			break;
-		case OpenGLShaderUniformDeclaration::Type::Mat4:
+		case OpenGLShaderUniform::Type::Mat4:
 			UploadUniformMat4(field.GetLocation(), *(glm::mat4*)&data[offset]);
 			break;
 		default:

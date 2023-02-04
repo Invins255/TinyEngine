@@ -3,15 +3,19 @@
 #include "Engine/Renderer/RenderPass.h"
 #include "Engine/Renderer/RenderCommandQueue.h"
 #include "Engine/Renderer/RenderCommand.h"
+#include "Engine/Renderer/Mesh.h"
 
 namespace Engine
 {
+	class ShaderLibrary;
+
 	class Renderer
 	{
 	public:
 		typedef void(*RenderCommandFn)(void*);
 
 		static RendererAPI::RendererAPIType GetAPIType() { return RendererAPI::GetAPIType(); }
+		static Ref<ShaderLibrary> GetShaderLibrary();
 
 		template<typename FuncT>
 		static void Submit(FuncT&& func)
@@ -35,7 +39,9 @@ namespace Engine
 		static void EndRenderPass();
 
 		static void OnWindowResize(uint32_t width, uint32_t height);
-	
+
+		static void SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial = nullptr);
+
 	private:
 		static RenderCommandQueue& GetCommandQueue();
 	};

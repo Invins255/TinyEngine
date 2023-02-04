@@ -4,16 +4,19 @@
 
 namespace Engine
 {
-	class OpenGLShaderUniformDeclaration : public ShaderUniformDeclaration
+	class OpenGLShaderUniform : public ShaderUniform
 	{
+		friend class OpenGLShader;
+		friend class OpenGLShaderUniformBuffer;
+
 	public:
 		enum class Type
 		{
 			None, Int, Float, Vec2, Vec3, Vec4, Mat3, Mat4, Bool, Struct
 		};
 	public:
-		OpenGLShaderUniformDeclaration(ShaderDomain domain, Type type, const std::string& name, uint32_t count = 1);
-		OpenGLShaderUniformDeclaration(ShaderDomain domain, ShaderStruct* uniformStruct, const std::string& name, uint32_t count = 1);
+		OpenGLShaderUniform(ShaderDomain domain, Type type, const std::string& name, uint32_t count = 1);
+		OpenGLShaderUniform(ShaderDomain domain, ShaderStruct* uniformStruct, const std::string& name, uint32_t count = 1);
 
 		virtual const std::string& GetName() const override { return m_Name; }
 		virtual uint32_t GetSize() const override { return m_Size; }
@@ -47,36 +50,32 @@ namespace Engine
 		ShaderDomain m_Domain;
 		Type m_Type;
 		mutable int32_t m_Location = -1;
-
-
-	private:
-		friend class OpenGLShader;
-		friend class OpenGLShaderUniformBufferDeclaration;
-
 	};
 
 	struct GLShaderUniformField
 	{
-		OpenGLShaderUniformDeclaration::Type Type;
+		OpenGLShaderUniform::Type Type;
 		std::string Name;
 		uint32_t Count;
 		mutable uint32_t Size;
 		mutable int32_t Location;
 	};
 
-	class OpenGLShaderUniformBufferDeclaration : public ShaderUniformBufferDeclaration
+	class OpenGLShaderUniformBuffer : public ShaderUniformBuffer
 	{
+		friend class Shader;
+
 	public:
-		OpenGLShaderUniformBufferDeclaration(const std::string& name, ShaderDomain domain);
+		OpenGLShaderUniformBuffer(const std::string& name, ShaderDomain domain);
 
 		virtual const std::string& GetName() const override { return m_Name; }
 		virtual uint32_t GetRegister() const override { return m_Register; }
 		virtual uint32_t GetSize() const override { return m_Size; }
 		virtual ShaderDomain GetDomain() const { return m_Domain; }
-		virtual const ShaderUniformList& GetUniformDeclarations() const override { return m_Uniforms; }
+		virtual const ShaderUniformList& GetUniforms() const override { return m_Uniforms; }
 
-		void PushUniform(OpenGLShaderUniformDeclaration* uniform);
-		ShaderUniformDeclaration* FindUniform(const std::string& name);
+		void PushUniform(OpenGLShaderUniform* uniform);
+		ShaderUniform* FindUniform(const std::string& name);
 
 	private:
 		std::string m_Name;
@@ -84,14 +83,12 @@ namespace Engine
 		uint32_t m_Size;
 		ShaderDomain m_Domain;
 		ShaderUniformList m_Uniforms;
-
-	private:
-		friend class Shader;
-
 	};
 
-	class OpenGLShaderResourceDeclaration : public ShaderResourceDeclaration
+	class OpenGLShaderResource : public ShaderResource
 	{
+		friend class OpenGLShader;
+
 	public:
 		enum class Type
 		{
@@ -99,7 +96,7 @@ namespace Engine
 		};
 
 	public:
-		OpenGLShaderResourceDeclaration(Type type, const std::string& name, uint32_t count);
+		OpenGLShaderResource(Type type, const std::string& name, uint32_t count);
 
 		virtual const std::string& GetName() const override { return m_Name; };
 		virtual uint32_t GetRegister() const override { return m_Register; };
@@ -115,9 +112,5 @@ namespace Engine
 		uint32_t m_Register = 0;
 		uint32_t m_Count = 0;
 		Type m_Type;
-	
-	private:
-		friend class OpenGLShader;
-
 	};
 }

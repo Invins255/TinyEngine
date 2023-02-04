@@ -13,8 +13,11 @@ namespace Engine
 		Pixel = 1
 	};
 
-	class ShaderUniformDeclaration
+	class ShaderUniform
 	{
+		friend class Shader;
+		friend class ShaderStruct;
+
 	public:
 		virtual const std::string& GetName() const = 0;
 		virtual uint32_t GetSize() const = 0;
@@ -24,33 +27,31 @@ namespace Engine
 
 	protected:
 		virtual void SetOffset(uint32_t offset) = 0;
-
-	private:
-		friend class Shader;
-		friend class ShaderStruct;
 	};
 
-	using ShaderUniformList = std::vector<ShaderUniformDeclaration*>;
+	using ShaderUniformList = std::vector<ShaderUniform*>;
 
-	class ShaderUniformBufferDeclaration
+	class ShaderUniformBuffer
 	{
 	public:
 		virtual const std::string& GetName() const = 0;
 		virtual uint32_t GetRegister() const = 0;
 		virtual uint32_t GetSize() const = 0;
-		virtual const ShaderUniformList& GetUniformDeclarations() const = 0;
-		virtual ShaderUniformDeclaration* FindUniform(const std::string& name) = 0;
+		virtual const ShaderUniformList& GetUniforms() const = 0;
+		virtual ShaderUniform* FindUniform(const std::string& name) = 0;
 	};
 
 	class ShaderStruct
 	{
+		friend class Shader;
+
 	public:
 		ShaderStruct(const std::string& name) :
 			m_Name(name), m_Size(0), m_Offset(0)
 		{
 		}
 
-		void AddField(ShaderUniformDeclaration* field)
+		void AddField(ShaderUniform* field)
 		{
 			m_Size += field->GetSize();
 			uint32_t offset = 0;
@@ -64,24 +65,22 @@ namespace Engine
 		}
 		
 		const std::string& GetName() const { return m_Name; }
-		const std::vector<ShaderUniformDeclaration*>& GetFields() const { return m_Fields; }
+		const std::vector<ShaderUniform*>& GetFields() const { return m_Fields; }
 		uint32_t GetSize() const { return m_Size; }
 		void SetOffset(uint32_t offset) { m_Offset = offset; }
 		uint32_t GetOffset() const { return m_Offset; }
 
 	private:
 		std::string m_Name;
-		std::vector<ShaderUniformDeclaration*> m_Fields;
+		std::vector<ShaderUniform*> m_Fields;
 		uint32_t m_Size;
 		uint32_t m_Offset;
 
-	private:
-		friend class Shader;
 	};
 
 	using ShaderStructList = std::vector<ShaderStruct*>;
 
-	class ShaderResourceDeclaration
+	class ShaderResource
 	{
 	public:
 		virtual const std::string& GetName() const = 0;
@@ -89,5 +88,5 @@ namespace Engine
 		virtual uint32_t GetCount() const = 0;
 	};
 
-	using ShaderResourceList = std::vector<ShaderResourceDeclaration*>;
+	using ShaderResourceList = std::vector<ShaderResource*>;
 }
