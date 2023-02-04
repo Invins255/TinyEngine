@@ -33,6 +33,8 @@ namespace Engine
 		uint32_t rendererID = m_RendererID;
 		Renderer::Submit([rendererID]()
 			{
+				RENDERCOMMAND_INFO("RenderCommand: Destroy shader. ID: {1}", rendererID);
+
 				glDeleteProgram(rendererID);
 			}
 		);
@@ -48,6 +50,8 @@ namespace Engine
 	{
 		Renderer::Submit([this]()
 			{
+				RENDERCOMMAND_INFO("RenderCommand: Bind shader({0})", m_RendererID);
+
 				glUseProgram(m_RendererID);
 			}
 		);
@@ -57,6 +61,8 @@ namespace Engine
 	{
 		Renderer::Submit([this]()
 			{
+				RENDERCOMMAND_INFO("RenderCommand: Unbind shader({0})", m_RendererID);
+
 				glUseProgram(0);
 			}
 		);
@@ -137,78 +143,6 @@ namespace Engine
 				break;
 			}
 		}
-	}
-
-	void OpenGLShader::SetInt(const std::string& name, int value)
-	{
-		Renderer::Submit([=]()
-			{
-				UploadUniformInt(name, value);
-			}
-		);
-	}
-
-	void OpenGLShader::SetIntArray(const std::string& name, int value[], uint32_t count)
-	{
-		Renderer::Submit([=]()
-			{
-				UploadUniformIntArray(name, value, count);
-			}
-		);
-	}
-
-	void OpenGLShader::SetFloat(const std::string& name, float value)
-	{
-		Renderer::Submit([=]()
-			{
-				UploadUniformFloat(name, value);
-			}
-		);
-	}
-
-	void OpenGLShader::SetFloat2(const std::string& name, const glm::vec2& value)
-	{
-		Renderer::Submit([=]()
-			{
-				UploadUniformFloat2(name, value);
-			}
-		);
-	}
-
-	void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3& value)
-	{
-		Renderer::Submit([=]()
-			{
-				UploadUniformFloat3(name, value);
-			}
-		);
-	}
-
-	void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& value)
-	{
-		Renderer::Submit([=]()
-			{
-				UploadUniformFloat4(name, value);
-			}
-		);
-	}
-
-	void OpenGLShader::SetMat3(const std::string& name, const glm::mat3& value)
-	{
-		Renderer::Submit([=]()
-			{
-				UploadUniformMat3(name, value);
-			}
-		);
-	}
-
-	void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& value)
-	{
-		Renderer::Submit([=]()
-			{
-				UploadUniformMat4(name, value);
-			}
-		);
 	}
 
 	void OpenGLShader::SetVSMaterialUniformBuffer(Buffer buffer)
@@ -387,6 +321,8 @@ namespace Engine
 				}
 
 				m_Loaded = true;
+
+				RENDERCOMMAND_INFO("RenderCommand: Construct shader. Name: [{0}], ID: ({1})", m_Name, m_RendererID);
 			}
 		);
 	}

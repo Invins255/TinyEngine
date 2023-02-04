@@ -943,7 +943,6 @@
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Renderer\RenderCommandQueue.h" />
-    <ClInclude Include="src\Engine\Renderer\Renderer2D.h" />
     <ClInclude Include="src\Engine\Renderer\RenderPass.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLRenderPass.h" />
     <ClInclude Include="src\Engine\Renderer\SceneRenderer.h" />
@@ -1014,9 +1013,6 @@
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Renderer\Renderer.cpp">
-      <Filter>src\Engine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Engine\Renderer\Renderer2D.cpp">
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Renderer\RendererAPI.cpp">

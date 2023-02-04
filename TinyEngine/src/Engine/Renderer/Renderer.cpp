@@ -26,6 +26,7 @@ namespace Engine
 		SceneRenderer::Init();
 
 		s_Data->m_ShaderLibrary = CreateRef<ShaderLibrary>();
+
 		//TEMP
 		s_Data->m_ShaderLibrary->Load("assets/Shaders/FlatColor3D.glsl");
 	}
@@ -67,7 +68,7 @@ namespace Engine
 		const glm::vec4& clearColor = s_Data->m_ActiveRenderPass->GetSpecification().TargetFramebuffer->GetSpecification().ClearColor;
 		Renderer::Submit([=]()
 			{
-				ENGINE_INFO("RenderCommand: Clear frameBuffer");
+				RENDERCOMMAND_INFO("RenderCommand: Clear current frameBuffer");
 				RenderCommand::SetClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 				RenderCommand::Clear();
 			}
@@ -100,15 +101,7 @@ namespace Engine
 			auto shader = material->GetShader();
 			material->Bind();
 
-			shader->SetMat4("u_Transform", transform * submesh.Transform);
-			/*
-			auto transformMatrix = transform * submesh.Transform;
-			ENGINE_INFO("Transform: \n{0}, {1}, {2}, {3},\n{4}, {5}, {6}, {7},\n{8}, {9}, {10}, {11},\n{12}, {13}, {14}, {15}",
-				transformMatrix[0][0], transformMatrix[0][1], transformMatrix[0][2], transformMatrix[0][3],
-				transformMatrix[1][0], transformMatrix[1][1], transformMatrix[1][2], transformMatrix[1][3],
-				transformMatrix[2][0], transformMatrix[2][1], transformMatrix[2][2], transformMatrix[2][3],
-				transformMatrix[3][0], transformMatrix[3][1], transformMatrix[3][2], transformMatrix[3][3]);
-			*/
+			material->Set("u_Transform", transform * submesh.Transform);
 
 			Renderer::Submit([submesh, material]
 				{
@@ -133,6 +126,7 @@ namespace Engine
 						submesh.BaseVertex
 					);
 					
+					RENDERCOMMAND_INFO("RenderCommand: Submit mesh. Mesh: [{0}], Node: [{1}]", submesh.MeshName, submesh.NodeName);
 				}
 			);
 		}

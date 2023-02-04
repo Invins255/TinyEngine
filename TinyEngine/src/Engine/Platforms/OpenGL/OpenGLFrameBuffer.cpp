@@ -21,7 +21,7 @@ namespace Engine
         uint32_t depthAttachment = m_DepthAttachment;
         Renderer::Submit([rendererID, colorAttachment, depthAttachment]()
             {
-                ENGINE_INFO("RenderCommand: Destroy frameBuffer({0})", rendererID);
+                RENDERCOMMAND_INFO("RenderCommand: Destroy frameBuffer({0})", rendererID);
 
                 glDeleteTextures(1, &colorAttachment);
                 glDeleteTextures(1, &depthAttachment);
@@ -34,7 +34,7 @@ namespace Engine
     {
         Renderer::Submit([this]()
             {
-                ENGINE_INFO("RenderCommand: Bind frameBuffer({0})", m_RendererID);
+                RENDERCOMMAND_INFO("RenderCommand: Bind frameBuffer({0})", m_RendererID);
 
                 glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
                 glViewport(0, 0, m_Specification.Width, m_Specification.Height);
@@ -46,7 +46,7 @@ namespace Engine
     {
         Renderer::Submit([this]()
             {
-                ENGINE_INFO("RenderCommand: Unbind frameBuffer({0})", m_RendererID);
+                RENDERCOMMAND_INFO("RenderCommand: Unbind frameBuffer({0})", m_RendererID);
 
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
             }
@@ -99,7 +99,7 @@ namespace Engine
 
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-                ENGINE_INFO("RenderCommand: Construct frameBuffer({0})", m_RendererID);
+                RENDERCOMMAND_INFO("RenderCommand: Construct frameBuffer({0})", m_RendererID);
             }
         );
     }

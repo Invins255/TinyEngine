@@ -1,15 +1,17 @@
 #include "pch.h"
 #include "RenderCommandQueue.h"
 #include "RenderCommand.h"
+#include "Renderer.h"
 
 namespace Engine
 {
+	const uint32_t RenderCommandQueue::MaxQueueSize = 10 * 1024 * 1024; //10MB
+
 	RenderCommandQueue::RenderCommandQueue()
 	{
-		//³õÊ¼»¯BufferÎª10Mb
-		m_CommandBuffer = new uint8_t[10 * 1024 * 1024];
+		m_CommandBuffer = new uint8_t[MaxQueueSize];
 		m_CommandBufferPtr = m_CommandBuffer;
-		memset(m_CommandBuffer, 0, 10 * 1024 * 1024);
+		memset(m_CommandBuffer, 0, MaxQueueSize);
 	}
 
 	RenderCommandQueue::~RenderCommandQueue()
@@ -39,8 +41,8 @@ namespace Engine
 	{
 		uint8_t* buffer = m_CommandBuffer;
 
-		ENGINE_INFO("--------------------------------------------------------------");
-		ENGINE_INFO("RenderCommandQueue excute:");
+		RENDERCOMMAND_INFO("--------------------------------------------------------------");
+		RENDERCOMMAND_INFO("RenderCommandQueue excute:");
 		for (uint32_t i = 0; i < m_CommandCount; i++)
 		{
 			RenderCommandFn function = *(RenderCommandFn*)buffer;
@@ -51,7 +53,7 @@ namespace Engine
 			function(buffer);
 			buffer += size;
 		}
-		ENGINE_INFO("--------------------------------------------------------------");
+		RENDERCOMMAND_INFO("--------------------------------------------------------------");
 
 		m_CommandBufferPtr = m_CommandBuffer;
 		m_CommandCount = 0;

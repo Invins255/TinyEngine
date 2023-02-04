@@ -122,7 +122,7 @@ namespace Engine
 			auto uniform = m_Material->FindShaderUniform(name);
 			ENGINE_ASSERT(uniform, "Conld not find uniform in shader!");
 			auto& buffer = GetUniformBufferTarget(uniform);
-			buffer.Write((byte*)&value, uniform->GetSize(), uniform->GetOffset());
+			buffer.Write((uint8_t*)&value, uniform->GetSize(), uniform->GetOffset());
 
 			m_OverriddenValues.insert(name);
 		}

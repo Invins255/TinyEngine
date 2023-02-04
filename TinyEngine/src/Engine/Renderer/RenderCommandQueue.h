@@ -5,6 +5,9 @@ namespace Engine
 	class RenderCommandQueue
 	{
 	public:
+		static const uint32_t MaxQueueSize;
+
+	public:
 		typedef void(*RenderCommandFn)(void*);
 
 		RenderCommandQueue();

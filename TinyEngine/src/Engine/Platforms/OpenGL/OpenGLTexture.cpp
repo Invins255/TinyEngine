@@ -43,7 +43,7 @@ namespace Engine
 
                 glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 
-                ENGINE_INFO("RenderCommand: Construct texture({0})", m_RendererID);
+                RENDERCOMMAND_INFO("RenderCommand: Construct texture. Path: [{0}], ID: [{1}]", m_Path, m_RendererID);
 
                 stbi_image_free(data);
             }
@@ -66,7 +66,7 @@ namespace Engine
                 glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
                 glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-                ENGINE_INFO("RenderCommand: Construct texture({0})", m_RendererID);
+                RENDERCOMMAND_INFO("RenderCommand: Construct texture. Path: [{0}], ID: [{1}]", m_Path, m_RendererID);
             }
         );
     }
@@ -76,7 +76,7 @@ namespace Engine
         uint32_t rendererID = m_RendererID;
         Renderer::Submit([rendererID]()
             {
-                ENGINE_INFO("RenderCommand: Destroy texture({0})", rendererID);
+                RENDERCOMMAND_INFO("RenderCommand: Destroy texture. ID: [{0}]", rendererID);
                 glDeleteTextures(1, &rendererID);
             }
         );
@@ -86,7 +86,7 @@ namespace Engine
     {
         Renderer::Submit([this, slot]()
             {
-                ENGINE_INFO("RenderCommand: Bind texture({0})", m_RendererID);
+                RENDERCOMMAND_INFO("RenderCommand: Bind texture. ID: [{0}]", m_RendererID);
                 glBindTextureUnit(slot, m_RendererID);
             }
         );
