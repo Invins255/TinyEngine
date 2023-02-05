@@ -1,13 +1,30 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 #include <glm/glm.hpp>
 #include "Engine/Core/TimeStep.h"
 #include "Engine/Renderer/Pipeline.h"
 #include "Engine/Renderer/Material.h"
+#include "Engine/Renderer/Shader.h"
+
+struct aiScene;
+struct aiNode;
+
+namespace Assimp {
+	class Importer;
+}
 
 namespace Engine
 {
+
+#define MESH_DEBUG 1
+#if MESH_DEBUG
+#define MESH_INFO(...) ENGINE_INFO(__VA_ARGS__)
+#else
+#define MESH_INFO(...)
+#endif
+
 	struct Vertex
 	{
 		glm::vec3 Position	= glm::vec3(0.0f);
@@ -48,6 +65,7 @@ namespace Engine
 	class Mesh
 	{
 		friend class Renderer;
+		friend class SceneHierarchyPanel;
 
 	public:
 		Mesh(const std::string& filename);
@@ -67,6 +85,9 @@ namespace Engine
 		std::vector<Ref<MaterialInstance>> GetMaterials() { return m_Materials; }
 
 	private:
+		void TraverseNodes(aiNode* node, const glm::mat4& parentTransform = glm::mat4(1.0f), uint32_t level = 0);
+
+	private:
 		std::string m_FilePath;
 
 		std::vector<Submesh> m_Submeshes;
@@ -83,5 +104,9 @@ namespace Engine
 		Ref<Shader> m_MeshShader;
 		Ref<Material> m_BaseMaterial;
 		std::vector<Ref<MaterialInstance>> m_Materials;
+		std::vector<Ref<Texture2D>> m_Textures;
+
+		std::unique_ptr<Assimp::Importer> m_Importer;
+		const aiScene* m_Scene;
 	};
 }

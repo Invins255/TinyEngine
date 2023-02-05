@@ -60,6 +60,9 @@
     <ClInclude Include="src\Engine\Core\Application.h">
       <Filter>src\Engine\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Core\Buffer.h">
+      <Filter>src\Engine\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Engine\Core\Core.h">
       <Filter>src\Engine\Core</Filter>
     </ClInclude>
@@ -108,6 +111,9 @@
     <ClInclude Include="src\Engine\ImGui\ImGuiLayer.h">
       <Filter>src\Engine\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\ImGui\ImGuiUI.h">
+      <Filter>src\Engine\ImGui</Filter>
+    </ClInclude>
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLBuffer.h">
       <Filter>src\Engine\Platforms\OpenGL</Filter>
     </ClInclude>
@@ -117,10 +123,19 @@
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLFrameBuffer.h">
       <Filter>src\Engine\Platforms\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLPipeline.h">
+      <Filter>src\Engine\Platforms\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLRenderPass.h">
+      <Filter>src\Engine\Platforms\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLRendererAPI.h">
       <Filter>src\Engine\Platforms\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLShader.h">
+      <Filter>src\Engine\Platforms\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLShaderUniform.h">
       <Filter>src\Engine\Platforms\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLTexture.h">
@@ -141,10 +156,22 @@
     <ClInclude Include="src\Engine\Renderer\FrameBuffer.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Renderer\RendererContext.h">
+    <ClInclude Include="src\Engine\Renderer\Material.h">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\Mesh.h">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\Pipeline.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Renderer\RenderCommand.h">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\RenderCommandQueue.h">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\RenderPass.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Renderer\Renderer.h">
@@ -153,7 +180,16 @@
     <ClInclude Include="src\Engine\Renderer\RendererAPI.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\RendererContext.h">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\SceneRenderer.h">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Engine\Renderer\Shader.h">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\ShaderUniform.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Renderer\Texture.h">
@@ -942,17 +978,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Renderer\RenderCommandQueue.h" />
-    <ClInclude Include="src\Engine\Renderer\RenderPass.h" />
-    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLRenderPass.h" />
-    <ClInclude Include="src\Engine\Renderer\SceneRenderer.h" />
-    <ClInclude Include="src\Engine\Core\Buffer.h" />
-    <ClInclude Include="src\Engine\Renderer\Mesh.h" />
-    <ClInclude Include="src\Engine\Renderer\Material.h" />
-    <ClInclude Include="src\Engine\Renderer\ShaderUniform.h" />
-    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLShaderUniform.h" />
-    <ClInclude Include="src\Engine\Renderer\Pipeline.h" />
-    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLPipeline.h" />
+    <ClInclude Include="src\Engine\Scene\Light.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -985,10 +1011,19 @@
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLFrameBuffer.cpp">
       <Filter>src\Engine\Platforms\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLPipeline.cpp">
+      <Filter>src\Engine\Platforms\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLRenderPass.cpp">
+      <Filter>src\Engine\Platforms\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLRendererAPI.cpp">
       <Filter>src\Engine\Platforms\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLShader.cpp">
+      <Filter>src\Engine\Platforms\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLShaderUniform.cpp">
       <Filter>src\Engine\Platforms\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLTexture.cpp">
@@ -1006,16 +1041,40 @@
     <ClCompile Include="src\Engine\Renderer\Buffer.cpp">
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\Camera.cpp">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Engine\Renderer\FrameBuffer.cpp">
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\Material.cpp">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\Mesh.cpp">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\Pipeline.cpp">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Engine\Renderer\RenderCommand.cpp">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\RenderCommandQueue.cpp">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\RenderPass.cpp">
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Renderer\Renderer.cpp">
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Renderer\RendererAPI.cpp">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\RendererContext.cpp">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\SceneRenderer.cpp">
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Renderer\Shader.cpp">
@@ -1042,16 +1101,5 @@
     <ClCompile Include="vendor\stb_image\std_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Renderer\RendererContext.cpp" />
-    <ClCompile Include="src\Engine\Renderer\Camera.cpp" />
-    <ClCompile Include="src\Engine\Renderer\RenderCommandQueue.cpp" />
-    <ClCompile Include="src\Engine\Renderer\RenderPass.cpp" />
-    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLRenderPass.cpp" />
-    <ClCompile Include="src\Engine\Renderer\SceneRenderer.cpp" />
-    <ClCompile Include="src\Engine\Renderer\Mesh.cpp" />
-    <ClCompile Include="src\Engine\Renderer\Material.cpp" />
-    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLShaderUniform.cpp" />
-    <ClCompile Include="src\Engine\Renderer\Pipeline.cpp" />
-    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLPipeline.cpp" />
   </ItemGroup>
 </Project>

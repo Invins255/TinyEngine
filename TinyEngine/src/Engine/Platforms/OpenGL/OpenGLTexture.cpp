@@ -1,74 +1,147 @@
 #include "pch.h"
 #include "OpenGLTexture.h"
 #include "Engine/Renderer/Renderer.h"
+
 #include "stb_image.h"
+#include <glad/glad.h>
 
 namespace Engine
 {
-    OpenGLTexture2D::OpenGLTexture2D(const std::string& path):
-        m_Path(path)
+    static GLenum TextureFormatToOpenGLTextureFormat(TextureFormat format)
+    {
+        switch (format)
+        {
+        case Engine::TextureFormat::RGB:        return GL_RGB;
+        case Engine::TextureFormat::RGBA:       return GL_RGBA;
+        case Engine::TextureFormat::Float16:    return GL_RGBA16F;
+        }
+        ENGINE_ASSERT(false, "Unknown texture format!");
+        return 0;
+    }
+
+    //-----------------------------------------------------------------------------------
+    //OpenGLTexture2D
+    //-----------------------------------------------------------------------------------
+    OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool srgb)
+        :m_Path(path)
     {
         int width, height, channels;
-        stbi_set_flip_vertically_on_load(1);
-        stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-        ENGINE_ASSERT(data, "Failed to load image!");
+        if (stbi_is_hdr(path.c_str()))
+        {
+            m_Data.Data = (uint8_t*)stbi_loadf(path.c_str(), &width, &height, &channels, 0);
+            m_IsHDR = true;
+            m_Format = TextureFormat::Float16;
+        }
+        else
+        {
+            m_Data.Data = stbi_load(path.c_str(), &width, &height, &channels, srgb ? STBI_rgb : STBI_rgb_alpha);
+            m_IsHDR = false;
+            m_Format = TextureFormat::RGBA;
+        }
+        if (!m_Data.Data)
+        {
+            ENGINE_ERROR("Could not read image {0}", path);
+            return;
+        }
+
+        m_Loaded = true;
         m_Width = width;
         m_Height = height;
+        m_Channels = channels;
 
-        GLenum internalFormat = 0, dataFormat = 0;
-        if (channels == 4)
-        {
-            internalFormat = GL_RGBA8;
-            dataFormat = GL_RGBA;
-        }
-        else if (channels == 3)
-        {
-            internalFormat = GL_RGB8;
-            dataFormat = GL_RGB;
-        }
-        ENGINE_ASSERT(internalFormat & dataFormat, "Format not support!");
-        m_InternalFormat = internalFormat;
-        m_DataFormat = dataFormat;
-
-        Renderer::Submit([this, data]()
+        //TODO: More details
+        Renderer::Submit([this, srgb]() 
             {
-                glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-                glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
+                if (srgb)
+                {
+                    glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+                    int levels = Texture::CalculateMipMapCount(m_Width, m_Height);
+                    glTextureStorage2D(m_RendererID, levels, GL_SRGB8, m_Width, m_Height);
+                    glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+                    glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-                glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                    glTextureSubImage2D(
+                        m_RendererID, 
+                        0, 
+                        0, 
+                        0, 
+                        m_Width, 
+                        m_Height, 
+                        GL_RGB, 
+                        GL_UNSIGNED_BYTE, 
+                        m_Data.Data
+                    );
+                    glGenerateTextureMipmap(m_RendererID);
+                }
+                else
+                {
+                    glGenTextures(1, &m_RendererID);
+                    glBindTexture(GL_TEXTURE_2D, m_RendererID);
 
-                glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-                glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+                    GLenum internalFormat = TextureFormatToOpenGLTextureFormat(m_Format);
+                    GLenum format = srgb ? GL_SRGB8 : (m_IsHDR ? GL_RGB : TextureFormatToOpenGLTextureFormat(m_Format)); // HDR = GL_RGB for now
+                    GLenum type = internalFormat == GL_RGBA16F ? GL_FLOAT : GL_UNSIGNED_BYTE;
+                    glTexImage2D(
+                        GL_TEXTURE_2D,
+                        0, 
+                        internalFormat, 
+                        m_Width, 
+                        m_Height, 
+                        0, 
+                        format, 
+                        type, 
+                        m_Data.Data
+                    );
+                    glGenerateMipmap(GL_TEXTURE_2D);
+
+                    glBindTexture(GL_TEXTURE_2D, 0);
+                }
+                stbi_image_free(m_Data.Data);
 
                 RENDERCOMMAND_INFO("RenderCommand: Construct texture. Path: [{0}], ID: [{1}]", m_Path, m_RendererID);
-
-                stbi_image_free(data);
             }
         );
     }
 
-    OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height):
-        m_Width(width), m_Height(height)
+    OpenGLTexture2D::OpenGLTexture2D(TextureFormat format, uint32_t width, uint32_t height, TextureWrap wrap)
+        :m_Format(format), m_Width(width), m_Height(height), m_Wrap(wrap)
     {
-        m_InternalFormat = GL_RGBA8, m_DataFormat = GL_RGBA;
-
         Renderer::Submit([this]()
             {
                 glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-                glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
+                glBindTexture(GL_TEXTURE_2D, m_RendererID);
 
-                glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                GLenum wrap = m_Wrap == TextureWrap::Clamp ? GL_CLAMP_TO_EDGE : GL_REPEAT;
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
 
-                glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexImage2D(
+                    GL_TEXTURE_2D, 
+                    0, 
+                    TextureFormatToOpenGLTextureFormat(m_Format), 
+                    m_Width, 
+                    m_Height, 
+                    0, 
+                    TextureFormatToOpenGLTextureFormat(m_Format), 
+                    GL_UNSIGNED_BYTE, 
+                    nullptr
+                );
 
-                RENDERCOMMAND_INFO("RenderCommand: Construct texture. Path: [{0}], ID: [{1}]", m_Path, m_RendererID);
+                glBindTexture(GL_TEXTURE_2D, 0);
+
+                RENDERCOMMAND_INFO("RenderCommand: Construct texture. ID: [{0}]", m_RendererID);
             }
         );
+
+        m_Data.Allocate(width * height * Texture::GetBPP(m_Format));
     }
 
     OpenGLTexture2D::~OpenGLTexture2D()
@@ -82,6 +155,11 @@ namespace Engine
         );
     }
 
+    uint32_t OpenGLTexture2D::GetMipLevelCount() const
+    {
+        return Texture::CalculateMipMapCount(m_Width, m_Height);
+    }
+
     void OpenGLTexture2D::Bind(uint32_t slot) const
     {
         Renderer::Submit([this, slot]()
@@ -91,15 +169,33 @@ namespace Engine
             }
         );
     }
-
-    void OpenGLTexture2D::SetData(void* data, uint32_t size)
+    
+    void OpenGLTexture2D::Lock()
     {
-        uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;
-        ENGINE_ASSERT(size == m_Width * m_Height * bpp, "Data must be entire texture!");
-        Renderer::Submit([this, data]()
+        m_Locked = true;
+    }
+
+    void OpenGLTexture2D::Unlock()
+    {
+        m_Locked = false;
+        Renderer::Submit([this]()
             {
-                glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+                glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, TextureFormatToOpenGLTextureFormat(m_Format), GL_UNSIGNED_BYTE, m_Data.Data);
             }
         );
     }
+    
+    void OpenGLTexture2D::Resize(uint32_t width, uint32_t height)
+    {
+        ENGINE_ASSERT(m_Locked, "Texture must be locked!");
+        m_Data.Allocate(width * height * Texture::GetBPP(m_Format));
+        m_Data.ZeroInitialize();
+    }
+
+    Buffer& OpenGLTexture2D::GetWritableBuffer()
+    {
+        ENGINE_ASSERT(m_Locked, "Texture must be locked!");
+        return m_Data;
+    }
+    
 }

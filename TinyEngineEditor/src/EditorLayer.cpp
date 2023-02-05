@@ -22,6 +22,7 @@ namespace Engine
         m_ActiveScene = CreateRef<Scene>();
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
+        /*
         //Temp
         auto vertices = {
             Vertex{{ 0.5f,  0.5f,  0.5f}}, //0
@@ -54,6 +55,11 @@ namespace Engine
             submesh.MeshName = "Mesh Entity";
             submesh.NodeName = std::to_string(i);
         }
+        auto& meshEntity = m_ActiveScene->CreateEntity("Mesh Entity");
+        meshEntity.AddComponent<MeshComponent>();
+        meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
+        */
+        auto mesh = CreateRef<Mesh>("assets/Models/helmet/helmet.obj");
         auto& meshEntity = m_ActiveScene->CreateEntity("Mesh Entity");
         meshEntity.AddComponent<MeshComponent>();
         meshEntity.GetComponent<MeshComponent>().Mesh = mesh;

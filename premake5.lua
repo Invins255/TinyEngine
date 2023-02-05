@@ -23,6 +23,9 @@ include "TinyEngine/vendor/GLFW"
 include "TinyEngine/vendor/Glad"
 include "TinyEngine/vendor/ImGui"
 
+-----------------------------------------------
+-- TinyEngine        
+-----------------------------------------------
 project "TinyEngine"
     location "TinyEngine"
     kind "StaticLib"
@@ -55,6 +58,7 @@ project "TinyEngine"
     {
         "%{prj.name}/src",
         "%{prj.name}/vendor/spdlog/include",
+        "%{prj.name}/vendor/assimp/include",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.ImGui}",
@@ -96,6 +100,9 @@ project "TinyEngine"
         runtime "Release"
         optimize "on"
 
+-----------------------------------------------
+-- TinyEngineEditor        
+-----------------------------------------------
 project "TinyEngineEditor"
     location "TinyEngineEditor"
     kind "ConsoleApp"
@@ -115,10 +122,11 @@ project "TinyEngineEditor"
     includedirs
     {
         "TinyEngine/src",
-        "TinyEngine/vendor/spdlog/include"  , 
+        "TinyEngine/vendor/spdlog/include", 
         "TinyEngine/vendor",
         "%{IncludeDir.glm}",
-        "%{IncludeDir.entt}"
+        "%{IncludeDir.entt}",
+        "TinyEngine/vendor/assimp/include"
     }
 
     links
@@ -139,17 +147,40 @@ project "TinyEngineEditor"
         runtime "Debug"
         symbols "on"
 
+        links
+        {
+            "TinyEngine/vendor/assimp/bin/Debug/assimp-vc141-mtd.lib"
+        }
+
+        postbuildcommands 
+		{
+			'{COPY} "../TinyEngine/vendor/assimp/bin/Debug/assimp-vc141-mtd.dll" "%{cfg.targetdir}"'
+		}
+
     filter "configurations:Release"
         defines "ENGINE_RELEASE"
         runtime "Release"
         optimize "on"
+
+        links
+        {
+            "TinyEngine/vendor/assimp/bin/Release/assimp-vc141-mtd.lib"
+        }
+
+        postbuildcommands 
+		{
+			'{COPY} "../TinyEngine/vendor/assimp/bin/Release/assimp-vc141-mtd.dll" "%{cfg.targetdir}"'
+		}
+
 
     filter "configurations:Dist"
         defines "ENGINE_DIST"
         runtime "Release"
         optimize "on"
 
-
+-----------------------------------------------
+-- Sandbox    
+-----------------------------------------------
 project "Sandbox"
     location "Sandbox"
     kind "ConsoleApp"

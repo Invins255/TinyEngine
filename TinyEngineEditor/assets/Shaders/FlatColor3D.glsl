@@ -41,5 +41,5 @@ in VertexOutput
 
 void main()
 {
-	color = vec4(0.8, 0.3, 0.2, 1.0);//vec4(vs_Input.WorldPosition + vec3(0.5), 1.0);
+	color = vec4(0.8, 0.3, 0.2, 1.0);
 }

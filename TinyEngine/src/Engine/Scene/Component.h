@@ -2,6 +2,7 @@
 
 #include <string>
 #include <functional>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -69,5 +70,16 @@ namespace Engine
 
 		operator SceneCamera& () { return Camera; }
 		operator const SceneCamera& () const { return Camera; }
+	};
+
+	enum class LightType
+	{
+		None = 0, Directional = 1, Point = 2, Spot = 3
+	};
+
+	struct DirectionalLightComponent
+	{
+		glm::vec3 Radiance = { 1.0f, 1.0f, 1.0f };
+		float Intensity = 1.0f;
 	};
 }

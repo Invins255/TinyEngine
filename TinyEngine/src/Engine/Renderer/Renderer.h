@@ -6,15 +6,17 @@
 #include "Engine/Renderer/Mesh.h"
 
 
-#define RENDERCOMMAND_DEBUG 
-#ifdef RENDERCOMMAND_DEBUG
-	#define RENDERCOMMAND_INFO(...)		::Engine::Log::GetCoreLogger()->info(__VA_ARGS__)
-#else
-	#define RENDERCOMMAND_INFO(...)
-#endif // RENDERCOMMAND_DEBUG
-
 namespace Engine
 {
+
+#define RENDERCOMMAND_DEBUG 1
+#if RENDERCOMMAND_DEBUG
+#define RENDERCOMMAND_INFO(...)		ENGINE_INFO(__VA_ARGS__)
+#else
+#define RENDERCOMMAND_INFO(...)
+#endif 
+
+
 	class ShaderLibrary;
 
 	class Renderer

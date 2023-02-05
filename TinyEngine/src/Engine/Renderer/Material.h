@@ -120,7 +120,12 @@ namespace Engine
 		void Set(const std::string& name, const T& value)
 		{
 			auto uniform = m_Material->FindShaderUniform(name);
-			ENGINE_ASSERT(uniform, "Conld not find uniform in shader!");
+			//ENGINE_ASSERT(uniform, "Conld not find uniform in shader!");
+			if (!uniform) 
+			{
+				ENGINE_WARN("Material: Shader {0} does not have uniform {1}", m_Material->GetShader()->GetName(), name);
+				return;
+			}
 			auto& buffer = GetUniformBufferTarget(uniform);
 			buffer.Write((uint8_t*)&value, uniform->GetSize(), uniform->GetOffset());
 
@@ -129,7 +134,12 @@ namespace Engine
 		void Set(const std::string& name, const Ref<Texture>& texture)
 		{
 			auto resource = m_Material->FindShaderResource(name);
-			ENGINE_ASSERT(resource, "Conld not find uniform in shader!");
+			//ENGINE_ASSERT(resource, "Conld not find uniform in shader!");
+			if (!resource)
+			{
+				ENGINE_WARN("Material: Shader {0} does not have resource {1}", m_Material->GetShader()->GetName(), name);
+				return;
+			}
 			uint32_t slot = resource->GetRegister();
 			if (m_Textures.size() <= slot)
 				m_Textures.resize((size_t)slot + 1);
