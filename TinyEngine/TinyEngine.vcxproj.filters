@@ -976,6 +976,7 @@
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Scene\Light.h" />
+    <ClInclude Include="src\Engine\Renderer\MeshFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -1098,5 +1099,6 @@
     <ClCompile Include="vendor\stb_image\std_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\MeshFactory.cpp" />
   </ItemGroup>
 </Project>
