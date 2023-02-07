@@ -195,7 +195,6 @@
     <ClInclude Include="src\Engine\Scene\Light.h" />
     <ClInclude Include="src\Engine\Scene\Scene.h" />
     <ClInclude Include="src\Engine\Scene\SceneCamera.h" />
-    <ClInclude Include="src\Engine\Scene\ScriptableEntity.h" />
     <ClInclude Include="src\TinyEngine.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />

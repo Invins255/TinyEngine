@@ -93,12 +93,18 @@ namespace Engine
 	private:
 		Ref<Shader> m_Shader;
 		uint32_t m_MaterialFlags;
+
+		//该Material所拥有的MaterialInstance
 		std::unordered_set<MaterialInstance*> m_MaterialInstances;
+
 		Buffer m_VSUniformStorageBuffer;
 		Buffer m_PSUniformStorageBuffer;
 		std::vector<Ref<Texture>> m_Textures;
 	};
 
+	/// <summary>
+	/// Material实例。Material与MaterialInstance之间构成一对多关系，用于具体的Mesh
+	/// </summary>
 	class MaterialInstance
 	{
 		friend class Material;
@@ -195,7 +201,10 @@ namespace Engine
 
 	private:
 		std::string m_Name;
+
+		//该MaterialInstance所属的Material
 		Ref<Material> m_Material;
+
 		Buffer m_VSUniformStorageBuffer;
 		Buffer m_PSUniformStorageBuffer;
 		std::vector<Ref<Texture>> m_Textures;

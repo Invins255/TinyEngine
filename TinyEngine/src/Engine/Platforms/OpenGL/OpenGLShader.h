@@ -87,8 +87,12 @@ namespace Engine
 		ShaderUniformList m_PSRendererUniformBuffers;
 		Ref<OpenGLShaderUniformBuffer> m_VSMaterialUniformBuffer;
 		Ref<OpenGLShaderUniformBuffer> m_PSMaterialUniformBuffer;
+		
+		//Shader内部Texture resource
 		ShaderResourceList m_Resources;
+		//Shader内部Struct
 		ShaderStructList m_Structs;
+		
 		std::unordered_map<GLenum, std::string> m_ShaderSource;
 		std::vector<ShaderReloadedCallback> m_ShaderReloadedCallbacks;
 

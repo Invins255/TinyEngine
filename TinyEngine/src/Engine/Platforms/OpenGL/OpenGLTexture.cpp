@@ -25,6 +25,8 @@ namespace Engine
     OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool srgb)
         :m_Path(path)
     {
+        stbi_set_flip_vertically_on_load(true);
+
         int width, height, channels;
         if (stbi_is_hdr(path.c_str()))
         {

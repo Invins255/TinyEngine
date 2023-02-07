@@ -22,43 +22,7 @@ namespace Engine
         m_ActiveScene = CreateRef<Scene>();
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
-        /*
-        //Temp
-        auto vertices = {
-            Vertex{{ 0.5f,  0.5f,  0.5f}}, //0
-            Vertex{{-0.5f,  0.5f,  0.5f}}, //1
-            Vertex{{ 0.5f, -0.5f,  0.5f}}, //2
-            Vertex{{ 0.5f,  0.5f, -0.5f}}, //3
-            Vertex{{-0.5f, -0.5f,  0.5f}}, //4
-            Vertex{{ 0.5f, -0.5f, -0.5f}}, //5
-            Vertex{{-0.5f,  0.5f, -0.5f}}, //6
-            Vertex{{-0.5f, -0.5f, -0.5f}}  //7
-        };
-        auto indices = {
-            Index{7, 5, 3},
-            Index{3, 6, 7},
-            Index{4, 2, 0},
-            Index{0, 1, 4},
-            Index{1, 6, 7},
-            Index{7, 4, 1},
-            Index{0, 3, 5},
-            Index{5, 2, 0},
-            Index{7, 5, 2},
-            Index{2, 4, 7},
-            Index{6, 3, 0},
-            Index{0, 1, 6}
-        };
-        auto mesh = CreateRef<Mesh>(vertices, indices);
-        for (uint32_t i = 0; i < mesh->GetSubmeshes().size();i++)
-        {
-            auto& submesh = mesh->GetSubmeshes()[i];
-            submesh.MeshName = "Mesh Entity";
-            submesh.NodeName = std::to_string(i);
-        }
-        auto& meshEntity = m_ActiveScene->CreateEntity("Mesh Entity");
-        meshEntity.AddComponent<MeshComponent>();
-        meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-        */
+        //TEMP
         auto mesh = CreateRef<Mesh>("assets/Models/helmet/helmet.obj");
         auto& meshEntity = m_ActiveScene->CreateEntity("Mesh Entity");
         meshEntity.AddComponent<MeshComponent>();
@@ -66,6 +30,11 @@ namespace Engine
 
         auto& camera = m_ActiveScene->CreateEntity("Camera Entity");
         camera.AddComponent<CameraComponent>();
+        camera.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 0.0f, 5.0f);
+
+        auto& light = m_ActiveScene->CreateEntity("Light Entity");
+        light.AddComponent<DirectionalLightComponent>();
+        light.GetComponent<TransformComponent>().Translation = glm::vec3(1.0f, 1.0f, 1.0f);
     }
 
     void EditorLayer::OnDetach()

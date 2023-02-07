@@ -62,11 +62,14 @@ namespace Engine
             aiProcess_ValidateDataStructure;    // Validation
         const aiScene* scene = m_Importer->ReadFile(filename, meshImportFlags);
         if (!scene || !scene->HasMeshes())
+        {
             ENGINE_ERROR("Failed to load mesh file: {0}", filename);
+            return;
+        }
         m_Scene = scene;
 
         //TODO: Change to a better default shader
-        m_MeshShader = Renderer::GetShaderLibrary()->Get("FlatColor3D");
+        m_MeshShader = Renderer::GetShaderLibrary()->Get("BlinnPhong");
         m_BaseMaterial = CreateRef<Material>(m_MeshShader);
 
         uint32_t vertexCount = 0;
@@ -156,7 +159,6 @@ namespace Engine
                 MESH_INFO("     Roughness = {0}", roughness);
 
                 aiString aiTexPath;
-
                 
                 //Albedo map
                 mi->Set("u_AlbedoTexToggle", 0.0f);

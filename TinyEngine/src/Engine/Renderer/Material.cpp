@@ -14,8 +14,7 @@ namespace Engine
     Material::Material(const Ref<Shader>& shader)
         :m_Shader(shader)
     {
-        m_MaterialFlags = (uint32_t)MaterialFlag::DepthTest;
-        m_MaterialFlags = (uint32_t)MaterialFlag::Blend;
+        m_MaterialFlags |= (uint32_t)MaterialFlag::DepthTest;
 
         m_Shader->AddShaderReloadedCallback(std::bind(&Material::OnShaderReloaded, this));
         AllocateStorage();

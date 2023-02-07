@@ -145,6 +145,9 @@ namespace Engine
 		}
 	}
 
+	/// <summary>
+	/// 设置VSMaterialUniformBuffer并上传变量至Shader 
+	/// </summary>
 	void OpenGLShader::SetVSMaterialUniformBuffer(Buffer buffer)
 	{
 		Renderer::Submit([this, buffer]()
@@ -155,6 +158,9 @@ namespace Engine
 		);
 	}
 
+	/// <summary>
+	/// 设置PSMaterialUniformBuffer并上传变量至Shader 
+	/// </summary>
 	void OpenGLShader::SetPSMaterialUniformBuffer(Buffer buffer)
 	{
 		Renderer::Submit([this, buffer]()
@@ -551,7 +557,7 @@ namespace Engine
 			{
 				//struct
 				ShaderStruct* s = FindStruct(typeString);
-				ENGINE_ASSERT(s, "");
+				ENGINE_ASSERT(s, "Fail to find shader struct!");
 				uniform = new OpenGLShaderUniform(domain, s, name, count);
 			}
 			else
@@ -697,7 +703,7 @@ namespace Engine
 			}
 		}
 
-		//Vertex Shader
+		//Vertex Shader MaterialUniformBuffer
 		{
 			const auto& uniformBuffer = m_VSMaterialUniformBuffer;
 			if (uniformBuffer)
@@ -724,7 +730,7 @@ namespace Engine
 			}
 		}
 
-		//Fragment Shader
+		//Fragment Shader MaterialUniformBuffer
 		{
 			const auto& uniformBuffer = m_PSMaterialUniformBuffer;
 			if (uniformBuffer)
@@ -791,9 +797,8 @@ namespace Engine
 
 	void OpenGLShader::ResolveAndSetUniform(OpenGLShaderUniform* uniform, Buffer buffer)
 	{
-		if (uniform->GetLocation() == -1)
+		if (uniform->GetLocation() == -1 && uniform->m_Struct == nullptr)
 			return;
-		ENGINE_ASSERT(uniform->GetLocation() != -1, "Invalid uniform location!");
 
 		uint32_t offset = uniform->GetOffset();
 		switch (uniform->GetType())
@@ -832,10 +837,6 @@ namespace Engine
 
 	void OpenGLShader::ResolveAndSetUniformArray(OpenGLShaderUniform* uniform, Buffer buffer)
 	{
-		if (uniform->GetLocation() == -1)
-			return;
-		ENGINE_ASSERT(uniform->GetLocation() != -1, "Invalid uniform location!");
-
 		uint32_t offset = uniform->GetOffset();
 		switch (uniform->GetType())
 		{

@@ -42,14 +42,14 @@ namespace Engine
 		void SetOffset(uint32_t offset) override;
 
 	private:
-		std::string m_Name;
-		ShaderStruct* m_Struct;
-		uint32_t m_Size = 0;
-		uint32_t m_Count = 0;
-		uint32_t m_Offset = 0;
-		ShaderDomain m_Domain;
-		Type m_Type;
-		mutable int32_t m_Location = -1;
+		std::string m_Name;					//变量名
+		ShaderStruct* m_Struct = nullptr;	//变量所属于的Struct，若变量为基本类型则为nullptr
+		uint32_t m_Size = 0;				//变量大小
+		uint32_t m_Count = 0;				//变量个数，非数组变量值为1
+		uint32_t m_Offset = 0;				//偏移量
+		ShaderDomain m_Domain;				//变量所属Shader类型
+		Type m_Type;						//变量类型
+		mutable int32_t m_Location = -1;	//变量Shader location
 	};
 
 	struct GLShaderUniformField
@@ -79,7 +79,7 @@ namespace Engine
 
 	private:
 		std::string m_Name;
-		uint32_t m_Register;
+		uint32_t m_Register;		//UNUSED
 		uint32_t m_Size;
 		ShaderDomain m_Domain;
 		ShaderUniformList m_Uniforms;

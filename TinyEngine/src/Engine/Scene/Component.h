@@ -7,7 +7,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include "Engine/Scene/ScriptableEntity.h"
 #include "Engine/Scene/SceneCamera.h"
 #include "Engine/Renderer/Mesh.h"
 

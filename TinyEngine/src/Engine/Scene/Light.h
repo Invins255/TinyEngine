@@ -17,4 +17,9 @@ namespace Engine
 		glm::vec3 Radiance = { 0.0f, 0.0f, 0.0f };
 		float Multiplier = 0.0f;
 	};
+
+	struct LightEnvironment
+	{
+		DirectionalLight DirectionalLights[4];
+	};
 }

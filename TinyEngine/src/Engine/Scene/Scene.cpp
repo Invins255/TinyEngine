@@ -51,6 +51,27 @@ namespace Engine
 		SceneCamera& camera = cameraEntity.GetComponent<CameraComponent>();
 		glm::mat4 cameraViewMatrix = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
 
+		//Process lights
+		m_LightEnvironment = LightEnvironment();
+		auto& lights = m_Registry.group<DirectionalLightComponent>(entt::get<TransformComponent>);
+		uint32_t directionalLightIndex = 0;
+		for (auto entity : lights)
+		{
+			if (directionalLightIndex >= 4) {
+				ENGINE_WARN("Too many directional lights!");
+				break;
+			}
+
+			auto [transformComponent, lightComponent] = lights.get<TransformComponent, DirectionalLightComponent>(entity);
+			glm::vec3 direction = -glm::normalize(glm::mat3(transformComponent.GetTransform()) * glm::vec3(1.0f));
+			m_LightEnvironment.DirectionalLights[directionalLightIndex++] =
+			{
+				direction,
+				lightComponent.Radiance,
+				lightComponent.Intensity
+			};
+		}
+
 		SceneRenderer::BeginScene(this, {camera, cameraViewMatrix});
 		auto group = m_Registry.group<MeshComponent>(entt::get<TransformComponent>);
 		for (auto entity : group)
@@ -62,7 +83,6 @@ namespace Engine
 			}
 		}
 		SceneRenderer::EndScene();
-		
 	}
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
@@ -123,6 +143,11 @@ namespace Engine
 
 	template<>
 	void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
+	{
+	}
+
+	template<>
+	void Scene::OnComponentAdded<DirectionalLightComponent>(Entity entity, DirectionalLightComponent& component)
 	{
 	}
 }

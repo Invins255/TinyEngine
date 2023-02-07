@@ -7,15 +7,15 @@ layout(location = 2) in vec3 a_Tangent;
 layout(location = 3) in vec3 a_Bitangent;
 layout(location = 4) in vec2 a_TexCoord;
 
-uniform mat4 u_ViewProjectionMatrix;
-uniform mat4 u_Transform;
-
 out VertexOutput
 {
 	vec3 WorldPosition;
     vec3 Normal;
 	vec2 TexCoord;
 } vs_Output;
+
+uniform mat4 u_ViewProjectionMatrix;
+uniform mat4 u_Transform;
 
 void main()
 {
@@ -28,9 +28,7 @@ void main()
 #type fragment
 #version 430
 
-layout(location = 0) out vec4 color;
-
-uniform vec3 u_CameraPosition;
+layout(location = 0) out vec4 fragColor;
 
 in VertexOutput
 {
@@ -39,7 +37,32 @@ in VertexOutput
 	vec2 TexCoord;
 } vs_Input;
 
+struct DirectionalLight
+{
+	vec3 Direction;
+	vec3 Radiance;
+	float Multiplier;
+};
+
+uniform DirectionalLight u_DirectionalLights;
+uniform vec3 u_CameraPosition;
+
+uniform sampler2D u_AlbedoTexture;
+uniform float u_AlbedoTexToggle;
+uniform vec3 u_AlbedoColor;
+
 void main()
 {
-	color = vec4(0.8, 0.3, 0.2, 1.0);
+	float ambientStrength = 0.3;
+	vec3 ambient = ambientStrength * u_DirectionalLights.Radiance;
+
+	vec3 normal = normalize(vs_Input.Normal);
+	vec3 lightDir = normalize(u_DirectionalLights.Direction); 
+	float diff = max(dot(normal, lightDir), 0.0);
+	vec3 diffuse = diff * u_DirectionalLights.Radiance;
+
+	vec4 albedo = u_AlbedoTexToggle > 0.5 ? texture2D(u_AlbedoTexture, vs_Input.TexCoord) : vec4(u_AlbedoColor, 1.0);
+
+	vec3 result = (ambient + diffuse) * albedo.rgb;
+	fragColor = vec4(result, 1.0);
 }

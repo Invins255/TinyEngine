@@ -4,6 +4,7 @@
 #include "Engine/Renderer/Renderer.h"
 
 #include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
 
 namespace Engine 
 {

@@ -28,7 +28,7 @@ namespace Engine
 		s_Data->m_ShaderLibrary = CreateRef<ShaderLibrary>();
 
 		//TEMP
-		s_Data->m_ShaderLibrary->Load("assets/Shaders/FlatColor3D.glsl");
+		s_Data->m_ShaderLibrary->Load("assets/Shaders/BlinnPhong.glsl");
 	}
 
 	void Renderer::Shutdown()
@@ -99,9 +99,8 @@ namespace Engine
 			//Material
 			auto material = overrideMaterial ? overrideMaterial : materials[submesh.MaterialIndex];
 			auto shader = material->GetShader();
+			material->Set("u_Transform", transform * submesh.Transform);	
 			material->Bind();
-
-			material->Set("u_Transform", transform * submesh.Transform);
 
 			Renderer::Submit([submesh, material]
 				{

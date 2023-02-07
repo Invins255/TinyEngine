@@ -13,6 +13,9 @@ namespace Engine
 		Pixel = 1
 	};
 
+	/// <summary>
+	/// Shader中的Uniform变量
+	/// </summary>
 	class ShaderUniform
 	{
 		friend class Shader;
@@ -41,6 +44,9 @@ namespace Engine
 		virtual ShaderUniform* FindUniform(const std::string& name) = 0;
 	};
 
+	/// <summary>
+	/// Shader中的Struct
+	/// </summary>
 	class ShaderStruct
 	{
 		friend class Shader;
@@ -72,10 +78,11 @@ namespace Engine
 
 	private:
 		std::string m_Name;
-		std::vector<ShaderUniform*> m_Fields;
 		uint32_t m_Size;
 		uint32_t m_Offset;
 
+		//Struct内部变量
+		std::vector<ShaderUniform*> m_Fields;
 	};
 
 	using ShaderStructList = std::vector<ShaderStruct*>;

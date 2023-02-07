@@ -4,6 +4,7 @@
 #include "Engine/Renderer/RenderPass.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Shader.h"
+#include "Engine/Scene/Light.h"
 
 namespace Engine
 {
@@ -13,6 +14,9 @@ namespace Engine
 		struct SceneInfo
 		{
 			SceneRendererCamera SceneCamera;
+
+			Light ActiveLight;
+			LightEnvironment SceneLightEnvironment;
 
 		}m_SceneData;
 
@@ -54,7 +58,10 @@ namespace Engine
 		ENGINE_ASSERT(scene, "Scene is nullptr!");
 
 		s_Data->m_ActiveScene = scene;
+		//Get scene data
 		s_Data->m_SceneData.SceneCamera = camera;
+		s_Data->m_SceneData.ActiveLight = scene->m_Light;
+		s_Data->m_SceneData.SceneLightEnvironment = scene->m_LightEnvironment;
 	}
 
 	void SceneRenderer::EndScene()
@@ -100,8 +107,13 @@ namespace Engine
 			auto baseMaterial = dc.Mesh->GetMaterial();
 			baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
 			baseMaterial->Set("u_CameraPosition", cameraPosition);
+			//TODO: More uniforms 
 			
-			auto overrideMaterial = nullptr; 
+			//Set lights
+			auto directionalLight = s_Data->m_SceneData.SceneLightEnvironment.DirectionalLights[0];	//BUG: directionalLight方向可能出错
+			baseMaterial->Set("u_DirectionalLights", directionalLight); 
+
+			auto overrideMaterial = dc.Material;
 			Renderer::SubmitMesh(dc.Mesh, dc.Transform, overrideMaterial);
 		}
 
