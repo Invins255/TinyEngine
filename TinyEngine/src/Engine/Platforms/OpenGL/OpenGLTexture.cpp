@@ -43,6 +43,7 @@ namespace Engine
         if (!m_Data.Data)
         {
             ENGINE_ERROR("Could not read image {0}", path);
+            stbi_image_free(m_Data.Data);
             return;
         }
 
@@ -106,9 +107,8 @@ namespace Engine
                 }
                 stbi_image_free(m_Data.Data);
 
-                RENDERCOMMAND_INFO("RenderCommand: Construct texture. Path: [{0}], ID: [{1}]", m_Path, m_RendererID);
-            }
-        );
+                RENDERCOMMAND_INFO("RenderCommand: Construct texture2D. Path: [{0}], ID: [{1}]", m_Path, m_RendererID);
+            });
     }
 
     OpenGLTexture2D::OpenGLTexture2D(TextureFormat format, uint32_t width, uint32_t height, TextureWrap wrap)
@@ -140,8 +140,7 @@ namespace Engine
                 glBindTexture(GL_TEXTURE_2D, 0);
 
                 RENDERCOMMAND_INFO("RenderCommand: Construct texture. ID: [{0}]", m_RendererID);
-            }
-        );
+            });
 
         m_Data.Allocate(width * height * Texture::GetBPP(m_Format));
     }
@@ -153,8 +152,7 @@ namespace Engine
             {
                 RENDERCOMMAND_INFO("RenderCommand: Destroy texture. ID: [{0}]", rendererID);
                 glDeleteTextures(1, &rendererID);
-            }
-        );
+            });
     }
 
     uint32_t OpenGLTexture2D::GetMipLevelCount() const
@@ -168,8 +166,7 @@ namespace Engine
             {
                 RENDERCOMMAND_INFO("RenderCommand: Bind texture. ID: [{0}]", m_RendererID);
                 glBindTextureUnit(slot, m_RendererID);
-            }
-        );
+            });
     }
     
     void OpenGLTexture2D::Lock()
@@ -183,8 +180,7 @@ namespace Engine
         Renderer::Submit([this]()
             {
                 glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, TextureFormatToOpenGLTextureFormat(m_Format), GL_UNSIGNED_BYTE, m_Data.Data);
-            }
-        );
+            });
     }
     
     void OpenGLTexture2D::Resize(uint32_t width, uint32_t height)
@@ -200,4 +196,98 @@ namespace Engine
         return m_Data;
     }
     
+    //--------------------------------------------------------------------------------
+    // OpenGLTextureCube
+    //--------------------------------------------------------------------------------
+    OpenGLTextureCube::OpenGLTextureCube(
+        const std::string& right, const std::string& left,
+        const std::string& top, const std::string& bottom,
+        const std::string& front, const std::string& back)
+    {
+        m_Path[0] = right;
+        m_Path[1] = left;
+        m_Path[2] = top;
+        m_Path[3] = bottom;
+        m_Path[4] = front;
+        m_Path[5] = back;
+
+        stbi_set_flip_vertically_on_load(true);
+
+        int width, height, channels;
+        for (uint32_t i = 0; i < 6; i++)
+        {
+            m_Data[i].Data = stbi_load(m_Path[i].c_str(), &width, &height, &channels, STBI_rgb);
+            if (!m_Data[i].Data)
+            {
+                ENGINE_ERROR("Could not read image {0}", m_Path[i]);
+                for (uint32_t j = 0; j <= i; j++)
+                    stbi_image_free(m_Data[j].Data);
+                return;
+            }
+        }
+
+        m_Loaded = true;
+        m_Width = width;
+        m_Height = height;
+        m_Channels = channels;
+        m_Format = TextureFormat::RGB;
+
+        Renderer::Submit([this]()
+            {
+                glGenTextures(1, &m_RendererID);
+                glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
+
+                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+            
+                auto format = TextureFormatToOpenGLTextureFormat(m_Format);
+
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, m_Data[0].Data);//right
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, m_Data[1].Data);//left
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, m_Data[2].Data);//top
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, m_Data[3].Data);//bottom
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, m_Data[4].Data);//front
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, m_Data[5].Data);//back
+            
+                glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+                glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+                for (uint32_t i = 0; i < 6; i++)
+                    stbi_image_free(m_Data[i].Data);
+
+                RENDERCOMMAND_INFO("RenderCommand: Construct textureCube. ID: [{0}]", m_RendererID);
+                RENDERCOMMAND_INFO("    Left:   {0}", m_Path[1]);
+                RENDERCOMMAND_INFO("    Right:  {0}", m_Path[0]);
+                RENDERCOMMAND_INFO("    Top:    {0}", m_Path[2]);
+                RENDERCOMMAND_INFO("    Bottom: {0}", m_Path[3]);
+                RENDERCOMMAND_INFO("    Front:  {0}", m_Path[4]);
+                RENDERCOMMAND_INFO("    Back:   {0}", m_Path[5]);
+            });
+    }
+
+    OpenGLTextureCube::~OpenGLTextureCube()
+    {
+        uint32_t rendererID = m_RendererID;
+        Renderer::Submit([rendererID]() 
+            {
+                glDeleteTextures(1, &rendererID);
+            });
+    }
+
+    uint32_t OpenGLTextureCube::GetMipLevelCount() const
+    {
+        return Texture::CalculateMipMapCount(m_Width, m_Height);
+    }
+
+    void OpenGLTextureCube::Bind(uint32_t slot) const
+    {
+        Renderer::Submit([this, slot]()
+            {
+                glBindTextureUnit(slot, m_RendererID);
+            });
+    }
 }

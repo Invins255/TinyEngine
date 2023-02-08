@@ -157,9 +157,10 @@
     <ClInclude Include="src\Engine\Events\MouseEvent.h" />
     <ClInclude Include="src\Engine\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Engine\ImGui\ImGuiUI.h" />
-    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLBuffer.h" />
+    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLVertexBuffer.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLFrameBuffer.h" />
+    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLIndexBuffer.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLPipeline.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLRenderPass.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLRendererAPI.h" />
@@ -168,9 +169,10 @@
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLTexture.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Engine\Platforms\Windows\WindowsWindow.h" />
-    <ClInclude Include="src\Engine\Renderer\Buffer.h" />
+    <ClInclude Include="src\Engine\Renderer\VertexBuffer.h" />
     <ClInclude Include="src\Engine\Renderer\Camera.h" />
     <ClInclude Include="src\Engine\Renderer\FrameBuffer.h" />
+    <ClInclude Include="src\Engine\Renderer\IndexBuffer.h" />
     <ClInclude Include="src\Engine\Renderer\Material.h" />
     <ClInclude Include="src\Engine\Renderer\Mesh.h" />
     <ClInclude Include="src\Engine\Renderer\MeshFactory.h" />
@@ -457,9 +459,10 @@
     <ClCompile Include="src\Engine\Core\Window.cpp" />
     <ClCompile Include="src\Engine\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Engine\ImGui\ImGuiLayer.cpp" />
-    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLBuffer.cpp" />
+    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLVertexBuffer.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLFrameBuffer.cpp" />
+    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLIndexBuffer.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLPipeline.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLRenderPass.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLRendererAPI.cpp" />
@@ -469,9 +472,10 @@
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Engine\Platforms\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Engine\Platforms\Windows\WindowsWindow.cpp" />
-    <ClCompile Include="src\Engine\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\Engine\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\Engine\Renderer\Camera.cpp" />
     <ClCompile Include="src\Engine\Renderer\FrameBuffer.cpp" />
+    <ClCompile Include="src\Engine\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\Engine\Renderer\Material.cpp" />
     <ClCompile Include="src\Engine\Renderer\Mesh.cpp" />
     <ClCompile Include="src\Engine\Renderer\MeshFactory.cpp" />

@@ -27,6 +27,17 @@ namespace Engine
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
 		ImGui::Begin("Scene Hierarchy");
+
+		auto& sceneName = m_Context->GetName();
+		char buffer[256];
+		memset(buffer, 0, sizeof(buffer));
+		strcpy_s(buffer, sizeof(buffer), sceneName.c_str());
+		if (ImGui::InputText("Scene Name", buffer, sizeof(buffer)))
+		{
+			m_Context->SetName(std::string(buffer));
+		}
+		ImGui::Separator();
+
 		m_Context->m_Registry.each([&](auto entityID) 
 			{
 				Entity entity{ entityID, m_Context.get()};

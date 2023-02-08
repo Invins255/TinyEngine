@@ -31,6 +31,8 @@ namespace Engine
 		void OnViewportResize(uint32_t width, uint32_t height);
 	
 		const std::string GetName() const { return m_Name; }
+		void SetName(const std::string& name) { m_Name = name; }
+
 		const EntityMap& GetEntityMap() const { return m_EntityIDMap; }
 		Entity GetMainCameraEntity();
 		Light& GetLight() { return m_Light; }

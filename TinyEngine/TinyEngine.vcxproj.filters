@@ -117,7 +117,7 @@
     <ClInclude Include="src\Engine\ImGui\ImGuiUI.h">
       <Filter>src\Engine\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLBuffer.h">
+    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLVertexBuffer.h">
       <Filter>src\Engine\Platforms\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLContext.h">
@@ -150,7 +150,7 @@
     <ClInclude Include="src\Engine\Platforms\Windows\WindowsWindow.h">
       <Filter>src\Engine\Platforms\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Renderer\Buffer.h">
+    <ClInclude Include="src\Engine\Renderer\VertexBuffer.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Renderer\Camera.h">
@@ -987,6 +987,8 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\IndexBuffer.h" />
+    <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLIndexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -1013,7 +1015,7 @@
     <ClCompile Include="src\Engine\ImGui\ImGuiLayer.cpp">
       <Filter>src\Engine\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLBuffer.cpp">
+    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLVertexBuffer.cpp">
       <Filter>src\Engine\Platforms\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLContext.cpp">
@@ -1049,7 +1051,7 @@
     <ClCompile Include="src\Engine\Platforms\Windows\WindowsWindow.cpp">
       <Filter>src\Engine\Platforms\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Renderer\Buffer.cpp">
+    <ClCompile Include="src\Engine\Renderer\VertexBuffer.cpp">
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Renderer\Camera.cpp">
@@ -1118,5 +1120,7 @@
     <ClCompile Include="vendor\stb_image\std_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\IndexBuffer.cpp" />
+    <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLIndexBuffer.cpp" />
   </ItemGroup>
 </Project>

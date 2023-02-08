@@ -54,4 +54,22 @@ namespace Engine
 			levels++;
 		return levels;
 	}
+
+	Ref<TextureCube> TextureCube::Create(
+		const std::string& right, const std::string& left,
+		const std::string& top, const std::string& bottom,
+		const std::string& front, const std::string& back)
+	{
+		switch (Renderer::GetAPIType())
+		{
+		case RendererAPI::RendererAPIType::None:
+			ENGINE_ASSERT(false, "RendererAPI::None is currently not supported!");
+			return nullptr;
+		case RendererAPI::RendererAPIType::OpenGL:
+			return CreateRef<OpenGLTextureCube>(right, left, top, bottom, front, back);
+		default:
+			ENGINE_ASSERT(false, "Unknown RendererAPI!");
+			return nullptr;
+		}
+	}
 }

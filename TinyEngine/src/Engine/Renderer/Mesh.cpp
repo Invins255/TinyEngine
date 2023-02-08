@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Mesh.h"
-#include "Engine/Renderer/Buffer.h"
+#include "Engine/Renderer/VertexBuffer.h"
+#include "Engine/Renderer/IndexBuffer.h"
 #include "Engine/Renderer/Renderer.h"
 
 #include <filesystem>

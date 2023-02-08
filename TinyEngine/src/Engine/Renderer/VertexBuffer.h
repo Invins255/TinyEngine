@@ -2,9 +2,6 @@
 
 namespace Engine
 {
-	//-------------------------------------------------------------------------
-	//VertexBuffer
-	//-------------------------------------------------------------------------
 	enum class ShaderDataType
 	{
 		None = 0, 
@@ -156,37 +153,5 @@ namespace Engine
 		/// <param name="data">顶点数据数组</param>
 		/// <param name="size">数组总长度</param>
 		static Ref<VertexBuffer> Create(void* data, uint32_t size, VertexBufferUsage usage = VertexBufferUsage::Static);
-	};
-
-	//-------------------------------------------------------------------------
-	//IndexBuffer
-	//-------------------------------------------------------------------------
-	/// <summary>
-	/// IndexBuffer用于存储一个顶点数据组成图元的顶点下标。
-	/// </summary>
-	class IndexBuffer
-	{
-	public:
-		virtual ~IndexBuffer() = default;
-
-		virtual uint32_t GetRendererID() const = 0;
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
-
-		virtual void SetData(void* data, uint32_t size, uint32_t offset = 0) = 0;
-		virtual uint32_t GetCount() const = 0;
-		virtual uint32_t GetSize() const = 0;
-
-		/// <summary>
-		/// IndexBuffer工厂函数
-		/// </summary>
-		/// <param name="size">数组总长度</param>
-		static Ref<IndexBuffer> IndexBuffer::Create(uint32_t size);
-		/// <summary>
-		/// IndexBuffer工厂函数
-		/// </summary>
-		/// <param name="data">顶点下标数组</param>
-		/// <param name="size">数组总长度</param>
-		static Ref<IndexBuffer> Create(void* data, uint32_t size);
 	};
 }

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <memory>
-#include "Engine/Renderer/Buffer.h"
+#include "Engine/Renderer/VertexBuffer.h"
+#include "Engine/Renderer/IndexBuffer.h"
 
 namespace Engine
 {

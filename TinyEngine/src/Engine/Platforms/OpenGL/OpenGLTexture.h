@@ -45,4 +45,39 @@ namespace Engine
 		bool m_Locked = false;
 		bool m_Loaded = false;
 	};
+
+	class OpenGLTextureCube : public TextureCube
+	{
+	public:
+		OpenGLTextureCube(
+			const std::string& right, const std::string& left,
+			const std::string& top, const std::string& bottom,
+			const std::string& front, const std::string& back);
+		virtual ~OpenGLTextureCube();
+
+		virtual uint32_t GetWidth() const override { return m_Width; }
+		virtual uint32_t GetHeight() const override { return m_Height; }
+		virtual uint32_t GetChannels() const override { return m_Channels; }
+		virtual uint32_t GetMipLevelCount() const override;
+		virtual TextureFormat GetFormat() const override { return m_Format; }
+
+		virtual bool IsLoaded() const { return m_Loaded; };
+
+		virtual uint32_t GetRendererID() const override { return m_RendererID; }
+		virtual void Bind(uint32_t slot) const override;
+
+		virtual bool operator==(const Texture& other) override
+		{ return m_RendererID == ((OpenGLTextureCube&)other).m_RendererID; };
+
+	private:
+		uint32_t m_RendererID = 0;
+		TextureFormat m_Format;
+		uint32_t m_Width, m_Height, m_Channels;
+
+		//right(+X), left(-X), top(+Y), bottom(-Y), front(+Z), back(-Z)
+		std::string m_Path[6]; 
+		Buffer m_Data[6];
+
+		bool m_Loaded = false;
+	};
 }
