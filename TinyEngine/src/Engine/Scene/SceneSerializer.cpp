@@ -386,7 +386,7 @@ namespace Engine
 					component.Primary = cameraComponent["Primary"].as<bool>();
 					
 					if (type == SceneCamera::ProjectionType::Perspective)
-						component.Camera.SetPerspectiveProjection(persFOV, aspectRatio, persNear, persFar);
+						component.Camera.SetPerspectiveProjection(glm::radians(persFOV), aspectRatio, persNear, persFar);
 					else
 						component.Camera.SetOrthographicProjection(orthoSize, orthoSize, orthoNear, orthoFar);
 

@@ -16,7 +16,7 @@ namespace Engine
 
 	RenderCommandQueue::~RenderCommandQueue()
 	{
-		if(m_CommandCount!=0)
+		if (m_CommandCount != 0)
 			Execute();
 
 		delete[] m_CommandBuffer;
