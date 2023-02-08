@@ -4,6 +4,13 @@
 
 namespace Engine
 {
+#define SERIALIZER_DEBUG 1
+#if SERIALIZER_DEBUG
+#define SERIALIZER_INFO(...) ENGINE_INFO(__VA_ARGS__)
+#else
+#define MESH_INFO(...)
+#endif
+
 	class SceneSerializer
 	{
 	public:

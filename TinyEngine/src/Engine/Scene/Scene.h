@@ -5,10 +5,12 @@
 #include "Engine/Core/UUID.h"
 #include "Engine/Scene/Light.h"
 
+#include <unordered_map>
 
 namespace Engine
 {
 	class Entity;
+	using EntityMap = std::unordered_map<UUID, Entity>;
 
 	class Scene
 	{
@@ -40,7 +42,9 @@ namespace Engine
 	private:
 		std::string m_Name;
 		entt::registry m_Registry;
-		uint32_t m_ViewportWidth, m_ViewportHeight;
+		uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
+
+		EntityMap m_EntityIDMap;
 
 		//Lights
 		Light m_Light;

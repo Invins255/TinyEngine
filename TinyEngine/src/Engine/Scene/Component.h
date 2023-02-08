@@ -3,6 +3,7 @@
 #include <string>
 #include <functional>
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -15,7 +16,7 @@ namespace Engine
 {
 	struct IDComponent
 	{
-		UUID ID = 0;
+		UUID ID;
 	};
 
 	struct TagComponent

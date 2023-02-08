@@ -24,20 +24,21 @@ namespace Engine
         spec.Width = 1280;
         spec.Height = 720;
 
-        m_ActiveScene = CreateRef<Scene>();
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        NewScene();
+        //m_ActiveScene = CreateRef<Scene>();
+        //m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
         //TEMP
         auto mesh = CreateRef<Mesh>("assets/Models/helmet/helmet.obj");
-        auto& meshEntity = m_ActiveScene->CreateEntity("Mesh Entity");
+        auto& meshEntity = m_EditorScene->CreateEntity("Mesh Entity");
         meshEntity.AddComponent<MeshComponent>();
         meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
 
-        auto& camera = m_ActiveScene->CreateEntity("Camera Entity");
+        auto& camera = m_EditorScene->CreateEntity("Camera Entity");
         camera.AddComponent<CameraComponent>();
         camera.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 0.0f, 5.0f);
 
-        auto& light = m_ActiveScene->CreateEntity("Light Entity");
+        auto& light = m_EditorScene->CreateEntity("Light Entity");
         light.AddComponent<DirectionalLightComponent>();
         light.GetComponent<TransformComponent>().Translation = glm::vec3(1.0f, 1.0f, 1.0f);
     }
@@ -53,12 +54,12 @@ namespace Engine
         if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
         {
             SceneRenderer::SetViewportSize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-            m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+            m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
             ENGINE_INFO("Viewport window size: ({0}, {1})", (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         }
                
         //Update scene
-        m_ActiveScene->OnUpdate(ts);
+        m_EditorScene->OnUpdate(ts);
     }
 
     void EditorLayer::OnEvent(Engine::Event& e)
@@ -111,10 +112,21 @@ namespace Engine
                 ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), opt_flags);
             }
 
+            //Begin Menu Bar
             if (ImGui::BeginMenuBar())
             {
                 if (ImGui::BeginMenu("File"))
                 {
+                    if (ImGui::MenuItem("New Scene", "Ctrl+N"))
+                        NewScene();
+                    if (ImGui::MenuItem("Open Scene", "Ctrl+O"))
+                        OpenScene();
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
+                        SaveScene();
+                    if (ImGui::MenuItem("Save Scene As", "Ctrl+Shift+S"))
+                        SaveSceneAs();
+                    ImGui::Separator();
                     if (ImGui::MenuItem("Exit")) Engine::Application::Get().Close();
                     ImGui::EndMenu();
                 }

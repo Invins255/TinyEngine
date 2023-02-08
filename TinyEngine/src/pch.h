@@ -17,8 +17,10 @@
 #include <tuple>
 #include <unordered_map>
 
+#define _USE_MATH_DEFINES
 #include <math.h>
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>

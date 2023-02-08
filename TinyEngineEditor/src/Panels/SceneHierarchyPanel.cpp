@@ -96,6 +96,7 @@ namespace Engine
 		ImGui::Text("UID: ");
 		ImGui::SameLine();
 		ImGui::TextDisabled("%llx", id);
+		ImGui::Separator();
 
 		if (entity.HasComponent<TagComponent>())
 		{

@@ -31,7 +31,6 @@ namespace Engine
 		bool m_ViewportHovered = false;
 
 		//Scene
-		Ref<Scene> m_ActiveScene;
 		Ref<Scene> m_EditorScene;
 		Ref<Scene> m_RuntimeScene;
 		std::string m_SceneFilePath;

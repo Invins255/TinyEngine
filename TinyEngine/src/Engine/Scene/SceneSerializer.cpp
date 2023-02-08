@@ -155,17 +155,18 @@ namespace Engine
 		
 		out << YAML::BeginMap;
 
-		//Entity ID
-		out << YAML::Key << "Entity" << YAML::Value << entity.GetComponent<IDComponent>().ID;
+		//Entity ID, Tag
+		uint64_t uuid = entity.GetComponent<IDComponent>().ID;
+		std::string tag = entity.GetComponent<TagComponent>().Tag;
+		SERIALIZER_INFO("Deserialize entity: ID = {0}, tag = {1}", uuid, tag);
 
-		//TODO:More components
-		if (entity.HasComponent<TagComponent>())
-		{
-			out << YAML::Key << "TagComponent";
-			out << YAML::BeginMap; 			
-			out << YAML::Key << "Tag" << YAML::Value << entity.GetComponent<TagComponent>().Tag;
-			out << YAML::EndMap; 
-		}
+		out << YAML::Key << "Entity" << YAML::Value << uuid;
+
+		out << YAML::Key << "TagComponent";
+		out << YAML::BeginMap; 			
+		out << YAML::Key << "Tag" << YAML::Value << tag;
+		out << YAML::EndMap; 
+
 		if (entity.HasComponent<TransformComponent>())
 		{
 			out << YAML::Key << "TransformComponent";
@@ -175,6 +176,11 @@ namespace Engine
 			out << YAML::Key << "Rotation" << YAML::Value << transform.Rotation;
 			out << YAML::Key << "Scale" << YAML::Value << transform.Scale;
 			out << YAML::EndMap; 
+
+			SERIALIZER_INFO("	Entity Transform:");
+			SERIALIZER_INFO("		Position: {0}, {1}, {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
+			SERIALIZER_INFO("		Rotation: {0}, {1}, {2}", transform.Rotation.x, transform.Rotation.y, transform.Rotation.z);
+			SERIALIZER_INFO("		Scale:	  {0}, {1}, {2}", transform.Scale.x, transform.Scale.y, transform.Scale.z);
 		}
 		if (entity.HasComponent<MeshComponent>())
 		{
@@ -183,6 +189,9 @@ namespace Engine
 			auto mesh = entity.GetComponent<MeshComponent>().Mesh;
 			out << YAML::Key << "AssetPath" << YAML::Value << mesh->GetFilePath();
 			out << YAML::EndMap; 
+
+			SERIALIZER_INFO("	Mesh:");
+			SERIALIZER_INFO("		Asset Path: {0}", mesh->GetFilePath());
 		}
 		if (entity.HasComponent<CameraComponent>())
 		{
@@ -192,14 +201,20 @@ namespace Engine
 			out << YAML::Key << "Camera" << YAML::Value << "some camera data..."; //TODO: Camera data
 			out << YAML::Key << "Primary" << YAML::Value << cameraComponent.Primary;
 			out << YAML::EndMap;
+
+			SERIALIZER_INFO("	Camera:");
+			SERIALIZER_INFO("		Primary: {0}", cameraComponent.Primary);
 		}
 		if (entity.HasComponent<DirectionalLightComponent>())
 		{
 			out << YAML::Key << "DirectionalLightComponent";
 			out << YAML::BeginMap;
-			auto& directionalLightComponent = entity.GetComponent<DirectionalLightComponent>();
-			out << YAML::Key << "Radiance" << YAML::Value << directionalLightComponent.Radiance;
+			auto& light = entity.GetComponent<DirectionalLightComponent>();
+			out << YAML::Key << "Radiance" << YAML::Value << light.Radiance;
 			out << YAML::EndMap; 
+
+			SERIALIZER_INFO("	DirectionalLight:");
+			SERIALIZER_INFO("		Radiance: {0}, {1}, {2}", light.Radiance.x, light.Radiance.y, light.Radiance.z);
 		}
 
 		out << YAML::EndMap;
@@ -221,6 +236,8 @@ namespace Engine
 		out << YAML::BeginMap;
 		out << YAML::Key << "Scene";
 		out << YAML::Value << m_Scene->GetName();
+		SERIALIZER_INFO("Serialize scene '{0}'", m_Scene->GetName());
+
 		SerializeEnvironment(out, m_Scene);
 
 		//Serialize entities
@@ -255,11 +272,11 @@ namespace Engine
 			return false;
 
 		std::string sceneName = data["Scene"].as<std::string>();
-		ENGINE_INFO("Deserialize scene '{0}'", sceneName);
+		SERIALIZER_INFO("Deserialize scene '{0}'", sceneName);
 
 		//Deserialize entities
 		auto entities = data["Entities"];
-		if (!entities)
+		if (entities)
 		{
 			for (auto entity : entities)
 			{
@@ -271,7 +288,7 @@ namespace Engine
 					tag = tagComponent["Tag"].as<std::string>();
 
 				Entity deserializedEntity = m_Scene->CreateEntity(uuid, tag);
-				ENGINE_INFO("Deserialize entity: ID = {0}, tag = {1}", uuid, tag);
+				SERIALIZER_INFO("Deserialize entity: ID = {0}, tag = {1}", uuid, tag);
 
 				auto transformComponent = entity["TransformComponent"];
 				if (transformComponent)
@@ -281,10 +298,10 @@ namespace Engine
 					transform.Rotation = transformComponent["Rotation"].as<glm::vec3>();
 					transform.Scale = transformComponent["Scale"].as<glm::vec3>();
 				
-					ENGINE_INFO("	Entity Transform:");
-					ENGINE_INFO("		Position: {0}, {1}, {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
-					ENGINE_INFO("		Rotation: {0}, {1}, {2}", transform.Rotation.x, transform.Rotation.y, transform.Rotation.z);
-					ENGINE_INFO("		Scale:	  {0}, {1}, {2}", transform.Scale.x, transform.Scale.y, transform.Scale.z);
+					SERIALIZER_INFO("	Entity Transform:");
+					SERIALIZER_INFO("		Position: {0}, {1}, {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
+					SERIALIZER_INFO("		Rotation: {0}, {1}, {2}", transform.Rotation.x, transform.Rotation.y, transform.Rotation.z);
+					SERIALIZER_INFO("		Scale:	  {0}, {1}, {2}", transform.Scale.x, transform.Scale.y, transform.Scale.z);
 				}
 
 				auto meshComponent = entity["MeshComponent"];
@@ -294,8 +311,8 @@ namespace Engine
 					if (!deserializedEntity.HasComponent<MeshComponent>())
 						deserializedEntity.AddComponent<MeshComponent>(CreateRef<Mesh>(meshPath));
 
-					ENGINE_INFO("	Mesh:");
-					ENGINE_INFO("		Asset Path: {0}", meshPath);
+					SERIALIZER_INFO("	Mesh:");
+					SERIALIZER_INFO("		Asset Path: {0}", meshPath);
 				}
 
 				auto cameraComponent = entity["CameraComponent"];
@@ -305,8 +322,8 @@ namespace Engine
 					component.Camera = SceneCamera(); //TODO: Camera data
 					component.Primary = cameraComponent["Primary"].as<bool>();
 
-					ENGINE_INFO("	Camera:");
-					ENGINE_INFO("		Primary: {0}", component.Primary);
+					SERIALIZER_INFO("	Camera:");
+					SERIALIZER_INFO("		Primary: {0}", component.Primary);
 				}
 
 				auto directionalLightComponent = entity["DirectionalLightComponent"];
@@ -315,8 +332,8 @@ namespace Engine
 					auto& light = deserializedEntity.AddComponent<DirectionalLightComponent>();
 					light.Radiance = directionalLightComponent["Radiance"].as<glm::vec3>();
 
-					ENGINE_INFO("	DirectionalLight:");
-					ENGINE_INFO("		Radiance: {0}, {1}, {2}", light.Radiance.x, light.Radiance.y, light.Radiance.z);
+					SERIALIZER_INFO("	DirectionalLight:");
+					SERIALIZER_INFO("		Radiance: {0}, {1}, {2}", light.Radiance.x, light.Radiance.y, light.Radiance.z);
 				}
 			}
 		}

@@ -28,18 +28,21 @@ namespace Engine
 	Entity Scene::CreateEntity(const std::string& name)
 	{
 		Entity entity { m_Registry.create(), this };
-		entity.AddComponent<IDComponent>();
+		auto idComponent = entity.AddComponent<IDComponent>();
 		entity.AddComponent<TransformComponent>();
 		entity.AddComponent<TagComponent>(name);
+		m_EntityIDMap[idComponent.ID] = entity;
 		return entity;
 	}
 
 	Entity Scene::CreateEntity(UUID uuid, const std::string& name)
 	{
 		Entity entity{ m_Registry.create(), this };
-		entity.AddComponent<IDComponent>(uuid);
+		auto idComponent = entity.AddComponent<IDComponent>(uuid);
 		entity.AddComponent<TransformComponent>();
 		entity.AddComponent<TagComponent>(name);
+		ENGINE_ASSERT(m_EntityIDMap.find(uuid) == m_EntityIDMap.end(), "Entity already exists!");
+		m_EntityIDMap[uuid] = entity;
 		return entity;
 	}
 
