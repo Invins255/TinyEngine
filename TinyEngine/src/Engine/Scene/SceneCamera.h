@@ -38,6 +38,8 @@ namespace Engine
 		void SetPerspectiveFarClip(float farClip) { m_PerspectiveFar = farClip; RecalculateProjection(); }
 		float GetPerspectiveFarClip() { return m_PerspectiveFar; }
 
+		void SetAspectRatio(float aspectRatio) { m_AspectRatio = aspectRatio; }
+		float GetAspectRatio() const { return m_AspectRatio; }
 	private:
 		void RecalculateProjection();
 	

@@ -98,7 +98,7 @@ namespace Engine
 
 		//Camera
 		auto& sceneCamera = s_Data->m_SceneData.SceneCamera;
-		auto viewProjection = sceneCamera.Camera.GetProjection() * sceneCamera.ViewMatrix;
+		auto viewProjection = sceneCamera.Camera.GetProjection() * sceneCamera.ViewMatrix; //BUG£ºOpen Scene ºósceneCamera.Camera.GetProjection()³ö´í
 		glm::vec3 cameraPosition = glm::inverse(sceneCamera.ViewMatrix)[3];
 
 		//Render entities

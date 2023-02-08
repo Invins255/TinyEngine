@@ -198,11 +198,49 @@ namespace Engine
 			out << YAML::Key << "CameraComponent";
 			out << YAML::BeginMap;
 			auto& cameraComponent = entity.GetComponent<CameraComponent>();
-			out << YAML::Key << "Camera" << YAML::Value << "some camera data..."; //TODO: Camera data
+			out << YAML::Key << "Camera"; 
+			out << YAML::BeginMap; // Camera Data
+
+			auto& camera = cameraComponent.Camera;
+			std::string type;
+			switch (camera.GetProjectionType())
+			{
+			case SceneCamera::ProjectionType::Perspective:
+				type = "Perspective";
+				break;
+			case SceneCamera::ProjectionType::Orthographic:
+				type = "Orthographic";
+				break;
+			}
+			out << YAML::Key << "ProjectionType" << YAML::Value << type;
+			out << YAML::Key << "Orthographic";
+			out << YAML::BeginMap; // Orthographic
+			out << YAML::Key << "Size" << YAML::Value << camera.GetOrthographicSize();
+			out << YAML::Key << "Near" << YAML::Value << camera.GetOrthographicNearClip();
+			out << YAML::Key << "Far" << YAML::Value << camera.GetOrthographicFarClip();
+			out << YAML::EndMap; // Orthographic
+			out << YAML::Key << "Perspective";
+			out << YAML::BeginMap; // Perspective
+			out << YAML::Key << "FOV" << YAML::Value << camera.GetDegPerspectiveFOV();
+			out << YAML::Key << "Near" << YAML::Value << camera.GetPerspectiveNearClip();
+			out << YAML::Key << "Far" << YAML::Value << camera.GetPerspectiveFarClip();
+			out << YAML::EndMap; // Perspective
+			out << YAML::Key << "AspectRatio" << YAML::Value << camera.GetAspectRatio();
+			out << YAML::EndMap; // Camera Data
 			out << YAML::Key << "Primary" << YAML::Value << cameraComponent.Primary;
 			out << YAML::EndMap;
 
 			SERIALIZER_INFO("	Camera:");
+			SERIALIZER_INFO("		Type: {0}", type);
+			SERIALIZER_INFO("		Orthographic:");
+			SERIALIZER_INFO("			Size: {0}", camera.GetOrthographicSize());
+			SERIALIZER_INFO("			Near: {0}", camera.GetOrthographicNearClip());
+			SERIALIZER_INFO("			Far:  {0}", camera.GetOrthographicFarClip());
+			SERIALIZER_INFO("		Perspective:");
+			SERIALIZER_INFO("			FOV:  {0}", camera.GetDegPerspectiveFOV());
+			SERIALIZER_INFO("			Near: {0}", camera.GetPerspectiveNearClip());
+			SERIALIZER_INFO("			Far:  {0}", camera.GetPerspectiveFarClip());
+			SERIALIZER_INFO("		AspectRatio: {0}", camera.GetAspectRatio());
 			SERIALIZER_INFO("		Primary: {0}", cameraComponent.Primary);
 		}
 		if (entity.HasComponent<DirectionalLightComponent>())
@@ -245,7 +283,6 @@ namespace Engine
 		out << YAML::Value << YAML::BeginSeq;
 		m_Scene->m_Registry.each([&](auto entityID)
 			{
-				//BUG: ¿ÉÄÜ´íÎó
 				Entity entity = { entityID, m_Scene.get()};
 				if (!entity || !entity.HasComponent<IDComponent>())
 					return;
@@ -272,6 +309,7 @@ namespace Engine
 			return false;
 
 		std::string sceneName = data["Scene"].as<std::string>();
+		m_Scene->m_Name = sceneName;
 		SERIALIZER_INFO("Deserialize scene '{0}'", sceneName);
 
 		//Deserialize entities
@@ -319,10 +357,50 @@ namespace Engine
 				if (cameraComponent)
 				{
 					auto& component = deserializedEntity.AddComponent<CameraComponent>();
-					component.Camera = SceneCamera(); //TODO: Camera data
+					component.Camera = SceneCamera();
+
+					auto cameraData = cameraComponent["Camera"];
+					std::string typeStr = cameraData["ProjectionType"].as<std::string>();
+					SceneCamera::ProjectionType type;
+					if (typeStr == "Perspective")	
+						type = SceneCamera::ProjectionType::Perspective;
+					else							
+						type = SceneCamera::ProjectionType::Orthographic;
+					component.Camera.SetProjectionType(type);
+					auto orthoData = cameraData["Orthographic"];
+					float orthoSize = orthoData["Size"].as<float>();
+					float orthoNear = orthoData["Near"].as<float>();
+					float orthoFar = orthoData["Far"].as<float>();
+					component.Camera.SetOrthographicSize(orthoSize);
+					component.Camera.SetOrthographicNearClip(orthoNear);
+					component.Camera.SetOrthographicFarClip(orthoFar);
+					auto persData = cameraData["Perspective"];
+					float persFOV = persData["FOV"].as<float>();
+					float persNear = persData["Near"].as<float>();
+					float persFar = persData["Far"].as<float>();
+					component.Camera.SetDegPerspectiveFOV(persFOV);
+					component.Camera.SetOrthographicNearClip(persFOV);
+					component.Camera.SetPerspectiveFarClip(persFar);
+					float aspectRatio = cameraData["AspectRatio"].as<float>();
+					component.Camera.SetAspectRatio(aspectRatio);
 					component.Primary = cameraComponent["Primary"].as<bool>();
+					
+					if (type == SceneCamera::ProjectionType::Perspective)
+						component.Camera.SetPerspectiveProjection(persFOV, aspectRatio, persNear, persFar);
+					else
+						component.Camera.SetOrthographicProjection(orthoSize, orthoSize, orthoNear, orthoFar);
 
 					SERIALIZER_INFO("	Camera:");
+					SERIALIZER_INFO("		Type: {0}", typeStr);
+					SERIALIZER_INFO("		Orthographic:");
+					SERIALIZER_INFO("			Size: {0}", orthoData["Size"].as<float>());
+					SERIALIZER_INFO("			Near: {0}", orthoData["Near"].as<float>());
+					SERIALIZER_INFO("			Far:  {0}", orthoData["Far"].as<float>());
+					SERIALIZER_INFO("		Perspective:");
+					SERIALIZER_INFO("			FOV:  {0}", persData["FOV"].as<float>());
+					SERIALIZER_INFO("			Near: {0}", persData["Near"].as<float>());
+					SERIALIZER_INFO("			Far:  {0}", persData["Far"].as<float>());
+					SERIALIZER_INFO("		AspectRatio: {0}", cameraData["AspectRatio"].as<float>());
 					SERIALIZER_INFO("		Primary: {0}", component.Primary);
 				}
 

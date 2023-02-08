@@ -25,8 +25,6 @@ namespace Engine
         spec.Height = 720;
 
         NewScene();
-        //m_ActiveScene = CreateRef<Scene>();
-        //m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
         //TEMP
         auto mesh = CreateRef<Mesh>("assets/Models/helmet/helmet.obj");
@@ -166,7 +164,7 @@ namespace Engine
 
     void EditorLayer::NewScene()
     {
-        m_EditorScene = CreateRef<Scene>();
+        m_EditorScene = CreateRef<Scene>("Empty Scene");
         m_SceneHierarchyPanel.SetContext(m_EditorScene);
         m_SceneFilePath = "";
     }

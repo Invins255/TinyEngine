@@ -12,8 +12,6 @@ namespace Engine
 	{
 		Camera Camera;
 		glm::mat4 ViewMatrix;
-		float Near, Far;
-		float FOV;
 	};
 
 	class SceneRenderer
