@@ -7,11 +7,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include "Engine/Core/UUID.h"
 #include "Engine/Scene/SceneCamera.h"
 #include "Engine/Renderer/Mesh.h"
 
 namespace Engine
 {
+	struct IDComponent
+	{
+		UUID ID = 0;
+	};
+
 	struct TagComponent
 	{
 		std::string Tag;

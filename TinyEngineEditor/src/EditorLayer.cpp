@@ -1,10 +1,15 @@
 #include "EditorLayer.h"
 
 #include <imgui/imgui.h>
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
 #include <chrono>
+#include <filesystem>
+
 #include "Engine/Renderer/SceneRenderer.h"
+#include "Engine/Scene/SceneSerializer.h"
 
 namespace Engine
 {
@@ -139,8 +144,7 @@ namespace Engine
                 ImGui::Image((void*)textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), { 0, 1 }, { 1, 0 });
             }
             ImGui::End();
-            ImGui::PopStyleVar();
-            
+            ImGui::PopStyleVar();         
 
             //Scene hierarchy---------------------------------------------------------------
             m_SceneHierarchyPanel.OnImGuiRender();
@@ -148,4 +152,53 @@ namespace Engine
         ImGui::End();
     }
 
+    void EditorLayer::NewScene()
+    {
+        m_EditorScene = CreateRef<Scene>();
+        m_SceneHierarchyPanel.SetContext(m_EditorScene);
+        m_SceneFilePath = "";
+    }
+
+    void EditorLayer::OpenScene()
+    {
+        auto& app = Application::Get();
+        std::string filepath = app.OpenFile("(*.scene)\0*.scene\0");
+        if (!filepath.empty())
+            OpenScene(filepath);
+    }
+
+    void EditorLayer::OpenScene(const std::string& filepath)
+    {
+        auto newScene = CreateRef<Scene>("New Scene");
+        SceneSerializer serializer(newScene);
+        serializer.Deserialize(filepath);
+        m_EditorScene = newScene;
+        m_SceneHierarchyPanel.SetContext(m_EditorScene);
+    }
+
+    void EditorLayer::SaveScene()
+    {
+        if (!m_SceneFilePath.empty())
+        {
+            SceneSerializer serializer(m_EditorScene);
+            serializer.Serialize(m_SceneFilePath);
+        }
+        else
+        {
+            SaveSceneAs();
+        }
+    }
+
+    void EditorLayer::SaveSceneAs()
+    {
+        auto& app = Application::Get();
+        std::string filepath = app.SaveFile("(*.scene)\0*.scene\0");
+        if (!filepath.empty())
+        {
+            SceneSerializer serializer(m_EditorScene);
+            serializer.Serialize(filepath);
+
+            m_SceneFilePath = filepath;
+        }
+    }
 }

@@ -3,11 +3,16 @@
 #include "entt.hpp"
 #include "Engine/Core/Core.h"
 #include "Engine/Scene/Scene.h"
+#include "Engine/Scene/Entity.h"
 
 namespace Engine
 {
 	class Entity
 	{
+	public:
+		friend class Scene;
+		friend class SceneSerializer;
+
 	public:
 		Entity() = default;
 		Entity(entt::entity, Scene* scene);

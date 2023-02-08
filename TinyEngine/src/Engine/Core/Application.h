@@ -23,6 +23,9 @@ namespace Engine
 
 		static Application& Get() { return *s_Instance; }
 
+		Window& GetWindow() { return *m_Window; }
+		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
+
 		/// <summary>
 		/// ApplicationÖ÷Ñ­»·
 		/// </summary>
@@ -40,9 +43,9 @@ namespace Engine
 		void PushOverlay(Layer* overlay);
 		void PopOverlay(Layer* overlay);
 
-		Window& GetWindow() { return *m_Window; }
+		std::string OpenFile(const char* filter = "All\0*.*\0") const;
+		std::string SaveFile(const char* filter = "All\0*.*\0") const;
 
-		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);

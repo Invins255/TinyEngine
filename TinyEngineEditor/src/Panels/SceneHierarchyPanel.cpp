@@ -87,55 +87,15 @@ namespace Engine
 		}
 	}
 
-
-	template<typename T, typename UIFunction>
-	static void DrawComponent(const std::string& name, Entity entity, UIFunction uiFunction)
-	{
-		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
-		if (entity.HasComponent<T>())
-		{
-			ImGui::PushID((void*)typeid(T).hash_code());
-			auto& component = entity.GetComponent<T>();
-			ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
-
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
-			float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-			ImGui::Separator();
-			bool open = ImGui::TreeNodeEx("##dummy_id", treeNodeFlags, name.c_str());
-			ImGui::PopStyleVar();
-			ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
-			if (ImGui::Button("+", ImVec2{ lineHeight, lineHeight }))
-			{
-				ImGui::OpenPopup("ComponentSettings");
-			}
-
-			bool removeComponent = false;
-			if (ImGui::BeginPopup("ComponentSettings"))
-			{
-				if (ImGui::MenuItem("Remove component"))
-					removeComponent = true;
-
-				ImGui::EndPopup();
-			}
-
-			if (open)
-			{
-				uiFunction(component);
-				ImGui::TreePop();
-			}
-
-			if (removeComponent)
-				entity.RemoveComponent<T>();
-
-			ImGui::PopID();
-		}
-	}
-
 	void SceneHierarchyPanel::DrawComponents(Entity entity)
 	{
 		ImGui::AlignTextToFramePadding();
-
 		ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
+
+		auto id = entity.GetComponent<IDComponent>().ID;
+		ImGui::Text("UID: ");
+		ImGui::SameLine();
+		ImGui::TextDisabled("%llx", id);
 
 		if (entity.HasComponent<TagComponent>())
 		{
@@ -154,14 +114,12 @@ namespace Engine
 		//Draw component
 		DrawComponent<TransformComponent>("Transform", entity, [](TransformComponent& component)
 			{
-				UI::PropertyVector3("Translation", component.Translation);
+				UI::PropertyVector3("Position", component.Translation);
 				glm::vec3 rotation = glm::degrees(component.Rotation);
 				UI::PropertyVector3("Rotation", rotation);
 				component.Rotation = glm::radians(rotation);
 				UI::PropertyVector3("Scale", component.Scale, 1.0f);
-			}
-		);
-
+			});
 		DrawComponent<MeshComponent>("Mesh", entity, [](MeshComponent& mc)
 			{
 				ImGui::Columns(3);
@@ -186,9 +144,7 @@ namespace Engine
 				}
 				*/
 				ImGui::Columns(1);
-			}
-		);
-
+			});
 		DrawComponent<CameraComponent>("Camera", entity, [](CameraComponent& cc)
 			{
 				// Projection Type
@@ -244,17 +200,14 @@ namespace Engine
 				}
 
 				UI::EndPropertyGrid();
-			}
-		);
-
+			});
 		DrawComponent<DirectionalLightComponent>("Directional Light", entity, [](DirectionalLightComponent& dlc)
 			{
 				UI::BeginPropertyGrid();
 				UI::PropertyColor("Radiance", dlc.Radiance);
 				UI::Property("Intensity", dlc.Intensity);
 				UI::EndPropertyGrid();
-			}
-		);
+			});
 	}
 
 	void SceneHierarchyPanel::DrawAddComponentMenu()
@@ -264,31 +217,9 @@ namespace Engine
 
 		if (ImGui::BeginPopup("AddComponentPanel"))
 		{
-			//TODO: 使用泛型函数
-			if (!m_SelectionContext.HasComponent<CameraComponent>())
-			{
-				if (ImGui::Button("Camera"))
-				{
-					m_SelectionContext.AddComponent<CameraComponent>();
-					ImGui::CloseCurrentPopup();
-				}
-			}
-			if (!m_SelectionContext.HasComponent<MeshComponent>())
-			{
-				if (ImGui::Button("Mesh"))
-				{
-					m_SelectionContext.AddComponent<MeshComponent>();
-					ImGui::CloseCurrentPopup();
-				}
-			}
-			if (!m_SelectionContext.HasComponent<DirectionalLightComponent>())
-			{
-				if (ImGui::Button("DirectionalLight"))
-				{
-					m_SelectionContext.AddComponent<DirectionalLightComponent>();
-					ImGui::CloseCurrentPopup();
-				}
-			}			
+			DrawAddComponentButton<CameraComponent>("Camera");
+			DrawAddComponentButton<MeshComponent>("Mesh");
+			DrawAddComponentButton<DirectionalLightComponent>("DirectionalLight");		
 			ImGui::EndPopup();
 		}
 	}
@@ -348,4 +279,60 @@ namespace Engine
 		}
 	}
 	*/
+
+	template<typename T, typename UIFunction>
+	void SceneHierarchyPanel::DrawComponent(const std::string& name, Entity entity, UIFunction uiFunction)
+	{
+		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
+		if (entity.HasComponent<T>())
+		{
+			ImGui::PushID((void*)typeid(T).hash_code());
+			auto& component = entity.GetComponent<T>();
+			ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
+			float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+			ImGui::Separator();
+			bool open = ImGui::TreeNodeEx("##dummy_id", treeNodeFlags, name.c_str());
+			ImGui::PopStyleVar();
+			ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
+			if (ImGui::Button("+", ImVec2{ lineHeight, lineHeight }))
+			{
+				ImGui::OpenPopup("ComponentSettings");
+			}
+
+			bool removeComponent = false;
+			if (ImGui::BeginPopup("ComponentSettings"))
+			{
+				if (ImGui::MenuItem("Remove component"))
+					removeComponent = true;
+
+				ImGui::EndPopup();
+			}
+
+			if (open)
+			{
+				uiFunction(component);
+				ImGui::TreePop();
+			}
+
+			if (removeComponent)
+				entity.RemoveComponent<T>();
+
+			ImGui::PopID();
+		}
+	}
+
+	template<typename T>
+	void SceneHierarchyPanel::DrawAddComponentButton(const std::string& name)
+	{
+		if (!m_SelectionContext.HasComponent<T>())	
+		{
+			if (ImGui::Button(name.c_str()))
+			{
+				m_SelectionContext.AddComponent<T>();
+				ImGui::CloseCurrentPopup();
+			}
+		}
+	}
 }
