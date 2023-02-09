@@ -212,7 +212,7 @@ namespace Engine::UI {
 		ImGui::PushID(label.c_str());
 
 		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, 100.0f);
+		ImGui::SetColumnWidth(0, 80.0f);
 		ImGui::Text(label.c_str());
 		ImGui::NextColumn();
 

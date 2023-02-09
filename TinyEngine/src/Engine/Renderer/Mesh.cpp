@@ -72,6 +72,7 @@ namespace Engine
         //TODO: Change to a better default shader
         m_MeshShader = Renderer::GetShaderLibrary()->Get("BlinnPhong");
         m_BaseMaterial = CreateRef<Material>(m_MeshShader);
+        m_BaseMaterial->SetFlags(MaterialFlag::DepthTest);
 
         uint32_t vertexCount = 0;
         uint32_t indexCount = 0;

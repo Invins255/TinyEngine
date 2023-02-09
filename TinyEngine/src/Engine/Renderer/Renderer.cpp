@@ -29,6 +29,7 @@ namespace Engine
 
 		//TEMP
 		s_Data->m_ShaderLibrary->Load("assets/Shaders/BlinnPhong.glsl");
+		s_Data->m_ShaderLibrary->Load("assets/Shaders/Skybox.glsl");
 	}
 
 	void Renderer::Shutdown()
@@ -103,13 +104,12 @@ namespace Engine
 			material->Bind();
 
 			Renderer::Submit([submesh, material]
-				{
-					/*
+				{					
 					if (material->GetFlag(MaterialFlag::DepthTest))
 						glEnable(GL_DEPTH_TEST);
 					else
 						glDisable(GL_DEPTH_TEST);
-					
+					/*
 					if (material->GetFlag(MaterialFlag::TwoSided))
 						glDisable(GL_CULL_FACE);
 					else

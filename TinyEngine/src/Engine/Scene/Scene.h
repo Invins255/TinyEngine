@@ -4,6 +4,8 @@
 #include "Engine/Core/TimeStep.h"
 #include "Engine/Core/UUID.h"
 #include "Engine/Scene/Light.h"
+#include "Engine/Renderer/Texture.h"
+#include "Engine/Renderer/Material.h"
 
 #include <unordered_map>
 
@@ -37,6 +39,8 @@ namespace Engine
 		Entity GetMainCameraEntity();
 		Light& GetLight() { return m_Light; }
 		const Light& GetLight() const { return m_Light; }
+		
+		void SetSkybox(const Ref<TextureCube>& skybox);
 
 	private:
 		template<typename T>
@@ -53,5 +57,9 @@ namespace Engine
 		Light m_Light;
 		float m_LightMultiplier = 1.0f;
 		LightEnvironment m_LightEnvironment;
+
+		//Environment
+		Ref<TextureCube> m_SkyboxTexture;
+		Ref<MaterialInstance> m_SkyboxMaterial;
 	};
 }

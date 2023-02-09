@@ -9,6 +9,7 @@
 
 #include <assimp/scene.h>
 
+#include "Engine/Core/Application.h"
 #include "Engine/Scene/Component.h"
 #include "Engine/ImGui/ImGuiUI.h"
 
@@ -135,8 +136,8 @@ namespace Engine
 		DrawComponent<MeshComponent>("Mesh", entity, [](MeshComponent& mc)
 			{
 				ImGui::Columns(3);
-				ImGui::SetColumnWidth(0, 100);
-				ImGui::SetColumnWidth(1, 300);
+				ImGui::SetColumnWidth(0, 80);
+				ImGui::SetColumnWidth(1, 240);
 				ImGui::SetColumnWidth(2, 40);
 				ImGui::Text("File Path");
 				ImGui::NextColumn();
@@ -145,16 +146,14 @@ namespace Engine
 					ImGui::InputText("##meshfilepath", (char*)mc.Mesh->GetFilePath().c_str(), 256, ImGuiInputTextFlags_ReadOnly);
 				else
 					ImGui::InputText("##meshfilepath", (char*)"Null", 256, ImGuiInputTextFlags_ReadOnly);
-				ImGui::PopItemWidth();
+				ImGui::PopItemWidth();		
 				ImGui::NextColumn();
-				/*
 				if (ImGui::Button("...##openmesh"))
 				{
 					std::string file = Application::Get().OpenFile();
 					if (!file.empty())
-						mc.Mesh = Ref<Mesh>::Create(file);
+						mc.Mesh = CreateRef<Mesh>(file);
 				}
-				*/
 				ImGui::Columns(1);
 			});
 		DrawComponent<CameraComponent>("Camera", entity, [](CameraComponent& cc)

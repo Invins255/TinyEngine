@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Scene.h"
+#include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/SceneRenderer.h"
 #include "Engine/Scene/Component.h"
 #include "Engine/Scene/Entity.h"
@@ -11,18 +12,17 @@
 
 namespace Engine
 {
-	static void OnTransformConstruct()
-	{
-
-	}
-
 	Scene::Scene(const std::string& name)
 		:m_Name(name)
 	{
+		auto& skyboxShader = Renderer::GetShaderLibrary()->Get("Skybox");
+		m_SkyboxMaterial = MaterialInstance::Create(Material::Create(skyboxShader));
+		m_SkyboxMaterial->SetFlag(MaterialFlag::DepthTest, false);
 	}
 
 	Scene::~Scene()
 	{
+		m_Registry.clear();
 	}
 	 
 	Entity Scene::CreateEntity(const std::string& name)
@@ -126,6 +126,12 @@ namespace Engine
 		}
 		ENGINE_WARN("Conld not find main camera!");
 		return {};
+	}
+
+	void Scene::SetSkybox(const Ref<TextureCube>& skybox)
+	{
+		m_SkyboxTexture = skybox;
+		m_SkyboxMaterial->Set("u_Skybox", skybox);
 	}
 
 	template<typename T>
