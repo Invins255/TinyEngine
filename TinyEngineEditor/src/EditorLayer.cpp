@@ -21,10 +21,6 @@ namespace Engine
 
     void EditorLayer::OnAttach()
     {
-        Engine::FrameBufferSpecification spec;
-        spec.Width = 1280;
-        spec.Height = 720;
-
         NewScene();
 
         //TEMP
@@ -169,6 +165,7 @@ namespace Engine
 
             //Scene hierarchy---------------------------------------------------------------
             m_SceneHierarchyPanel.OnImGuiRender();
+
         }
         ImGui::End();
     }

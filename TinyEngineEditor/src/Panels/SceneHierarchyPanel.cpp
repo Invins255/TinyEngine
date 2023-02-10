@@ -188,7 +188,7 @@ namespace Engine
 					float nearClip = cc.Camera.GetPerspectiveNearClip();
 					if (UI::Property("Near Clip", nearClip))
 						cc.Camera.SetPerspectiveNearClip(nearClip);
-					ImGui::SameLine();
+					
 					float farClip = cc.Camera.GetPerspectiveFarClip();
 					if (UI::Property("Far Clip", farClip))
 						cc.Camera.SetPerspectiveFarClip(farClip);
@@ -204,7 +204,7 @@ namespace Engine
 					float nearClip = cc.Camera.GetOrthographicNearClip();
 					if (UI::Property("Near Clip", nearClip))
 						cc.Camera.SetOrthographicNearClip(nearClip);
-					ImGui::SameLine();
+					
 					float farClip = cc.Camera.GetOrthographicFarClip();
 					if (UI::Property("Far Clip", farClip))
 						cc.Camera.SetOrthographicFarClip(farClip);

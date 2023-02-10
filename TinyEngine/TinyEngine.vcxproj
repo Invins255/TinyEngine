@@ -157,6 +157,7 @@
     <ClInclude Include="src\Engine\Events\MouseEvent.h" />
     <ClInclude Include="src\Engine\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Engine\ImGui\ImGuiUI.h" />
+    <ClInclude Include="src\Engine\ImGui\ImGuizmo.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLVertexBuffer.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLFrameBuffer.h" />
@@ -460,6 +461,7 @@
     <ClCompile Include="src\Engine\Core\Window.cpp" />
     <ClCompile Include="src\Engine\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Engine\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Engine\ImGui\ImGuizmo.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLVertexBuffer.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLFrameBuffer.cpp" />
