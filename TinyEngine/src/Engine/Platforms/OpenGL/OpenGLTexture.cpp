@@ -211,8 +211,6 @@ namespace Engine
         m_Path[4] = front;
         m_Path[5] = back;
 
-        stbi_set_flip_vertically_on_load(true);
-
         int width, height, channels;
         for (uint32_t i = 0; i < 6; i++)
         {

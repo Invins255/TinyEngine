@@ -29,7 +29,6 @@ namespace Engine
 
         //TEMP
         {
-            //auto mesh = CreateRef<Mesh>("assets/models/Sphere/Sphere.fbx");
             auto mesh = MeshFactory::CreateBox(glm::vec3(2.0f, 2.0f, 2.0f));
             auto& meshEntity = m_EditorScene->CreateEntity("Cube 1");
             meshEntity.AddComponent<MeshComponent>();
@@ -37,27 +36,11 @@ namespace Engine
             meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-3.0f, 0.0f, 1.0f);
         }     
         {
-            //auto mesh = CreateRef<Mesh>("assets/models/Sphere/Sphere.fbx");
-            auto mesh = MeshFactory::CreateBox(glm::vec3(2.0f, 2.0f, 2.0f));
-            auto& meshEntity = m_EditorScene->CreateEntity("Cube 2");
-            meshEntity.AddComponent<MeshComponent>();
-            meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-3.0f, 6.0f, 1.0f);
-        }
-        /**/
-        {
             auto mesh = CreateRef<Mesh>("assets/models/Sphere/Sphere.fbx");
             auto& meshEntity = m_EditorScene->CreateEntity("Sphere 1");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
             meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(1.0f, 3.0f, -1.0f);
-        }
-        {
-            auto mesh = CreateRef<Mesh>("assets/models/Sphere/Sphere.fbx");
-            auto& meshEntity = m_EditorScene->CreateEntity("Sphere 2");
-            meshEntity.AddComponent<MeshComponent>();
-            meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(2.0f, -3.0f, -1.0f);
         }
         
         auto& camera = m_EditorScene->CreateEntity("Camera Entity");

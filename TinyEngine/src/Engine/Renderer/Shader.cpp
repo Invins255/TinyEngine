@@ -6,6 +6,7 @@
 
 namespace Engine
 {
+	//TODO: Move to resource manager
 	std::vector<Ref<Shader>> Shader::s_AllShaders;
 
 	Ref<Shader> Shader::Create(const std::string& filepath)
@@ -23,7 +24,7 @@ namespace Engine
 			ENGINE_ASSERT(false, "Unknown RendererAPI!");
 			return nullptr;
 		}
-		s_AllShaders.push_back(result); //s_AllShaders导致shader在RendererCommandQueue析构后仍未被释放
+		s_AllShaders.push_back(result); //BUG: s_AllShaders导致shader在RendererCommandQueue析构后仍未被释放, 未来需要通过resource manager进行管理
 		return result;
 	}
 

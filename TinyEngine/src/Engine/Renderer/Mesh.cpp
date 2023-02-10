@@ -5,6 +5,8 @@
 #include "Engine/Renderer/Renderer.h"
 
 #include <filesystem>
+#include <locale>
+#include <codecvt>
 
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -48,6 +50,8 @@ namespace Engine
     Mesh::Mesh(const std::string& filename)
         :m_FilePath(filename)
     {
+        //BUG: ÖÐÎÄ×Ö·û¶ÁÈ¡´íÎó
+
         MESH_INFO("Mesh: Loading mesh {0}", filename);
 
         LogStream::Initialize();

@@ -17,12 +17,12 @@ namespace Engine
 	{
 		//Skybox texture
 		m_SkyboxTexture = TextureCube::Create(
-			"assets/textures/skybox/CornellBox/right.jpg",
-			"assets/textures/skybox/CornellBox/left.jpg",
-			"assets/textures/skybox/CornellBox/top.jpg",
-			"assets/textures/skybox/CornellBox/bottom.jpg",
-			"assets/textures/skybox/CornellBox/front.jpg",
-			"assets/textures/skybox/CornellBox/back.jpg"
+			"assets/textures/skybox/Sky/right.jpg",
+			"assets/textures/skybox/Sky/left.jpg",
+			"assets/textures/skybox/Sky/top.jpg",
+			"assets/textures/skybox/Sky/bottom.jpg",
+			"assets/textures/skybox/Sky/front.jpg",
+			"assets/textures/skybox/Sky/back.jpg"
 		);
 
 		//Skybox material

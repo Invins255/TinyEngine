@@ -50,6 +50,8 @@ namespace Engine
 		RenderPassSpecification geoRenderPassSpec;
 		geoRenderPassSpec.TargetFramebuffer = FrameBuffer::Create(geoFrameBufferSpec);
 		s_Data->m_RenderPass = RenderPass::Create(geoRenderPassSpec);
+
+		s_Data->m_SkyboxMesh = CreateRef<Mesh>("assets/models/Cube/Cube.fbx");
 	}
 
 	void SceneRenderer::Shutdown()
@@ -107,9 +109,9 @@ namespace Engine
 		glm::vec3 cameraPosition = glm::inverse(sceneCamera.ViewMatrix)[3];
 
 		//BUG
-		//s_Data->m_SceneData.SkyboxMaterial->Set("u_ViewMatrix", glm::mat4(glm::mat3(sceneCamera.ViewMatrix)));
-		//s_Data->m_SceneData.SkyboxMaterial->Set("u_ProjectionMatrix", sceneCamera.Camera.GetProjection());
-		//Renderer::SubmitMesh(s_Data->m_SkyboxMesh, glm::mat4(1.0f), s_Data->m_SceneData.SkyboxMaterial);
+		s_Data->m_SceneData.SkyboxMaterial->Set("u_ViewMatrix", glm::mat4(glm::mat3(sceneCamera.ViewMatrix)));
+		s_Data->m_SceneData.SkyboxMaterial->Set("u_ProjectionMatrix", sceneCamera.Camera.GetProjection());
+		Renderer::SubmitMesh(s_Data->m_SkyboxMesh, glm::mat4(1.0f), s_Data->m_SceneData.SkyboxMaterial);
 
 		//Render entities
 		for (auto& dc : s_Data->m_DrawList)

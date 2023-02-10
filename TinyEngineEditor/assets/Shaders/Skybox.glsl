@@ -11,7 +11,7 @@ out vec3 TexCoord;
 void main()
 {
     TexCoord = a_Position;
-    vec4 pos = u_ViewMatrix * u_ProjectionMatrix * vec4(a_Position, 1.0);
+    vec4 pos =  u_ProjectionMatrix * u_ViewMatrix * vec4(a_Position, 1.0);
     gl_Position = pos.xyww;
 }
 
@@ -26,6 +26,5 @@ uniform samplerCube u_Skybox;
 
 void main()
 {
-    vec3 color = texture(u_Skybox, TexCoord).rgb;
-    fragColor = vec4(color, 1.0);
+    fragColor = vec4(texture(u_Skybox, TexCoord).rgb, 1.0);
 }

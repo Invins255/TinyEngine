@@ -90,7 +90,7 @@ namespace Engine
 
 	void Renderer::SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial)
 	{
-		//顺序不可改变，否则导致顶点属性链接出错
+		//绑定顺序不可改变，否则导致顶点属性链接出错
 		mesh->m_VertexBuffer->Bind();
 		mesh->m_Pipeline->Bind();
 		mesh->m_IndexBuffer->Bind();
