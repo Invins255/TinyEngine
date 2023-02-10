@@ -22,6 +22,7 @@ namespace Engine
 
 		virtual PipelineSpecification& GetSpecification() = 0;
 		virtual const PipelineSpecification& GetSpecification() const = 0;
+		virtual uint32_t GetRendererID() const = 0;
 
 		virtual void Bind() = 0;
 

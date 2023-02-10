@@ -23,13 +23,13 @@ namespace Engine
 	{
 		s_Data = CreateScope<RendererData>();		
 		RenderCommand::Init();
-		SceneRenderer::Init();
 
 		s_Data->m_ShaderLibrary = CreateRef<ShaderLibrary>();
-
 		//TEMP
-		s_Data->m_ShaderLibrary->Load("assets/Shaders/BlinnPhong.glsl");
-		s_Data->m_ShaderLibrary->Load("assets/Shaders/Skybox.glsl");
+		s_Data->m_ShaderLibrary->Load("assets/shaders/BlinnPhong.glsl");
+		s_Data->m_ShaderLibrary->Load("assets/shaders/Skybox.glsl");
+
+		SceneRenderer::Init();
 	}
 
 	void Renderer::Shutdown()
@@ -90,8 +90,9 @@ namespace Engine
 
 	void Renderer::SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial)
 	{
-		mesh->m_Pipeline->Bind();
+		//顺序不可改变，否则导致顶点属性链接出错
 		mesh->m_VertexBuffer->Bind();
+		mesh->m_Pipeline->Bind();
 		mesh->m_IndexBuffer->Bind();
 
 		auto materials = mesh->GetMaterials();
@@ -115,8 +116,6 @@ namespace Engine
 					else
 						glEnable(GL_CULL_FACE);
 					*/
-					glEnable(GL_DEPTH_TEST);
-
 					glDrawElementsBaseVertex(
 						GL_TRIANGLES,
 						submesh.IndexCount,

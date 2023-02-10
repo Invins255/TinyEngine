@@ -169,6 +169,7 @@
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLTexture.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Engine\Platforms\Windows\WindowsWindow.h" />
+    <ClInclude Include="src\Engine\Renderer\SceneEnvironment.h" />
     <ClInclude Include="src\Engine\Renderer\VertexBuffer.h" />
     <ClInclude Include="src\Engine\Renderer\Camera.h" />
     <ClInclude Include="src\Engine\Renderer\FrameBuffer.h" />
@@ -190,7 +191,7 @@
     <ClInclude Include="src\Engine\Renderer\VertexArray.h" />
     <ClInclude Include="src\Engine\Scene\Component.h" />
     <ClInclude Include="src\Engine\Scene\Entity.h" />
-    <ClInclude Include="src\Engine\Scene\Light.h" />
+    <ClInclude Include="src\Engine\Renderer\Light.h" />
     <ClInclude Include="src\Engine\Scene\Scene.h" />
     <ClInclude Include="src\Engine\Scene\SceneCamera.h" />
     <ClInclude Include="src\Engine\Scene\SceneSerializer.h" />
@@ -472,6 +473,7 @@
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Engine\Platforms\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Engine\Platforms\Windows\WindowsWindow.cpp" />
+    <ClCompile Include="src\Engine\Renderer\SceneEnvironment.cpp" />
     <ClCompile Include="src\Engine\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\Engine\Renderer\Camera.cpp" />
     <ClCompile Include="src\Engine\Renderer\FrameBuffer.cpp" />

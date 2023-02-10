@@ -4,7 +4,8 @@
 #include "Engine/Renderer/RenderPass.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Shader.h"
-#include "Engine/Scene/Light.h"
+#include "Engine/Renderer/Light.h"
+#include "Engine/Renderer/MeshFactory.h"
 
 namespace Engine
 {
@@ -18,10 +19,13 @@ namespace Engine
 			Light ActiveLight;
 			LightEnvironment SceneLightEnvironment;
 
+			Ref<MaterialInstance> SkyboxMaterial;
+
 		}m_SceneData;
 
 		//TEMP
 		Ref<RenderPass> m_RenderPass;
+		Ref<Mesh> m_SkyboxMesh;
 
 		struct DrawCommand
 		{
@@ -62,6 +66,7 @@ namespace Engine
 		s_Data->m_SceneData.SceneCamera = camera;
 		s_Data->m_SceneData.ActiveLight = scene->m_Light;
 		s_Data->m_SceneData.SceneLightEnvironment = scene->m_LightEnvironment;
+		s_Data->m_SceneData.SkyboxMaterial = scene->m_SkyboxMaterial;
 	}
 
 	void SceneRenderer::EndScene()
@@ -100,6 +105,11 @@ namespace Engine
 		auto& sceneCamera = s_Data->m_SceneData.SceneCamera;
 		auto viewProjection = sceneCamera.Camera.GetProjection() * sceneCamera.ViewMatrix; //BUG£ºOpen Scene ºósceneCamera.Camera.GetProjection()³ö´í
 		glm::vec3 cameraPosition = glm::inverse(sceneCamera.ViewMatrix)[3];
+
+		//BUG
+		//s_Data->m_SceneData.SkyboxMaterial->Set("u_ViewMatrix", glm::mat4(glm::mat3(sceneCamera.ViewMatrix)));
+		//s_Data->m_SceneData.SkyboxMaterial->Set("u_ProjectionMatrix", sceneCamera.Camera.GetProjection());
+		//Renderer::SubmitMesh(s_Data->m_SkyboxMesh, glm::mat4(1.0f), s_Data->m_SceneData.SkyboxMaterial);
 
 		//Render entities
 		for (auto& dc : s_Data->m_DrawList)

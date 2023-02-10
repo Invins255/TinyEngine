@@ -71,7 +71,7 @@ namespace Engine
 
         //TODO: Change to a better default shader
         m_MeshShader = Renderer::GetShaderLibrary()->Get("BlinnPhong");
-        m_BaseMaterial = CreateRef<Material>(m_MeshShader);
+        m_BaseMaterial = Material::Create(m_MeshShader);
         m_BaseMaterial->SetFlags(MaterialFlag::DepthTest);
 
         uint32_t vertexCount = 0;
@@ -123,7 +123,6 @@ namespace Engine
         }
 
         TraverseNodes(m_Scene->mRootNode);
-
         
         //Materials
         if (m_Scene->HasMaterials())
@@ -138,17 +137,13 @@ namespace Engine
                 auto aiMaterial = m_Scene->mMaterials[i];
                 auto aiMaterialName = aiMaterial->GetName();
 
-                auto mi = CreateRef<MaterialInstance>(m_BaseMaterial, aiMaterialName.data);
+                auto mi = MaterialInstance::Create(m_BaseMaterial, aiMaterialName.data);
                 m_Materials[i] = mi;
 
-                MESH_INFO("Mesh: Load material {0}, index = {1}", mi->GetName(), i);
-
                 uint32_t textureCount = aiMaterial->GetTextureCount(aiTextureType_DIFFUSE);
-                MESH_INFO("     TextureCount = {0}", textureCount);
 
                 aiColor3D aiColor;
                 aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor);
-                MESH_INFO("     Color = {0}, {1}, {2}", aiColor.r, aiColor.g, aiColor.b);
 
                 float shininess, metalness;
                 if (aiMaterial->Get(AI_MATKEY_SHININESS, shininess) != aiReturn_SUCCESS)
@@ -156,6 +151,10 @@ namespace Engine
                 if (aiMaterial->Get(AI_MATKEY_REFLECTIVITY, metalness) != aiReturn_SUCCESS)
                     metalness = 0.0f;
                 float roughness = 1.0f - glm::sqrt(shininess / 100.0f);
+
+                MESH_INFO("Mesh: Load material {0}, index = {1}", mi->GetName(), i);
+                MESH_INFO("     TextureCount = {0}", textureCount);
+                MESH_INFO("     Color = {0}, {1}, {2}", aiColor.r, aiColor.g, aiColor.b);
                 MESH_INFO("     Shininess = {0}", shininess);
                 MESH_INFO("     Metalness = {0}", metalness);
                 MESH_INFO("     Roughness = {0}", roughness);
@@ -254,9 +253,10 @@ namespace Engine
             }
         }
 
+        m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), m_StaticVertices.size() * sizeof(Vertex));
+        m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), m_Indices.size() * sizeof(Index));
         //VertexBuffer layout
         BufferLayout vertexLayout;
-        m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), m_StaticVertices.size() * sizeof(Vertex));
         vertexLayout = {
             { ShaderDataType::Float3, "a_Position" },
             { ShaderDataType::Float3, "a_Normal" },
@@ -264,42 +264,50 @@ namespace Engine
             { ShaderDataType::Float3, "a_Binormal" },
             { ShaderDataType::Float2, "a_TexCoord" },
         };
-        m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), m_Indices.size() * sizeof(Index));
-
         PipelineSpecification spec;
         spec.Layout = vertexLayout;
         m_Pipeline = Pipeline::Create(spec);
-
     }
 
     Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const glm::mat4& transform)
         : m_StaticVertices(vertices), m_Indices(indices)
     {
-        Submesh submesh;
+        MESH_INFO("Mesh: Construct basic mesh");
+
+        m_Importer = nullptr;
+        m_Scene = nullptr;
+
+        Submesh& submesh = m_Submeshes.emplace_back();
+        submesh.MeshName = "Basic mesh";
         submesh.BaseVertex = 0;
         submesh.BaseIndex = 0;
+        submesh.MaterialIndex = 0;
         submesh.IndexCount = indices.size() * 3;
+        submesh.VertexCount = vertices.size();
         submesh.Transform = transform;
-        m_Submeshes.push_back(submesh);
+
+        //TEMP
+        m_MeshShader = Renderer::GetShaderLibrary()->Get("BlinnPhong");
+        m_BaseMaterial = Material::Create(m_MeshShader);
+        m_BaseMaterial->SetFlags(MaterialFlag::DepthTest);
+        auto mi = MaterialInstance::Create(m_BaseMaterial);
+        mi->Set("u_AlbedoColor", glm::vec3(0.6f, 0.6f, 0.6f));
+        m_Materials.push_back(mi);
 
         m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), m_StaticVertices.size() * sizeof(Vertex));
         m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), m_Indices.size() * sizeof(Index));
-
-        PipelineSpecification pipelineSpecification;
-        pipelineSpecification.Layout = {
+        //VertexBuffer layout
+        BufferLayout vertexLayout;
+        vertexLayout = {
             { ShaderDataType::Float3, "a_Position" },
             { ShaderDataType::Float3, "a_Normal" },
             { ShaderDataType::Float3, "a_Tangent" },
             { ShaderDataType::Float3, "a_Binormal" },
             { ShaderDataType::Float2, "a_TexCoord" },
         };
-        m_Pipeline = Pipeline::Create(pipelineSpecification);
-
-        //TEMP
-        m_MeshShader = Renderer::GetShaderLibrary()->Get("FlatColor3D");
-        m_BaseMaterial = Material::Create(m_MeshShader);
-        m_Materials.resize(1);
-        m_Materials[0] = CreateRef<MaterialInstance>(m_BaseMaterial);
+        PipelineSpecification spec;
+        spec.Layout = vertexLayout;
+        m_Pipeline = Pipeline::Create(spec);
     }
 
     Mesh::~Mesh()

@@ -117,9 +117,9 @@ namespace Engine
     //--------------------------------------------------------------------------------
     //MaterialInstance
     //--------------------------------------------------------------------------------
-    Ref<MaterialInstance> MaterialInstance::Create(const Ref<Material>& material)
+    Ref<MaterialInstance> MaterialInstance::Create(const Ref<Material>& material, const std::string& name)
     {
-        return CreateRef<MaterialInstance>(material);
+        return CreateRef<MaterialInstance>(material, name);
     }
 
     MaterialInstance::MaterialInstance(const Ref<Material>& material, const std::string& name)

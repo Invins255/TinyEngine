@@ -110,7 +110,7 @@ namespace Engine
 		friend class Material;
 
 	public:
-		static Ref<MaterialInstance> Create(const Ref<Material>& material);
+		static Ref<MaterialInstance> Create(const Ref<Material>& material, const std::string& name = "");
 
 		MaterialInstance(const Ref<Material>& material, const std::string& name = "");
 		virtual ~MaterialInstance();

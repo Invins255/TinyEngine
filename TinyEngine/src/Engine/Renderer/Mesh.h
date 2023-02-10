@@ -36,7 +36,7 @@ namespace Engine
 
 	struct Index
 	{
-		uint32_t V1, V2, V3;
+		uint32_t V1 = 0, V2 = 0, V3 = 0;
 	};
 
 	struct Triangle
@@ -53,13 +53,13 @@ namespace Engine
 		std::string NodeName;
 		std::string MeshName;
 
-		uint32_t BaseVertex;
-		uint32_t BaseIndex;
-		uint32_t MaterialIndex = 0;
-		uint32_t IndexCount = 0;
-		uint32_t VertexCount = 0;
+		uint32_t BaseVertex		= 0;
+		uint32_t BaseIndex		= 0;
+		uint32_t MaterialIndex	= 0;
+		uint32_t IndexCount		= 0;
+		uint32_t VertexCount	= 0;
 
-		glm::mat4 Transform;	
+		glm::mat4 Transform = glm::mat4(1.0f);
 	};
 
 	class Mesh

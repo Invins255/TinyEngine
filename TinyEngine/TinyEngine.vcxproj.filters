@@ -210,7 +210,7 @@
     <ClInclude Include="src\Engine\Scene\Entity.h">
       <Filter>src\Engine\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Scene\Light.h">
+    <ClInclude Include="src\Engine\Renderer\Light.h">
       <Filter>src\Engine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Scene\Scene.h">
@@ -989,6 +989,7 @@
     </ClInclude>
     <ClInclude Include="src\Engine\Renderer\IndexBuffer.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLIndexBuffer.h" />
+    <ClInclude Include="src\Engine\Renderer\SceneEnvironment.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -1122,5 +1123,6 @@
     </ClCompile>
     <ClCompile Include="src\Engine\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLIndexBuffer.cpp" />
+    <ClCompile Include="src\Engine\Renderer\SceneEnvironment.cpp" />
   </ItemGroup>
 </Project>

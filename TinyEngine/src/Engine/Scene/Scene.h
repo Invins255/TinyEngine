@@ -3,7 +3,7 @@
 #include "entt.hpp"
 #include "Engine/Core/TimeStep.h"
 #include "Engine/Core/UUID.h"
-#include "Engine/Scene/Light.h"
+#include "Engine/Renderer/Light.h"
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Renderer/Material.h"
 

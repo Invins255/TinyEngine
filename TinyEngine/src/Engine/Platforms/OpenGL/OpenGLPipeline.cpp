@@ -37,6 +37,7 @@ namespace Engine
 		GLuint rendererID = m_VertexArrayRendererID;
 		Renderer::Submit([rendererID]()
 			{
+				RENDERCOMMAND_INFO("RenderCommand: Destroy vertexArray({0})", rendererID);
 				glDeleteVertexArrays(1, &rendererID);
 			}
 		);
@@ -46,6 +47,7 @@ namespace Engine
     {
 		Renderer::Submit([this]()
 			{
+				RENDERCOMMAND_INFO("RenderCommand: Bind vertexArray({0})", m_VertexArrayRendererID);
 				glBindVertexArray(m_VertexArrayRendererID);
 
 				const auto& layout = m_Specification.Layout;
@@ -70,7 +72,7 @@ namespace Engine
 							attribIndex,
 							element.GetComponentCount(),
 							glBaseType,
-							element.Normalized?GL_TRUE:GL_FALSE,
+							element.Normalized ? GL_TRUE : GL_FALSE,
 							layout.GetStride(),
 							(const void*)(intptr_t)element.Offset
 						);
@@ -91,6 +93,8 @@ namespace Engine
 					glDeleteVertexArrays(1, &m_VertexArrayRendererID);
 				
 				glGenVertexArrays(1, &m_VertexArrayRendererID);
+
+				RENDERCOMMAND_INFO("RenderCommand: Construct vertexArray({0})", m_VertexArrayRendererID);
 			}
 		);
     }

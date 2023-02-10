@@ -15,6 +15,17 @@ namespace Engine
 	Scene::Scene(const std::string& name)
 		:m_Name(name)
 	{
+		//Skybox texture
+		m_SkyboxTexture = TextureCube::Create(
+			"assets/textures/skybox/CornellBox/right.jpg",
+			"assets/textures/skybox/CornellBox/left.jpg",
+			"assets/textures/skybox/CornellBox/top.jpg",
+			"assets/textures/skybox/CornellBox/bottom.jpg",
+			"assets/textures/skybox/CornellBox/front.jpg",
+			"assets/textures/skybox/CornellBox/back.jpg"
+		);
+
+		//Skybox material
 		auto& skyboxShader = Renderer::GetShaderLibrary()->Get("Skybox");
 		m_SkyboxMaterial = MaterialInstance::Create(Material::Create(skyboxShader));
 		m_SkyboxMaterial->SetFlag(MaterialFlag::DepthTest, false);
@@ -43,12 +54,15 @@ namespace Engine
 		entity.AddComponent<TagComponent>(name);
 		ENGINE_ASSERT(m_EntityIDMap.find(uuid) == m_EntityIDMap.end(), "Entity already exists!");
 		m_EntityIDMap[uuid] = entity;
+		ENGINE_INFO("Scene '{0}': Create entity '{1}'", m_Name, name);
 		return entity;
 	}
 
 	void Scene::DestroyEntity(Entity entity)
 	{
+		std::string tag = entity.GetComponent<TagComponent>().Tag;
 		m_Registry.destroy(entity);
+		ENGINE_INFO("Scene '{0}': Destroy entity '{1}'", m_Name, tag);
 	}
 
 	void Scene::OnUpdate(Timestep ts)
@@ -57,7 +71,7 @@ namespace Engine
 		Entity cameraEntity = GetMainCameraEntity();
 		if (!cameraEntity)
 		{
-			ENGINE_WARN("Scene {0} does not have main camera!", m_Name);
+			ENGINE_WARN("Scene '{0}' does not have main camera!", m_Name);
 			return;
 		}
 
@@ -84,6 +98,9 @@ namespace Engine
 				lightComponent.Intensity
 			};
 		}
+
+		//Skybox
+		SetSkybox(m_SkyboxTexture);
 
 		SceneRenderer::BeginScene(this, {camera, cameraViewMatrix});
 		auto group = m_Registry.group<MeshComponent>(entt::get<TransformComponent>);
