@@ -46,7 +46,8 @@ namespace Engine
 		FrameBufferSpecification geoFrameBufferSpec;
 		geoFrameBufferSpec.Width = 1280;
 		geoFrameBufferSpec.Height = 720;
-		geoFrameBufferSpec.ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };		
+		geoFrameBufferSpec.ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
+		geoFrameBufferSpec.Attachments = { FrameBufferTextureFormat::RGBA16F, FrameBufferTextureFormat::RGBA16F, FrameBufferTextureFormat::Depth };
 		RenderPassSpecification geoRenderPassSpec;
 		geoRenderPassSpec.TargetFramebuffer = FrameBuffer::Create(geoFrameBufferSpec);
 		s_Data->m_RenderPass = RenderPass::Create(geoRenderPassSpec);

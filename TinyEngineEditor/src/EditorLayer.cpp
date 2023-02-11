@@ -2,15 +2,20 @@
 
 #include <imgui/imgui.h>
 
-#include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp> 
 
 #include <chrono>
 #include <filesystem>
 
 #include "Engine/Renderer/SceneRenderer.h"
 #include "Engine/Scene/SceneSerializer.h"
+#include "Engine/ImGui/ImGuizmo.h"
 #include "Engine/Renderer/MeshFactory.h"
+
 
 namespace Engine
 {
@@ -26,22 +31,31 @@ namespace Engine
         //TEMP
         {
             auto mesh = MeshFactory::CreateBox(glm::vec3(2.0f, 2.0f, 2.0f));
-            auto& meshEntity = m_EditorScene->CreateEntity("Cube 1");
+            auto& meshEntity = m_EditorScene->CreateEntity("Cube");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-3.0f, 0.0f, 1.0f);
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-3.0f, 1.0f, 1.0f);
         }     
         {
             auto mesh = CreateRef<Mesh>("assets/models/Sphere/Sphere.fbx");
-            auto& meshEntity = m_EditorScene->CreateEntity("Sphere 1");
+            auto& meshEntity = m_EditorScene->CreateEntity("Sphere");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
             meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(1.0f, 3.0f, -1.0f);
         }
+        {
+            auto mesh = CreateRef<Mesh>("assets/models/Plane/Plane.fbx");
+            auto& meshEntity = m_EditorScene->CreateEntity("Plane");
+            meshEntity.AddComponent<MeshComponent>();
+            meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 0.0f, 0.0f);
+            meshEntity.GetComponent<TransformComponent>().Scale = glm::vec3(0.5f, 0.5f, 0.5f);
+        }
         
         auto& camera = m_EditorScene->CreateEntity("Camera Entity");
         camera.AddComponent<CameraComponent>();
-        camera.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 0.0f, 25.0f);
+        camera.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 10.0f, 40.0f);
+        camera.GetComponent<TransformComponent>().Rotation = glm::vec3(glm::radians(-15.0f), 0.0f, 0.0f);
 
         auto& light = m_EditorScene->CreateEntity("Light Entity");
         light.AddComponent<DirectionalLightComponent>();
@@ -166,6 +180,7 @@ namespace Engine
             //Scene hierarchy---------------------------------------------------------------
             m_SceneHierarchyPanel.OnImGuiRender();
 
+            
         }
         ImGui::End();
     }
