@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "IndexBuffer.h"
-
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Platforms/OpenGL/OpenGLIndexBuffer.h"
 

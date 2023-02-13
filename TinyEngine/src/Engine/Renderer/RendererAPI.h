@@ -1,8 +1,5 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include "Engine/Renderer/VertexArray.h"
-
 namespace Engine
 {
 	class RendererAPI

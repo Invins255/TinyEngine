@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "RenderPass.h"
-
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Platforms/OpenGL/OpenGLRenderPass.h"
 

@@ -171,9 +171,6 @@
     <ClInclude Include="src\Engine\Renderer\Pipeline.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Renderer\RenderCommand.h">
-      <Filter>src\Engine\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\Engine\Renderer\RenderCommandQueue.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
@@ -1072,9 +1069,6 @@
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Renderer\Pipeline.cpp">
-      <Filter>src\Engine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Engine\Renderer\RenderCommand.cpp">
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Renderer\RenderCommandQueue.cpp">

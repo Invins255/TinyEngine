@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "VertexArray.h"
-
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Platforms/OpenGL/OpenGLVertexArray.h"
 

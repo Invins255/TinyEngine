@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Renderer.h"
 #include "Engine/Renderer/SceneRenderer.h"
+#include "Engine/Platforms/OpenGL/OpenGLRendererAPI.h"
 
 #include <glad/glad.h>
 
@@ -8,6 +9,8 @@ namespace Engine
 {
 	struct RendererData
 	{
+		Scope<RendererAPI> m_RendererAPI;
+
 		Ref<RenderPass> m_ActiveRenderPass;
 		RenderCommandQueue m_CommandQueue;
 		Ref<ShaderLibrary> m_ShaderLibrary;
@@ -21,8 +24,13 @@ namespace Engine
 
 	void Renderer::Init()
 	{
-		s_Data = CreateScope<RendererData>();		
-		RenderCommand::Init();
+		s_Data = CreateScope<RendererData>();
+		
+		//Initialize rendererAPI
+		s_Data->m_RendererAPI = CreateScope<OpenGLRendererAPI>();
+		s_Data->m_RendererAPI->Init();
+		
+		//RenderCommand::Init();
 
 		s_Data->m_ShaderLibrary = CreateRef<ShaderLibrary>();
 		//TEMP
@@ -42,7 +50,8 @@ namespace Engine
 	{
 		Renderer::Submit([=]()
 			{
-				RenderCommand::SetClearColor(r, g, b, a);
+				//RenderCommand::SetClearColor(r, g, b, a);
+				s_Data->m_RendererAPI->SetClearColor(r, g, b, a);
 			}
 		);
 	}
@@ -51,7 +60,8 @@ namespace Engine
 	{
 		Renderer::Submit([]()
 			{
-				RenderCommand::Clear();
+				//RenderCommand::Clear();
+				s_Data->m_RendererAPI->Clear();
 			}
 		);
 	}
@@ -70,8 +80,10 @@ namespace Engine
 		Renderer::Submit([=]()
 			{
 				RENDERCOMMAND_INFO("RenderCommand: Clear current frameBuffer");
-				RenderCommand::SetClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
-				RenderCommand::Clear();
+				//RenderCommand::SetClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+				//RenderCommand::Clear();
+				s_Data->m_RendererAPI->SetClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+				s_Data->m_RendererAPI->Clear();
 			}
 		);
 	}
@@ -85,7 +97,8 @@ namespace Engine
 
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height)
 	{
-		RenderCommand::SetViewport(0, 0, width, height);
+		//RenderCommand::SetViewport(0, 0, width, height);
+		s_Data->m_RendererAPI->SetViewport(0, 0, width, height);
 	}
 
 	void Renderer::SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial)

@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Engine/Renderer/RendererAPI.h"
 #include "Engine/Renderer/RenderPass.h"
 #include "Engine/Renderer/RenderCommandQueue.h"
-#include "Engine/Renderer/RenderCommand.h"
 #include "Engine/Renderer/Mesh.h"
 
 
@@ -41,8 +41,10 @@ namespace Engine
 
 		static void Init();
 		static void Shutdown();
+		
 		static void SetClearColor(float r, float g, float b, float a = 1.0f);
 		static void Clear();
+		
 		static void WaitAndRender();
 
 		static void BeginRenderPass(const Ref<RenderPass>& renderPass);
