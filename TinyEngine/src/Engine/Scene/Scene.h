@@ -6,6 +6,7 @@
 #include "Engine/Renderer/Light.h"
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Renderer/Material.h"
+#include "Engine/Scene/Environment.h"
 
 #include <unordered_map>
 
@@ -40,6 +41,8 @@ namespace Engine
 		Light& GetLight() { return m_Light; }
 		const Light& GetLight() const { return m_Light; }
 		
+		const Environment& GetEnvironment() const { return m_Environment; }
+		void SetEnvironment(Environment& environment) { m_Environment = environment; }
 		void SetSkybox(const Ref<TextureCube>& skybox);
 
 	private:
@@ -59,7 +62,7 @@ namespace Engine
 		LightEnvironment m_LightEnvironment;
 
 		//Environment
-		Ref<TextureCube> m_SkyboxTexture;
+		Environment m_Environment;
 		Ref<MaterialInstance> m_SkyboxMaterial;
 	};
 }

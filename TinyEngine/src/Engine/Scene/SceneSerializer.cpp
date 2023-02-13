@@ -158,7 +158,7 @@ namespace Engine
 		//Entity ID, Tag
 		uint64_t uuid = entity.GetComponent<IDComponent>().ID;
 		std::string tag = entity.GetComponent<TagComponent>().Tag;
-		SERIALIZER_INFO("Deserialize entity: ID = {0}, tag = {1}", uuid, tag);
+		SERIALIZER_INFO("Serialize entity: ID = {0}, tag = {1}", uuid, tag);
 
 		out << YAML::Key << "Entity" << YAML::Value << uuid;
 
@@ -184,6 +184,8 @@ namespace Engine
 		}
 		if (entity.HasComponent<MeshComponent>())
 		{
+			//TODO: 对程序化生成的Mesh进行序列化
+
 			out << YAML::Key << "MeshComponent";
 			out << YAML::BeginMap; 
 			auto mesh = entity.GetComponent<MeshComponent>().Mesh;
@@ -264,8 +266,33 @@ namespace Engine
 		out << YAML::Key << "Environment"; 
 		out << YAML::Value;
 		out << YAML::BeginMap; // Environment
+		out << YAML::Key << "Skybox";
+		out << YAML::Value;
+		out << YAML::BeginMap; // Skybox
+		out << YAML::Key << "AssetPath";
+		out << YAML::Value;
+		out << YAML::BeginMap;// path
+		auto skyboxPath = scene->GetEnvironment().SkyboxMap->GetPath();
+		out << YAML::Key << "Left" << YAML::Value << skyboxPath[1];
+		out << YAML::Key << "Right" << YAML::Value << skyboxPath[0];
+		out << YAML::Key << "Top" << YAML::Value << skyboxPath[2];
+		out << YAML::Key << "Bottom" << YAML::Value << skyboxPath[3];
+		out << YAML::Key << "Front" << YAML::Value << skyboxPath[4];
+		out << YAML::Key << "Back" << YAML::Value << skyboxPath[5];
+		out << YAML::EndMap; // Path
+		out << YAML::EndMap; // Skybox		
+
 		//TODO: Environment data
 		out << YAML::EndMap; //Environment		
+
+		SERIALIZER_INFO("Environment:");
+		SERIALIZER_INFO("	Skybox:");
+		SERIALIZER_INFO("		Left:	{0}", skyboxPath[1]);
+		SERIALIZER_INFO("		Right:	{0}", skyboxPath[0]);
+		SERIALIZER_INFO("		Top:	{0}", skyboxPath[2]);
+		SERIALIZER_INFO("		Bottom: {0}", skyboxPath[3]);
+		SERIALIZER_INFO("		Front:	{0}", skyboxPath[4]);
+		SERIALIZER_INFO("		Back:	{0}", skyboxPath[5]);
 	}
 
 	void SceneSerializer::Serialize(const std::string& filepath)
@@ -276,6 +303,7 @@ namespace Engine
 		out << YAML::Value << m_Scene->GetName();
 		SERIALIZER_INFO("Serialize scene '{0}'", m_Scene->GetName());
 
+		//Serialize environment
 		SerializeEnvironment(out, m_Scene);
 
 		//Serialize entities
@@ -311,6 +339,23 @@ namespace Engine
 		std::string sceneName = data["Scene"].as<std::string>();
 		m_Scene->m_Name = sceneName;
 		SERIALIZER_INFO("Deserialize scene '{0}'", sceneName);
+
+		//Deserialize environment
+		auto environment = data["Environment"];
+		if (environment)
+		{
+			auto skybox = environment["Skybox"];
+			auto skyboxPath = skybox["AssetPath"];
+			auto skyboxTexture = TextureCube::Create(
+				skyboxPath["Right"].as<std::string>(),
+				skyboxPath["Left"].as<std::string>(),
+				skyboxPath["Top"].as<std::string>(),
+				skyboxPath["Bottom"].as<std::string>(),
+				skyboxPath["Front"].as<std::string>(),
+				skyboxPath["Back"].as<std::string>()
+			);
+			m_Scene->SetSkybox(skyboxTexture);
+		}
 
 		//Deserialize entities
 		auto entities = data["Entities"];

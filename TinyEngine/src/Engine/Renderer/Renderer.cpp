@@ -10,16 +10,25 @@ namespace Engine
 	struct RendererData
 	{
 		Scope<RendererAPI> m_RendererAPI;
-
+		Scope<RenderCommandQueue> m_CommandQueue;
+		Scope<ShaderLibrary> m_ShaderLibrary;
 		Ref<RenderPass> m_ActiveRenderPass;
-		RenderCommandQueue m_CommandQueue;
-		Ref<ShaderLibrary> m_ShaderLibrary;
 	};
 	static Scope<RendererData> s_Data;
 
-	Ref<ShaderLibrary> Renderer::GetShaderLibrary()
+	RendererAPI& Renderer::GetAPI()
 	{
-		return s_Data->m_ShaderLibrary;
+		return *(s_Data->m_RendererAPI);
+	}
+
+	ShaderLibrary& Renderer::GetShaderLibrary()
+	{
+		return *(s_Data->m_ShaderLibrary);
+	}
+
+	RenderCommandQueue& Renderer::GetCommandQueue()
+	{
+		return *(s_Data->m_CommandQueue);
 	}
 
 	void Renderer::Init()
@@ -29,10 +38,10 @@ namespace Engine
 		//Initialize rendererAPI
 		s_Data->m_RendererAPI = CreateScope<OpenGLRendererAPI>();
 		s_Data->m_RendererAPI->Init();
-		
-		//RenderCommand::Init();
 
-		s_Data->m_ShaderLibrary = CreateRef<ShaderLibrary>();
+		s_Data->m_CommandQueue = CreateScope<RenderCommandQueue>();
+		s_Data->m_ShaderLibrary = CreateScope<ShaderLibrary>();
+		
 		//TEMP
 		s_Data->m_ShaderLibrary->Load("assets/shaders/BlinnPhong.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/Skybox.glsl");
@@ -46,29 +55,9 @@ namespace Engine
 		s_Data.reset();
 	}
 
-	void Renderer::SetClearColor(float r, float g, float b, float a)
-	{
-		Renderer::Submit([=]()
-			{
-				//RenderCommand::SetClearColor(r, g, b, a);
-				s_Data->m_RendererAPI->SetClearColor(r, g, b, a);
-			}
-		);
-	}
-
-	void Renderer::Clear()
-	{
-		Renderer::Submit([]()
-			{
-				//RenderCommand::Clear();
-				s_Data->m_RendererAPI->Clear();
-			}
-		);
-	}
-
 	void Renderer::WaitAndRender()
 	{
-		s_Data->m_CommandQueue.Execute();
+		s_Data->m_CommandQueue->Execute();
 	}
 
 	void Renderer::BeginRenderPass(const Ref<RenderPass>& renderPass)
@@ -79,9 +68,7 @@ namespace Engine
 		const glm::vec4& clearColor = s_Data->m_ActiveRenderPass->GetSpecification().TargetFramebuffer->GetSpecification().ClearColor;
 		Renderer::Submit([=]()
 			{
-				RENDERCOMMAND_INFO("RenderCommand: Clear current frameBuffer");
-				//RenderCommand::SetClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
-				//RenderCommand::Clear();
+				RENDERCOMMAND_TRACE("RenderCommand: Clear current frameBuffer");
 				s_Data->m_RendererAPI->SetClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 				s_Data->m_RendererAPI->Clear();
 			}
@@ -97,7 +84,6 @@ namespace Engine
 
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height)
 	{
-		//RenderCommand::SetViewport(0, 0, width, height);
 		s_Data->m_RendererAPI->SetViewport(0, 0, width, height);
 	}
 
@@ -137,14 +123,10 @@ namespace Engine
 						submesh.BaseVertex
 					);
 					
-					RENDERCOMMAND_INFO("RenderCommand: Submit mesh. Mesh: [{0}], Node: [{1}]", submesh.MeshName, submesh.NodeName);
+					RENDERCOMMAND_TRACE("RenderCommand: Submit mesh. Mesh: [{0}], Node: [{1}]", submesh.MeshName, submesh.NodeName);
 				}
 			);
 		}
 	}
 
-	RenderCommandQueue& Renderer::GetCommandQueue()
-	{
-		return s_Data->m_CommandQueue;
-	}
 }

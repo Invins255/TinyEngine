@@ -40,6 +40,8 @@ namespace Engine
 	class FrameBuffer
 	{
 	public:
+		static const uint32_t MaxColorAttachmentCount = 4;
+
 		virtual ~FrameBuffer() = default;
 
 		virtual void Bind() = 0;

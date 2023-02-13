@@ -33,7 +33,7 @@ namespace Engine
 		uint32_t rendererID = m_RendererID;
 		Renderer::Submit([rendererID]()
 			{
-				RENDERCOMMAND_INFO("RenderCommand: Destroy shader. ID: {1}", rendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Destroy shader. ID: {1}", rendererID);
 
 				glDeleteProgram(rendererID);
 			}
@@ -50,7 +50,7 @@ namespace Engine
 	{
 		Renderer::Submit([this]()
 			{
-				RENDERCOMMAND_INFO("RenderCommand: Bind shader({0})", m_RendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Bind shader({0})", m_RendererID);
 
 				glUseProgram(m_RendererID);
 			}
@@ -61,7 +61,7 @@ namespace Engine
 	{
 		Renderer::Submit([this]()
 			{
-				RENDERCOMMAND_INFO("RenderCommand: Unbind shader({0})", m_RendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Unbind shader({0})", m_RendererID);
 
 				glUseProgram(0);
 			}
@@ -384,7 +384,7 @@ namespace Engine
 
 				m_Loaded = true;
 
-				RENDERCOMMAND_INFO("RenderCommand: Construct shader. Name: [{0}], ID: ({1})", m_Name, m_RendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Construct shader. Name: [{0}], ID: ({1})", m_Name, m_RendererID);
 			}
 		);
 	}

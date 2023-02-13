@@ -15,7 +15,7 @@ namespace Engine
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
 				glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Size, nullptr, GL_DYNAMIC_DRAW);
 
-				RENDERCOMMAND_INFO("RenderCommand: Construct indexBuffer({0})", m_RendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Construct indexBuffer({0})", m_RendererID);
 			}
 		);
 	}
@@ -31,7 +31,7 @@ namespace Engine
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
 				glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Size, m_LocalData.Data, GL_STATIC_DRAW);
 
-				RENDERCOMMAND_INFO("RenderCommand: Construct indexBuffer({0})", m_RendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Construct indexBuffer({0})", m_RendererID);
 			}
 		);
 	}
@@ -41,7 +41,7 @@ namespace Engine
 		uint32_t rendererID = m_RendererID;
 		Renderer::Submit([rendererID]()
 			{
-				RENDERCOMMAND_INFO("RenderCommand: Destroy indexBuffer({0})", rendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Destroy indexBuffer({0})", rendererID);
 
 				glDeleteBuffers(1, &rendererID);
 			}
@@ -52,7 +52,7 @@ namespace Engine
 	{
 		Renderer::Submit([this]()
 			{
-				RENDERCOMMAND_INFO("RenderCommand: Bind indexBuffer({0})", m_RendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Bind indexBuffer({0})", m_RendererID);
 
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
 			}

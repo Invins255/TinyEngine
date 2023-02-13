@@ -986,7 +986,7 @@
     </ClInclude>
     <ClInclude Include="src\Engine\Renderer\IndexBuffer.h" />
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLIndexBuffer.h" />
-    <ClInclude Include="src\Engine\Renderer\SceneEnvironment.h" />
+    <ClInclude Include="src\Engine\Scene\Environment.h" />
     <ClInclude Include="src\Engine\ImGui\ImGuizmo.h" />
   </ItemGroup>
   <ItemGroup>
@@ -1118,7 +1118,7 @@
     </ClCompile>
     <ClCompile Include="src\Engine\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\Engine\Platforms\OpenGL\OpenGLIndexBuffer.cpp" />
-    <ClCompile Include="src\Engine\Renderer\SceneEnvironment.cpp" />
+    <ClCompile Include="src\Engine\Scene\Environment.cpp" />
     <ClCompile Include="src\Engine\ImGui\ImGuizmo.cpp" />
   </ItemGroup>
 </Project>

@@ -40,8 +40,8 @@ namespace Engine
 	{
 		uint8_t* buffer = m_CommandBuffer;
 
-		RENDERCOMMAND_INFO("--------------------------------------------------------------");
-		RENDERCOMMAND_INFO("RenderCommandQueue excute:");
+		RENDERCOMMAND_TRACE("--------------------------------------------------------------");
+		RENDERCOMMAND_TRACE("RenderCommandQueue excute:");
 		for (uint32_t i = 0; i < m_CommandCount; i++)
 		{
 			RenderCommandFn function = *(RenderCommandFn*)buffer;
@@ -52,7 +52,7 @@ namespace Engine
 			function(buffer);
 			buffer += size;
 		}
-		RENDERCOMMAND_INFO("--------------------------------------------------------------");
+		RENDERCOMMAND_TRACE("--------------------------------------------------------------");
 
 		m_CommandBufferPtr = m_CommandBuffer;
 		m_CommandCount = 0;

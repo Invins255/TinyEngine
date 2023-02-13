@@ -74,7 +74,7 @@ namespace Engine
         m_Scene = scene;
 
         //TODO: Change to a better default shader
-        m_MeshShader = Renderer::GetShaderLibrary()->Get("BlinnPhong");
+        m_MeshShader = Renderer::GetShaderLibrary().Get("BlinnPhong");
         
         m_BaseMaterial = Material::Create(m_MeshShader);
         m_BaseMaterial->SetFlags(MaterialFlag::DepthTest);
@@ -294,7 +294,7 @@ namespace Engine
         submesh.Transform = transform;
 
         //TEMP
-        m_MeshShader = Renderer::GetShaderLibrary()->Get("BlinnPhong");
+        m_MeshShader = Renderer::GetShaderLibrary().Get("BlinnPhong");
         
         m_BaseMaterial = Material::Create(m_MeshShader);
         m_BaseMaterial->SetFlags(MaterialFlag::DepthTest);

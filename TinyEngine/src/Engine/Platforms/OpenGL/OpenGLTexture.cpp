@@ -107,7 +107,7 @@ namespace Engine
                 }
                 stbi_image_free(m_Data.Data);
 
-                RENDERCOMMAND_INFO("RenderCommand: Construct texture2D. Path: [{0}], ID: [{1}]", m_Path, m_RendererID);
+                RENDERCOMMAND_TRACE("RenderCommand: Construct texture2D. Path: [{0}], ID: [{1}]", m_Path, m_RendererID);
             });
     }
 
@@ -139,7 +139,7 @@ namespace Engine
 
                 glBindTexture(GL_TEXTURE_2D, 0);
 
-                RENDERCOMMAND_INFO("RenderCommand: Construct texture. ID: [{0}]", m_RendererID);
+                RENDERCOMMAND_TRACE("RenderCommand: Construct texture. ID: [{0}]", m_RendererID);
             });
 
         m_Data.Allocate(width * height * Texture::GetBPP(m_Format));
@@ -150,7 +150,7 @@ namespace Engine
         uint32_t rendererID = m_RendererID;
         Renderer::Submit([rendererID]()
             {
-                RENDERCOMMAND_INFO("RenderCommand: Destroy texture. ID: [{0}]", rendererID);
+                RENDERCOMMAND_TRACE("RenderCommand: Destroy texture. ID: [{0}]", rendererID);
                 glDeleteTextures(1, &rendererID);
             });
     }
@@ -164,7 +164,7 @@ namespace Engine
     {
         Renderer::Submit([this, slot]()
             {
-                RENDERCOMMAND_INFO("RenderCommand: Bind texture. ID: [{0}]", m_RendererID);
+                RENDERCOMMAND_TRACE("RenderCommand: Bind texture. ID: [{0}]", m_RendererID);
                 glBindTextureUnit(slot, m_RendererID);
             });
     }
@@ -257,13 +257,13 @@ namespace Engine
                 for (uint32_t i = 0; i < 6; i++)
                     stbi_image_free(m_Data[i].Data);
 
-                RENDERCOMMAND_INFO("RenderCommand: Construct textureCube. ID: [{0}]", m_RendererID);
-                RENDERCOMMAND_INFO("    Left:   {0}", m_Path[1]);
-                RENDERCOMMAND_INFO("    Right:  {0}", m_Path[0]);
-                RENDERCOMMAND_INFO("    Top:    {0}", m_Path[2]);
-                RENDERCOMMAND_INFO("    Bottom: {0}", m_Path[3]);
-                RENDERCOMMAND_INFO("    Front:  {0}", m_Path[4]);
-                RENDERCOMMAND_INFO("    Back:   {0}", m_Path[5]);
+                RENDERCOMMAND_TRACE("RenderCommand: Construct textureCube. ID: [{0}]", m_RendererID);
+                RENDERCOMMAND_TRACE("    Left:   {0}", m_Path[1]);
+                RENDERCOMMAND_TRACE("    Right:  {0}", m_Path[0]);
+                RENDERCOMMAND_TRACE("    Top:    {0}", m_Path[2]);
+                RENDERCOMMAND_TRACE("    Bottom: {0}", m_Path[3]);
+                RENDERCOMMAND_TRACE("    Front:  {0}", m_Path[4]);
+                RENDERCOMMAND_TRACE("    Back:   {0}", m_Path[5]);
             });
     }
 
@@ -274,6 +274,14 @@ namespace Engine
             {
                 glDeleteTextures(1, &rendererID);
             });
+    }
+
+    const std::vector<std::string> OpenGLTextureCube::GetPath() const
+    {
+        std::vector<std::string> path;
+        for (uint32_t i = 0; i < 6; i++)
+            path.push_back(std::string(m_Path[i]));
+        return path;
     }
 
     uint32_t OpenGLTextureCube::GetMipLevelCount() const

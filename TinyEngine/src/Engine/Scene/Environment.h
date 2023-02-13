@@ -4,9 +4,8 @@
 
 namespace Engine
 {
-	//Unused
 	struct Environment
 	{
-
+		Ref<TextureCube> SkyboxMap;
 	};
 }

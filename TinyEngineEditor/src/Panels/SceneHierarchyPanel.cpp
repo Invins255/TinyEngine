@@ -28,40 +28,189 @@ namespace Engine
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
 		ImGui::Begin("Scene Hierarchy");
-
-		auto& sceneName = m_Context->GetName();
-		char buffer[256];
-		memset(buffer, 0, sizeof(buffer));
-		strcpy_s(buffer, sizeof(buffer), sceneName.c_str());
-		if (ImGui::InputText("Scene Name", buffer, sizeof(buffer)))
 		{
-			m_Context->SetName(std::string(buffer));
-		}
-		ImGui::Separator();
-
-		m_Context->m_Registry.each([&](auto entityID) 
+			auto& sceneName = m_Context->GetName();
+			char buffer[256];
+			memset(buffer, 0, sizeof(buffer));
+			strcpy_s(buffer, sizeof(buffer), sceneName.c_str());
+			if (ImGui::InputText("Scene Name", buffer, sizeof(buffer)))
 			{
-				Entity entity{ entityID, m_Context.get()};
-				DrawEntityNode(entity);
+				m_Context->SetName(std::string(buffer));
 			}
-		);
-		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-			m_SelectionContext = {};
+			ImGui::Separator();
 
-		if (ImGui::BeginPopupContextWindow(0, 1, false))
-		{
-			if (ImGui::MenuItem("Create Empty Entity"))
-				m_Context->CreateEntity("Empty Entity");
+			m_Context->m_Registry.each([&](auto entityID)
+				{
+					Entity entity{ entityID, m_Context.get() };
+					DrawEntityNode(entity);
+				}
+			);
+			if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+				m_SelectionContext = {};
 
-			ImGui::EndPopup();
+			if (ImGui::BeginPopupContextWindow(0, 1, false))
+			{
+				if (ImGui::MenuItem("Create Empty Entity"))
+					m_Context->CreateEntity("Empty Entity");
+
+				ImGui::EndPopup();
+			}
 		}
 		ImGui::End();
 
 		ImGui::Begin("Properties");
-		if (m_SelectionContext)
 		{
-			DrawComponents(m_SelectionContext);
-			DrawAddComponentMenu();
+			if (m_SelectionContext)
+			{
+				DrawComponents(m_SelectionContext);
+				DrawAddComponentMenu();
+			}
+		}
+		ImGui::End();
+
+		ImGui::Begin("Lighting");
+		{
+			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
+			{
+				if (ImGui::BeginTabItem("Environment"))
+				{
+					const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
+					ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
+
+					ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
+					float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+					ImGui::Separator();
+					if (ImGui::TreeNodeEx("##dummy_id", treeNodeFlags, "Environment"))
+					{
+						//Environment settings
+						if(ImGui::TreeNode("Source"))
+						{
+							auto path = m_Context->GetEnvironment().SkyboxMap->GetPath();
+							
+							int width1 = 60, width2 = 250, width3 = 40;
+							{
+								//Left
+								ImGui::PushID(path[1].c_str());
+								ImGui::Columns(3);
+								ImGui::SetColumnWidth(0, width1);
+								ImGui::SetColumnWidth(1, width2);
+								ImGui::SetColumnWidth(2, width3);
+								ImGui::Text("Left");
+								ImGui::NextColumn();
+								ImGui::PushItemWidth(-1);
+								ImGui::InputText("##left", (char*)path[1].c_str(), 256, ImGuiInputTextFlags_ReadOnly);
+								ImGui::PopItemWidth();
+								ImGui::NextColumn();
+								if (ImGui::Button("...##openmesh"))
+								{
+									//Get face path
+								}
+								ImGui::PopID();
+								ImGui::NextColumn();
+								//Right
+								ImGui::PushID(path[0].c_str());
+								ImGui::Columns(3);
+								ImGui::SetColumnWidth(0, width1);
+								ImGui::SetColumnWidth(1, width2);
+								ImGui::SetColumnWidth(2, width3);
+								ImGui::Text("Right");
+								ImGui::NextColumn();
+								ImGui::PushItemWidth(-1);
+								ImGui::InputText("##right", (char*)path[0].c_str(), 256, ImGuiInputTextFlags_ReadOnly);
+								ImGui::PopItemWidth();
+								ImGui::NextColumn();
+								if (ImGui::Button("...##openmesh"))
+								{
+									//Get face path
+								}
+								ImGui::PopID();
+								ImGui::NextColumn();
+								//Top
+								ImGui::PushID(path[2].c_str());
+								ImGui::Columns(3);
+								ImGui::SetColumnWidth(0, width1);
+								ImGui::SetColumnWidth(1, width2);
+								ImGui::SetColumnWidth(2, width3);
+								ImGui::Text("Top");
+								ImGui::NextColumn();
+								ImGui::PushItemWidth(-1);
+								ImGui::InputText("##top", (char*)path[2].c_str(), 256, ImGuiInputTextFlags_ReadOnly);
+								ImGui::PopItemWidth();
+								ImGui::NextColumn();
+								if (ImGui::Button("...##openmesh"))
+								{
+									//Get face path
+								}
+								ImGui::PopID();
+								ImGui::NextColumn();
+								//Bottom
+								ImGui::PushID(path[3].c_str());
+								ImGui::Columns(3);
+								ImGui::SetColumnWidth(0, width1);
+								ImGui::SetColumnWidth(1, width2);
+								ImGui::SetColumnWidth(2, width3);
+								ImGui::Text("Bottom");
+								ImGui::NextColumn();
+								ImGui::PushItemWidth(-1);
+								ImGui::InputText("##bottom", (char*)path[3].c_str(), 256, ImGuiInputTextFlags_ReadOnly);
+								ImGui::PopItemWidth();
+								ImGui::NextColumn();
+								if (ImGui::Button("...##openmesh"))
+								{
+									//Get face path
+								}
+								ImGui::PopID();
+								ImGui::NextColumn();
+								//Front
+								ImGui::PushID(path[4].c_str());
+								ImGui::Columns(3);
+								ImGui::SetColumnWidth(0, width1);
+								ImGui::SetColumnWidth(1, width2);
+								ImGui::SetColumnWidth(2, width3);
+								ImGui::Text("Front");
+								ImGui::NextColumn();
+								ImGui::PushItemWidth(-1);
+								ImGui::InputText("##front", (char*)path[4].c_str(), 256, ImGuiInputTextFlags_ReadOnly);
+								ImGui::PopItemWidth();
+								ImGui::NextColumn();
+								if (ImGui::Button("...##openmesh"))
+								{
+									//Get face path
+								}
+								ImGui::PopID();
+								ImGui::NextColumn();
+								//Back
+								ImGui::PushID(path[5].c_str());
+								ImGui::Columns(3);
+								ImGui::SetColumnWidth(0, width1);
+								ImGui::SetColumnWidth(1, width2);
+								ImGui::SetColumnWidth(2, width3);
+								ImGui::Text("Back");
+								ImGui::NextColumn();
+								ImGui::PushItemWidth(-1);
+								ImGui::InputText("##back", (char*)path[5].c_str(), 256, ImGuiInputTextFlags_ReadOnly);
+								ImGui::PopItemWidth();
+								ImGui::NextColumn();
+								if (ImGui::Button("...##openmesh"))
+								{
+									//Get face path
+								}
+								ImGui::PopID();
+								ImGui::NextColumn();
+							}
+
+							ImGui::TreePop();
+						}
+
+						ImGui::TreePop();
+					}
+					ImGui::PopStyleVar();
+
+					ImGui::EndTabItem();
+				}
+				ImGui::EndTabBar();
+			}
 		}
 		ImGui::End();
 	}

@@ -60,6 +60,7 @@ namespace Engine
 		virtual uint32_t GetChannels() const override { return m_Channels; }
 		virtual uint32_t GetMipLevelCount() const override;
 		virtual TextureFormat GetFormat() const override { return m_Format; }
+		virtual const std::vector<std::string> GetPath() const override;
 
 		virtual bool IsLoaded() const { return m_Loaded; };
 

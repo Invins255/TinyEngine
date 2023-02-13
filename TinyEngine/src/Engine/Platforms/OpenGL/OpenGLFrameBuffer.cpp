@@ -105,7 +105,7 @@ namespace Engine
         uint32_t depthAttachment = m_DepthAttachment;
         Renderer::Submit([rendererID, colorAttachments, depthAttachment]()
             {
-                RENDERCOMMAND_INFO("RenderCommand: Destroy frameBuffer({0})", rendererID);
+                RENDERCOMMAND_TRACE("RenderCommand: Destroy frameBuffer({0})", rendererID);
 
                 glDeleteTextures(colorAttachments.size(), colorAttachments.data());
                 glDeleteTextures(1, &depthAttachment);
@@ -118,7 +118,7 @@ namespace Engine
     {
         Renderer::Submit([this]()
             {
-                RENDERCOMMAND_INFO("RenderCommand: Bind frameBuffer({0})", m_RendererID);
+                RENDERCOMMAND_TRACE("RenderCommand: Bind frameBuffer({0})", m_RendererID);
 
                 glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
                 glViewport(0, 0, m_Specification.Width, m_Specification.Height);
@@ -130,7 +130,7 @@ namespace Engine
     {
         Renderer::Submit([this]()
             {
-                RENDERCOMMAND_INFO("RenderCommand: Unbind frameBuffer({0})", m_RendererID);
+                RENDERCOMMAND_TRACE("RenderCommand: Unbind frameBuffer({0})", m_RendererID);
 
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
             }
@@ -219,8 +219,8 @@ namespace Engine
                 
                 if (m_ColorAttachments.size() > 1)
                 {
-                    ENGINE_ASSERT(m_ColorAttachments.size() <= 4, "");
-                    GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+                    ENGINE_ASSERT(m_ColorAttachments.size() <= MaxColorAttachmentCount, "ColorAttachment count exceeds the maximum!");
+                    GLenum buffers[MaxColorAttachmentCount] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
                     glDrawBuffers(m_ColorAttachments.size(), buffers);
                 }
                 else if (m_ColorAttachments.size() == 0)
@@ -232,7 +232,7 @@ namespace Engine
 
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-                RENDERCOMMAND_INFO("RenderCommand: Construct frameBuffer({0})", m_RendererID);
+                RENDERCOMMAND_TRACE("RenderCommand: Construct frameBuffer({0})", m_RendererID);
             }
         );
     }

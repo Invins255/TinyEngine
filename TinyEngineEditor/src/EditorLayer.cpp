@@ -15,6 +15,7 @@
 #include "Engine/Scene/SceneSerializer.h"
 #include "Engine/ImGui/ImGuizmo.h"
 #include "Engine/Renderer/MeshFactory.h"
+#include "Engine/Renderer/Texture.h"
 
 
 namespace Engine
@@ -29,6 +30,17 @@ namespace Engine
         NewScene();
 
         //TEMP
+
+        auto skyboxTexture = TextureCube::Create(
+            "assets/textures/skybox/CornellBox/right.jpg",
+            "assets/textures/skybox/CornellBox/left.jpg",
+            "assets/textures/skybox/CornellBox/top.jpg",
+            "assets/textures/skybox/CornellBox/bottom.jpg",
+            "assets/textures/skybox/CornellBox/front.jpg",
+            "assets/textures/skybox/CornellBox/back.jpg"
+        );
+        m_EditorScene->SetSkybox(skyboxTexture);
+
         {
             auto mesh = MeshFactory::CreateBox(glm::vec3(2.0f, 2.0f, 2.0f));
             auto& meshEntity = m_EditorScene->CreateEntity("Cube");
@@ -153,6 +165,8 @@ namespace Engine
                 ImGui::EndMenuBar();
             }
 
+            //ImGui::ShowDemoWindow();
+
             //Settings----------------------------------------------------------------------
             ImGui::Begin("Stats");
             {
@@ -180,7 +194,6 @@ namespace Engine
             //Scene hierarchy---------------------------------------------------------------
             m_SceneHierarchyPanel.OnImGuiRender();
 
-            
         }
         ImGui::End();
     }

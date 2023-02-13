@@ -29,7 +29,7 @@ namespace Engine
 				glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 				glBufferData(GL_ARRAY_BUFFER, m_Size, nullptr, OpenGLVertexBufferUsage(m_Usage));
 
-				RENDERCOMMAND_INFO("RenderCommand: Construct vertexBuffer({0})", m_RendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Construct vertexBuffer({0})", m_RendererID);
 			}
 		);
 	}
@@ -45,7 +45,7 @@ namespace Engine
 				glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 				glBufferData(GL_ARRAY_BUFFER, m_Size, m_LocalData.Data, OpenGLVertexBufferUsage(m_Usage));
 
-				RENDERCOMMAND_INFO("RenderCommand: Construct vertexBuffer({0})", m_RendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Construct vertexBuffer({0})", m_RendererID);
 			}
 		);
 	}
@@ -55,7 +55,7 @@ namespace Engine
 		uint32_t rendererID = m_RendererID;
 		Renderer::Submit([rendererID]()
 			{
-				RENDERCOMMAND_INFO("RenderCommand: Destroy vertexBuffer({0})", rendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Destroy vertexBuffer({0})", rendererID);
 
 				glDeleteBuffers(1, &rendererID);
 			}
@@ -66,7 +66,7 @@ namespace Engine
 	{
 		Renderer::Submit([this]()
 			{
-				RENDERCOMMAND_INFO("RenderCommand: Bind vertexBuffer({0})", m_RendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Bind vertexBuffer({0})", m_RendererID);
 
 				glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 			}

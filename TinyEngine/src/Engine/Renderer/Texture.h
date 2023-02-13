@@ -71,5 +71,6 @@ namespace Engine
 		);
 
 		virtual bool IsLoaded() const = 0;
+		virtual const std::vector<std::string> GetPath() const = 0;
 	};
 }

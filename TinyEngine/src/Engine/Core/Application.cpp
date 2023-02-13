@@ -55,7 +55,7 @@ namespace Engine
 				Application* app = this;
 				Renderer::Submit([app]() 
 					{ 
-						RENDERCOMMAND_INFO("RenderCommand: Render ImGui");
+						RENDERCOMMAND_TRACE("RenderCommand: Render ImGui");
 						app->RenderImGui(); 
 					}
 				);

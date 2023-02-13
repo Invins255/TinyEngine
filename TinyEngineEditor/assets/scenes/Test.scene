@@ -1,17 +1,24 @@
 Scene: Empty Scene
 Environment:
-  {}
+  Skybox:
+    AssetPath:
+      Left: assets/textures/skybox/Sky/left.jpg
+      Right: assets/textures/skybox/Sky/right.jpg
+      Top: assets/textures/skybox/Sky/top.jpg
+      Bottom: assets/textures/skybox/Sky/bottom.jpg
+      Front: assets/textures/skybox/Sky/front.jpg
+      Back: assets/textures/skybox/Sky/back.jpg
 Entities:
-  - Entity: 5769338259164375289
+  - Entity: 9719204662643586920
     TagComponent:
       Tag: Light Entity
     TransformComponent:
-      Position: [1, 1, 1]
-      Rotation: [0, 0, 0]
+      Position: [0, 0, 0]
+      Rotation: [-3.14159274, 0, 0]
       Scale: [1, 1, 1]
     DirectionalLightComponent:
       Radiance: [1, 1, 1]
-  - Entity: 11703576853557481272
+  - Entity: 325549879676859147
     TagComponent:
       Tag: Camera Entity
     TransformComponent:
@@ -29,9 +36,9 @@ Entities:
           FOV: 45
           Near: 0.00999999978
           Far: 1000
-        AspectRatio: 1.0638051
+        AspectRatio: 1.04408348
       Primary: true
-  - Entity: 11351132379342288543
+  - Entity: 15044778169313957766
     TagComponent:
       Tag: Plane
     TransformComponent:
@@ -40,7 +47,7 @@ Entities:
       Scale: [0.5, 0.5, 0.5]
     MeshComponent:
       AssetPath: assets/models/Plane/Plane.fbx
-  - Entity: 17268516367051585611
+  - Entity: 13141930797571755004
     TagComponent:
       Tag: Sphere
     TransformComponent:
@@ -49,12 +56,3 @@ Entities:
       Scale: [1, 1, 1]
     MeshComponent:
       AssetPath: assets/models/Sphere/Sphere.fbx
-  - Entity: 1797249908088431101
-    TagComponent:
-      Tag: Cube
-    TransformComponent:
-      Position: [-3, 1, 1]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    MeshComponent:
-      AssetPath: ""

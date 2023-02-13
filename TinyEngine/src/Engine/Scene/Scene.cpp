@@ -15,18 +15,8 @@ namespace Engine
 	Scene::Scene(const std::string& name)
 		:m_Name(name)
 	{
-		//Skybox texture
-		m_SkyboxTexture = TextureCube::Create(
-			"assets/textures/skybox/CornellBox/right.jpg",
-			"assets/textures/skybox/CornellBox/left.jpg",
-			"assets/textures/skybox/CornellBox/top.jpg",
-			"assets/textures/skybox/CornellBox/bottom.jpg",
-			"assets/textures/skybox/CornellBox/front.jpg",
-			"assets/textures/skybox/CornellBox/back.jpg"
-		);
-
 		//Skybox material
-		auto& skyboxShader = Renderer::GetShaderLibrary()->Get("Skybox");
+		auto& skyboxShader = Renderer::GetShaderLibrary().Get("Skybox");
 		m_SkyboxMaterial = MaterialInstance::Create(Material::Create(skyboxShader));
 		m_SkyboxMaterial->SetFlag(MaterialFlag::DepthTest, false);
 	}
@@ -99,9 +89,6 @@ namespace Engine
 			};
 		}
 
-		//Skybox
-		SetSkybox(m_SkyboxTexture);
-
 		SceneRenderer::BeginScene(this, {camera, cameraViewMatrix});
 		auto group = m_Registry.group<MeshComponent>(entt::get<TransformComponent>);
 		for (auto entity : group)
@@ -147,7 +134,7 @@ namespace Engine
 
 	void Scene::SetSkybox(const Ref<TextureCube>& skybox)
 	{
-		m_SkyboxTexture = skybox;
+		m_Environment.SkyboxMap = skybox;
 		m_SkyboxMaterial->Set("u_Skybox", skybox);
 	}
 
