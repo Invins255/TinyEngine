@@ -128,6 +128,16 @@ namespace Engine
 		virtual const ShaderUniformList& GetVSRendererUniforms() const = 0;
 		virtual const ShaderUniformList& GetPSRendererUniforms() const = 0;
 
+		//Bind shader before setting value
+		virtual void Set(const std::string& name, int value) = 0;
+		virtual void Set(const std::string& name, int value[], uint32_t count) = 0;
+		virtual void Set(const std::string& name, float value) = 0;
+		virtual void Set(const std::string& name, const glm::vec2& value) = 0;
+		virtual void Set(const std::string& name, const glm::vec3& value) = 0;
+		virtual void Set(const std::string& name, const glm::vec4& value) = 0;
+		virtual void Set(const std::string& name, const glm::mat3& matrix) = 0;
+		virtual void Set(const std::string& name, const glm::mat4& matrix) = 0;
+
 		virtual const ShaderResourceList& GetResources() const = 0;
 
 		virtual void AddShaderReloadedCallback(const ShaderReloadedCallback& callback) = 0;

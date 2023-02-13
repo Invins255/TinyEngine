@@ -55,11 +55,11 @@ namespace Engine
         auto& camera = m_EditorScene->CreateEntity("Camera Entity");
         camera.AddComponent<CameraComponent>();
         camera.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 10.0f, 40.0f);
-        camera.GetComponent<TransformComponent>().Rotation = glm::vec3(glm::radians(-15.0f), 0.0f, 0.0f);
+        camera.GetComponent<TransformComponent>().Rotation = glm::radians(glm::vec3(-15.0f, 0.0f, 0.0f));
 
         auto& light = m_EditorScene->CreateEntity("Light Entity");
         light.AddComponent<DirectionalLightComponent>();
-        light.GetComponent<TransformComponent>().Translation = glm::vec3(1.0f, 1.0f, 1.0f);
+        light.GetComponent<TransformComponent>().Rotation = glm::radians(glm::vec3(-180.0f, 0.0f, 0.0f));
     }
 
     void EditorLayer::OnDetach()

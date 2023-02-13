@@ -5,13 +5,14 @@
 
 namespace Engine
 {
+	//TODO: More values
 	enum class FrameBufferTextureFormat
 	{
 		None = 0,
 		//Color
 		RGBA8, RGBA16F, RGBA32F, 
 		//Depth/Stencil
-		DEPTH32F, DEPTH24STENCIL8, Depth = DEPTH24STENCIL8
+		DEPTH32F, DEPTH24STENCIL8
 	};
 
 	struct FrameBufferTextureSpecification
@@ -30,8 +31,8 @@ namespace Engine
 		uint32_t Width = 0; 
 		uint32_t Height = 0;
 		glm::vec4 ClearColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		uint32_t Samples = 1; //BUG: Multisample
 		FrameBufferAttachmentSpecification Attachments;
+		uint32_t Samples = 1; //BUG: Multisample
 
 		bool SwapChainTarget = false;
 	};

@@ -217,7 +217,6 @@ namespace Engine
                     }
                 }
                 
-
                 if (m_ColorAttachments.size() > 1)
                 {
                     ENGINE_ASSERT(m_ColorAttachments.size() <= 4, "");

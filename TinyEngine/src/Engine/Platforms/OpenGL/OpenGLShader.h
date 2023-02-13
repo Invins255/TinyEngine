@@ -35,6 +35,15 @@ namespace Engine
 		virtual const ShaderUniformList& GetVSRendererUniforms() const override { return m_VSRendererUniformBuffers; }
 		virtual const ShaderUniformList& GetPSRendererUniforms() const override { return m_PSRendererUniformBuffers; }
 
+		virtual void Set(const std::string& name, int value) override;
+		virtual void Set(const std::string& name, int value[], uint32_t count) override;
+		virtual void Set(const std::string& name, float value) override;
+		virtual void Set(const std::string& name, const glm::vec2& value) override;
+		virtual void Set(const std::string& name, const glm::vec3& value) override;
+		virtual void Set(const std::string& name, const glm::vec4& value) override;
+		virtual void Set(const std::string& name, const glm::mat3& matrix) override;
+		virtual void Set(const std::string& name, const glm::mat4& matrix) override;
+
 		virtual const ShaderResourceList& GetResources() const override { return m_Resources; }
 
 		virtual void AddShaderReloadedCallback(const ShaderReloadedCallback& callback) override;
@@ -57,6 +66,7 @@ namespace Engine
 
 		void Compile();
 
+		//Upload with name
 		void UploadUniformInt(const std::string& name, int value);
 		void UploadUniformIntArray(const std::string& name, int value[], uint32_t count);
 		void UploadUniformFloat(const std::string& name, float value);
@@ -66,6 +76,7 @@ namespace Engine
 		void UploadUniformMat3(const std::string& name, const glm::mat3& matrix);
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
 		void UploadUniformMat4Array(const std::string& name, const glm::mat4& matrix, uint32_t count);
+		//Upload with location ID
 		void UploadUniformInt(uint32_t location, int value);
 		void UploadUniformIntArray(uint32_t location, int value[], uint32_t count);
 		void UploadUniformFloat(uint32_t location, float value);
@@ -75,6 +86,7 @@ namespace Engine
 		void UploadUniformMat3(uint32_t location, const glm::mat3& matrix);
 		void UploadUniformMat4(uint32_t location, const glm::mat4& matrix);
 		void UploadUniformMat4Array(uint32_t location, const glm::mat4& matrix, uint32_t count);
+		
 		void UploadUniformStruct(OpenGLShaderUniform* uniform, uint8_t* buffer, uint32_t offset);
 
 	private:

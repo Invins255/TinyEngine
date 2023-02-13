@@ -174,55 +174,55 @@ namespace Engine
 	void OpenGLShader::UploadUniformInt(const std::string& name, int value)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniform1i(location, value);
+		UploadUniformInt(location, value);
 	}
 
 	void OpenGLShader::UploadUniformIntArray(const std::string& name, int value[], uint32_t count)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniform1iv(location, count, value);
+		UploadUniformIntArray(location, value, count);
 	}
 
 	void OpenGLShader::UploadUniformFloat(const std::string& name, float value)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniform1f(location, value);
+		UploadUniformFloat(location, value);
 	}
 
 	void OpenGLShader::UploadUniformFloat2(const std::string& name, const glm::vec2& value)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniform2f(location, value.x, value.y);
+		UploadUniformFloat2(location, value);
 	}
 
 	void OpenGLShader::UploadUniformFloat3(const std::string& name, const glm::vec3& value)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniform3f(location, value.x, value.y, value.z);
+		UploadUniformFloat3(location, value);
 	}
 
 	void OpenGLShader::UploadUniformFloat4(const std::string& name, const glm::vec4& value)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniform4f(location, value.x, value.y, value.z, value.w);
+		UploadUniformFloat4(location, value);
 	}
 
 	void OpenGLShader::UploadUniformMat3(const std::string& name, const glm::mat3& matrix)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+		UploadUniformMat3(location, matrix);
 	}
 
 	void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+		UploadUniformMat4(location, matrix);
 	}
 
 	void OpenGLShader::UploadUniformMat4Array(const std::string& name, const glm::mat4& matrix, uint32_t count)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniformMatrix4fv(location, count, GL_FALSE, glm::value_ptr(matrix));
+		UploadUniformMat4Array(location, matrix, count);
 	}
 
 	void OpenGLShader::UploadUniformInt(uint32_t location, int value)
@@ -279,6 +279,62 @@ namespace Engine
 			ResolveAndSetUniformField(*field, buffer, offset);
 			offset += field->m_Size;
 		}
+	}
+
+	void OpenGLShader::Set(const std::string& name, int value)
+	{
+		Renderer::Submit([=]() {
+			UploadUniformInt(name, value);
+			});
+	}
+
+	void OpenGLShader::Set(const std::string& name, int value[], uint32_t count)
+	{
+		Renderer::Submit([=]() {
+			UploadUniformIntArray(name, value, count);
+			});
+	}
+
+	void OpenGLShader::Set(const std::string& name, float value)
+	{
+		Renderer::Submit([=]() {
+			UploadUniformFloat(name, value);
+			});
+	}
+
+	void OpenGLShader::Set(const std::string& name, const glm::vec2& value)
+	{
+		Renderer::Submit([=]() {
+			UploadUniformFloat2(name, value);
+			});
+	}
+
+	void OpenGLShader::Set(const std::string& name, const glm::vec3& value)
+	{
+		Renderer::Submit([=]() {
+			UploadUniformFloat3(name, value);
+			});
+	}
+
+	void OpenGLShader::Set(const std::string& name, const glm::vec4& value)
+	{
+		Renderer::Submit([=]() {
+			UploadUniformFloat4(name, value);
+			});
+	}
+
+	void OpenGLShader::Set(const std::string& name, const glm::mat3& matrix)
+	{
+		Renderer::Submit([=]() {
+			UploadUniformMat3(name, matrix);
+			});
+	}
+
+	void OpenGLShader::Set(const std::string& name, const glm::mat4& matrix)
+	{
+		Renderer::Submit([=]() {
+			UploadUniformMat4(name, matrix);
+			});
 	}
 
 	void OpenGLShader::AddShaderReloadedCallback(const ShaderReloadedCallback& callback)
@@ -973,4 +1029,6 @@ namespace Engine
 
 		m_RendererID = program;
 	}
+
+
 }

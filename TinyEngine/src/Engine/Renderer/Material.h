@@ -15,23 +15,28 @@ namespace Engine
 		TwoSided	= BIT(3)
 	};
 
+	/// <summary>
+	/// Material
+	/// </summary>
 	class Material
 	{
 		friend class MaterialInstance;
 
 	public:
-		static Ref<Material> Create(const Ref<Shader>& shader);
+		static Ref<Material> Create(const Ref<Shader>& shader, const std::string& name = "Material");
 
-		Material(const Ref<Shader>& shader);
+		Material(const Ref<Shader>& shader, const std::string& name = "Material");
 		virtual ~Material();
 
 		void Bind();
 
+		const std::string GetName() const { return m_Name; }
 		uint32_t GetFlags() const { return m_MaterialFlags; }
 		void SetFlags(MaterialFlag flag) { m_MaterialFlags |= (uint32_t)flag; }
 
 		Ref<Shader> GetShader() { return m_Shader; }
 
+		//Set material values
 		template<typename T>
 		void Set(const std::string& name, const T& value)
 		{
@@ -62,6 +67,7 @@ namespace Engine
 			Set(name, (const Ref<Texture>&)texture);
 		}
 
+		//Get material values
 		template<typename T>
 		T& Get(const std::string& name)
 		{
@@ -70,7 +76,6 @@ namespace Engine
 			auto& buffer = GetUniformBufferTarget(uniform);
 			return buffer.Read<T>(uniform->GetOffset());
 		}
-
 		template<typename T>
 		Ref<T> GetResource(const std::string& name)
 		{
@@ -81,47 +86,52 @@ namespace Engine
 			return m_Textures[slot];
 		}
 
+		ShaderUniform* FindShaderUniform(const std::string& name);
+		ShaderResource* FindShaderResource(const std::string& name);
+
 	private:
 		void AllocateStorage();
 		void OnShaderReloaded();
 		void BindTextures();
 
-		ShaderUniform* FindShaderUniform(const std::string& name);
-		ShaderResource* FindShaderResource(const std::string& name);
 		Buffer& GetUniformBufferTarget(ShaderUniform* uniform);
 
 	private:
+		std::string m_Name;
 		Ref<Shader> m_Shader;
 		uint32_t m_MaterialFlags;
 
-		//该Material所拥有的MaterialInstance
+		//Material所拥有的MaterialInstance
 		std::unordered_set<MaterialInstance*> m_MaterialInstances;
 
+		//Material具有的属性、资源
 		Buffer m_VSUniformStorageBuffer;
 		Buffer m_PSUniformStorageBuffer;
 		std::vector<Ref<Texture>> m_Textures;
 	};
 
 	/// <summary>
-	/// Material实例。Material与MaterialInstance之间构成一对多关系，用于具体的Mesh
+	/// Material实例。Material与MaterialInstance之间构成一对多关系，用于具体的Mesh。
 	/// </summary>
 	class MaterialInstance
 	{
 		friend class Material;
 
 	public:
-		static Ref<MaterialInstance> Create(const Ref<Material>& material, const std::string& name = "");
+		static Ref<MaterialInstance> Create(const Ref<Material>& material, const std::string& name = "MaterialInstance");
 
-		MaterialInstance(const Ref<Material>& material, const std::string& name = "");
+		MaterialInstance(const Ref<Material>& material, const std::string& name = "MaterialInstance");
 		virtual ~MaterialInstance();
 
 		void Bind();
+
 		const std::string& GetName() const { return m_Name; }
 		Ref<Shader> GetShader() { return m_Material->GetShader(); }
 		uint32_t GetFlags() const { return m_Material->GetFlags(); }
 		bool GetFlag(MaterialFlag flag) const { return (uint32_t)flag & m_Material->GetFlags(); }
 		void SetFlag(MaterialFlag flag, bool value = true);
 
+		//Set material instance values
 		template <typename T>
 		void Set(const std::string& name, const T& value)
 		{
@@ -160,6 +170,7 @@ namespace Engine
 			Set(name, (const Ref<Texture>&)texture);
 		}
 
+		//Get material instance values
 		template<typename T>
 		T& Get(const std::string& name)
 		{
@@ -168,7 +179,6 @@ namespace Engine
 			auto& buffer = GetUniformBufferTarget(uniform);
 			return buffer.Read<T>(uniform->GetOffset());
 		}
-
 		template<typename T>
 		Ref<T> GetResource(const std::string& name)
 		{
@@ -176,20 +186,6 @@ namespace Engine
 			ENGINE_ASSERT(resource, "Conld not find uniform in shader!");
 			uint32_t slot = resource->GetRegister();
 			ENGINE_ASSERT(slot < m_Textures.size(), "Texture slot is invalid!");
-			return m_Textures[slot];
-		}
-
-		template<typename T>
-		Ref<T> TryGetResource(const std::string& name)
-		{
-			auto resource = m_Material->FindShaderResource(name);
-			if (!resource)
-				return nullptr;
-
-			uint32_t slot = resource->GetRegister();
-			if (slot >= m_Textures.size())
-				return nullptr;
-
 			return m_Textures[slot];
 		}
 

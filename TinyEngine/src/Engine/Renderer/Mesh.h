@@ -18,7 +18,7 @@ namespace Assimp {
 namespace Engine
 {
 
-#define MESH_DEBUG 1
+#define MESH_DEBUG 0
 #if MESH_DEBUG
 #define MESH_INFO(...) ENGINE_INFO(__VA_ARGS__)
 #else
@@ -62,6 +62,9 @@ namespace Engine
 		glm::mat4 Transform = glm::mat4(1.0f);
 	};
 
+	//------------------------------------------------------------------------------------
+	//Mesh
+	//------------------------------------------------------------------------------------
 	class Mesh
 	{
 		friend class Renderer;
@@ -72,16 +75,18 @@ namespace Engine
 		Mesh(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const glm::mat4& transform = glm::mat4(1.0f));
 		~Mesh();
 
-		void OnUpdate(Timestep ts);
-		void DumpVertexBuffer();
-
 		const std::string& GetFilePath() const { return m_FilePath; }
 		std::vector<Submesh>& GetSubmeshes() { return m_Submeshes; }
 		const std::vector<Submesh>& GetSubmeshes() const { return m_Submeshes; }
 		const std::vector<Vertex>& GetStaticVertices() const { return m_StaticVertices; }
 		const std::vector<Index>& GetIndices() const { return m_Indices; }
-
+		/// <summary>
+		/// 获取Material
+		/// </summary>
 		Ref<Material> GetMaterial() { return m_BaseMaterial; }
+		/// <summary>
+		/// 获取Material Instances
+		/// </summary>
 		std::vector<Ref<MaterialInstance>> GetMaterials() { return m_Materials; }
 
 	private:
@@ -106,6 +111,7 @@ namespace Engine
 		std::vector<Ref<MaterialInstance>> m_Materials;
 		std::vector<Ref<Texture2D>> m_Textures;
 
+		//Assimp
 		std::unique_ptr<Assimp::Importer> m_Importer;
 		const aiScene* m_Scene;
 	};

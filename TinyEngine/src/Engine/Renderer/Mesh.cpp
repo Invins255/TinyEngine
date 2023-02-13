@@ -16,7 +16,7 @@
 
 namespace Engine
 {
-    glm::mat4 AssimpMat4ToMat4(const aiMatrix4x4& matrix)
+    static glm::mat4 AssimpMat4ToMat4(const aiMatrix4x4& matrix)
     {
         glm::mat4 result;
         //the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
@@ -75,6 +75,7 @@ namespace Engine
 
         //TODO: Change to a better default shader
         m_MeshShader = Renderer::GetShaderLibrary()->Get("BlinnPhong");
+        
         m_BaseMaterial = Material::Create(m_MeshShader);
         m_BaseMaterial->SetFlags(MaterialFlag::DepthTest);
 
@@ -82,6 +83,7 @@ namespace Engine
         uint32_t indexCount = 0;
 
         //TODO: Load animated mesh 
+        //Load meshes
         m_Submeshes.reserve(m_Scene->mNumMeshes);
         for (uint32_t i = 0; i < m_Scene->mNumMeshes; i++)
         {
@@ -128,7 +130,7 @@ namespace Engine
 
         TraverseNodes(m_Scene->mRootNode);
         
-        //Materials
+        //Load materials
         if (m_Scene->HasMaterials())
         {
             MESH_INFO("Mesh: ({0}) materials", filename);
@@ -256,10 +258,11 @@ namespace Engine
                 //TODO: Other textures
             }
         }
-
+        
         m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), m_StaticVertices.size() * sizeof(Vertex));
         m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), m_Indices.size() * sizeof(Index));
-        //VertexBuffer layout
+        
+        //Set vertexBuffer layout
         BufferLayout vertexLayout;
         vertexLayout = {
             { ShaderDataType::Float3, "a_Position" },
@@ -292,14 +295,17 @@ namespace Engine
 
         //TEMP
         m_MeshShader = Renderer::GetShaderLibrary()->Get("BlinnPhong");
+        
         m_BaseMaterial = Material::Create(m_MeshShader);
         m_BaseMaterial->SetFlags(MaterialFlag::DepthTest);
+
         auto mi = MaterialInstance::Create(m_BaseMaterial);
         mi->Set("u_AlbedoColor", glm::vec3(0.6f, 0.6f, 0.6f));
         m_Materials.push_back(mi);
 
         m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), m_StaticVertices.size() * sizeof(Vertex));
         m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), m_Indices.size() * sizeof(Index));
+        
         //VertexBuffer layout
         BufferLayout vertexLayout;
         vertexLayout = {
@@ -315,15 +321,6 @@ namespace Engine
     }
 
     Mesh::~Mesh()
-    {
-    }
-
-    void Mesh::OnUpdate(Timestep ts)
-    {
-        //TODO: Animate
-    }
-
-    void Mesh::DumpVertexBuffer()
     {
     }
 

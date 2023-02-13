@@ -27,7 +27,10 @@ namespace Engine
 		{
 			m_Projection = glm::ortho(-width * 0.5f, width * 0.5f, -height * 0.5f, height * 0.5f, nearClip, farClip);
 		}
-	
+		void SetOrthographicProjection(float size, float nearClip, float farClip)
+		{
+			m_Projection = glm::ortho(-size * 0.5f, size * 0.5f, -size * 0.5f, size * 0.5f, nearClip, farClip);
+		}
 	protected:
 		glm::mat4 m_Projection = glm::mat4(1.0f);
 	};

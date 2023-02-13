@@ -6,12 +6,12 @@ namespace Engine
     //--------------------------------------------------------------------------------
     //Material
     //--------------------------------------------------------------------------------
-    Ref<Material> Material::Create(const Ref<Shader>& shader)
+    Ref<Material> Material::Create(const Ref<Shader>& shader, const std::string& name)
     {
-        return CreateRef<Material>(shader);
+        return CreateRef<Material>(shader, name);
     }
 
-    Material::Material(const Ref<Shader>& shader)
+    Material::Material(const Ref<Shader>& shader, const std::string& name)
         :m_Shader(shader)
     {
         m_MaterialFlags |= (uint32_t)MaterialFlag::DepthTest;
