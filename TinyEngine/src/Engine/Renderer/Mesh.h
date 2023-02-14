@@ -7,6 +7,9 @@
 #include "Engine/Renderer/Pipeline.h"
 #include "Engine/Renderer/Material.h"
 #include "Engine/Renderer/Shader.h"
+#include "Engine/Renderer/VertexArray.h"
+#include "Engine/Renderer/VertexBuffer.h"
+#include "Engine/Renderer/IndexBuffer.h"
 
 struct aiScene;
 struct aiNode;
@@ -97,10 +100,10 @@ namespace Engine
 
 		std::vector<Submesh> m_Submeshes;
 
-		//TODO: Use VertexArrayBuffer
-		Ref<Pipeline> m_Pipeline;
+		//Buffer
 		Ref<VertexBuffer> m_VertexBuffer;
 		Ref<IndexBuffer> m_IndexBuffer;
+		Ref<VertexArray> m_VertexArray;
 
 		std::vector<Vertex> m_StaticVertices;
 		std::vector<Index> m_Indices;

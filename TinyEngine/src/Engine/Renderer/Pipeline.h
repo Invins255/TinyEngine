@@ -9,8 +9,7 @@ namespace Engine
 {
 	struct PipelineSpecification
 	{
-		Ref<Shader> Shader;
-		BufferLayout Layout;
+		VertexBufferLayout Layout;
 	};
 
 	class Pipeline
@@ -22,10 +21,8 @@ namespace Engine
 
 		virtual PipelineSpecification& GetSpecification() = 0;
 		virtual const PipelineSpecification& GetSpecification() const = 0;
-		virtual uint32_t GetRendererID() const = 0;
 
-		virtual void Bind() = 0;
+		virtual void BindVertexLayout() const = 0;
 
-		virtual void Initialize() = 0;
 	};
 }

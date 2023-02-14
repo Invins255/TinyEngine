@@ -87,11 +87,11 @@ namespace Engine
 		s_Data->m_RendererAPI->SetViewport(0, 0, width, height);
 	}
 
-	void Renderer::SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial)
+	void Renderer::SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<Pipeline> pipeline, Ref<MaterialInstance> overrideMaterial)
 	{
-		//绑定顺序不可改变，否则导致顶点属性链接出错
 		mesh->m_VertexBuffer->Bind();
-		mesh->m_Pipeline->Bind();
+		mesh->m_VertexArray->Bind();
+		pipeline->BindVertexLayout();
 		mesh->m_IndexBuffer->Bind();
 
 		auto materials = mesh->GetMaterials();
@@ -100,11 +100,11 @@ namespace Engine
 			//Material
 			auto material = overrideMaterial ? overrideMaterial : materials[submesh.MaterialIndex];
 			auto shader = material->GetShader();
-			material->Set("u_Transform", transform * submesh.Transform);	
+			material->Set("u_Transform", transform * submesh.Transform);
 			material->Bind();
 
 			Renderer::Submit([submesh, material]
-				{					
+				{
 					if (material->GetFlag(MaterialFlag::DepthTest))
 						glEnable(GL_DEPTH_TEST);
 					else
@@ -122,11 +122,10 @@ namespace Engine
 						(void*)(sizeof(uint32_t) * submesh.BaseIndex),
 						submesh.BaseVertex
 					);
-					
+
 					RENDERCOMMAND_TRACE("RenderCommand: Submit mesh. Mesh: [{0}], Node: [{1}]", submesh.MeshName, submesh.NodeName);
 				}
 			);
 		}
 	}
-
 }

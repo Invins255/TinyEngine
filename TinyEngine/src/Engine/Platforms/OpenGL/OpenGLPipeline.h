@@ -12,15 +12,11 @@ namespace Engine
 
 		virtual PipelineSpecification& GetSpecification() override { return m_Specification; }
 		virtual const PipelineSpecification& GetSpecification() const override { return m_Specification; }
-		virtual uint32_t GetRendererID() const override { return m_VertexArrayRendererID; };
 
-		virtual void Bind() override;
+		virtual void BindVertexLayout() const override;
 		
-		virtual void Initialize() override;
-
 	private:
 		PipelineSpecification m_Specification;
-		uint32_t m_VertexArrayRendererID = 0;
 
 	};
 }

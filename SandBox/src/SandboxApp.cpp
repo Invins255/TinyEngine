@@ -27,7 +27,7 @@ public:
 
 		Engine::Ref<Engine::VertexBuffer> vertexBuffer;
 		vertexBuffer = Engine::VertexBuffer::Create(vertices, sizeof(vertices));
-		Engine::BufferLayout layout = {
+		Engine::VertexBufferLayout layout = {
 			{Engine::ShaderDataType::Float3, "a_Position"},
 			{Engine::ShaderDataType::Float2, "a_TexCoord"}
 		};

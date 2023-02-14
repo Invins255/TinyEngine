@@ -47,7 +47,6 @@ namespace Engine
 
 		static void OnWindowResize(uint32_t width, uint32_t height);
 
-		static void SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial = nullptr);
-
+		static void SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<Pipeline> pipeline, Ref<MaterialInstance> overrideMaterial = nullptr);
 	};
 }

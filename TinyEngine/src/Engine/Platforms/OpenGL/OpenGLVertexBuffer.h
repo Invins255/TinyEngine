@@ -16,18 +16,16 @@ namespace Engine
 		virtual ~OpenGLVertexBuffer();
 
 		virtual uint32_t GetRendererID() const override { return m_RendererID; }
+		virtual uint32_t GetSize() const override { return m_Size; }
+
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual const BufferLayout& GetLayout() const override { return m_Layout; }
-		virtual void SetLayout(const BufferLayout& layout) override { m_Layout = layout; }
-		virtual uint32_t GetSize() const override { return m_Size; }
 		virtual void SetData(void* data, uint32_t size, uint32_t offset = 0) override;
 
 	private:
 		uint32_t m_RendererID = 0;
 		uint32_t m_Size;
-		BufferLayout m_Layout;	
 		VertexBufferUsage m_Usage;
 
 		Buffer m_LocalData;

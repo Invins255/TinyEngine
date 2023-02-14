@@ -3,6 +3,7 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Renderer/RenderPass.h"
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Renderer/Pipeline.h"
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Light.h"
 #include "Engine/Renderer/MeshFactory.h"
@@ -36,6 +37,8 @@ namespace Engine
 		};
 		std::vector<DrawCommand> m_DrawList;
 
+		//Pipeline
+		Ref<Pipeline> m_Pipeline;
 	};
 	static Scope<SceneRendererData> s_Data;
 
@@ -54,6 +57,18 @@ namespace Engine
 		s_Data->m_RenderPass = RenderPass::Create(geoRenderPassSpec);
 
 		s_Data->m_SkyboxMesh = CreateRef<Mesh>("assets/models/Cube/Cube.fbx");
+
+		VertexBufferLayout vertexLayout;
+		vertexLayout = {
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float3, "a_Normal" },
+			{ ShaderDataType::Float3, "a_Tangent" },
+			{ ShaderDataType::Float3, "a_Binormal" },
+			{ ShaderDataType::Float2, "a_TexCoord" },
+		};
+		PipelineSpecification spec;
+		spec.Layout = vertexLayout;
+		s_Data->m_Pipeline = Pipeline::Create(spec);
 	}
 
 	void SceneRenderer::Shutdown()
@@ -118,7 +133,8 @@ namespace Engine
 			s_Data->m_SceneData.SkyboxMaterial->Set("u_Skybox", s_Data->m_SceneData.SceneEnvironment.SkyboxMap);
 			s_Data->m_SceneData.SkyboxMaterial->Set("u_ViewMatrix", glm::mat4(glm::mat3(sceneCamera.ViewMatrix)));
 			s_Data->m_SceneData.SkyboxMaterial->Set("u_ProjectionMatrix", sceneCamera.Camera.GetProjection());
-			Renderer::SubmitMesh(s_Data->m_SkyboxMesh, glm::mat4(1.0f), s_Data->m_SceneData.SkyboxMaterial);
+			
+			Renderer::SubmitMesh(s_Data->m_SkyboxMesh, glm::mat4(1.0f), s_Data->m_Pipeline, s_Data->m_SceneData.SkyboxMaterial);
 		}
 
 		//Render entities
@@ -134,7 +150,7 @@ namespace Engine
 			baseMaterial->Set("u_DirectionalLights", directionalLight); 
 
 			auto overrideMaterial = dc.Material;
-			Renderer::SubmitMesh(dc.Mesh, dc.Transform, overrideMaterial);
+			Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data->m_Pipeline);
 		}
 
 		Renderer::EndRenderPass();

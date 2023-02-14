@@ -36,9 +36,9 @@ namespace Engine
 	}
 
 	/// <summary>
-	/// Buffer布局中的数据元素，记录了一种数据元素（如坐标、颜色、法线）的数据类型、大小、布局中的偏移值等。
+	/// VertexBuffer布局中的数据元素，记录了一种数据元素（如坐标、颜色、法线）的数据类型、大小、布局中的偏移值等。
 	/// </summary>
-	struct BufferElement
+	struct VertexBufferElement
 	{
 		ShaderDataType Type;
 		std::string Name;
@@ -46,11 +46,11 @@ namespace Engine
 		uint32_t Offset;
 		bool Normalized;
 
-		BufferElement() :
+		VertexBufferElement() :
 			Type(ShaderDataType::None), Name(""), Size(0), Offset(0), Normalized(false)
 		{
 		}
-		BufferElement(ShaderDataType type, const std::string& name, bool normalized = false) :
+		VertexBufferElement(ShaderDataType type, const std::string& name, bool normalized = false) :
 			Type(type), Name(name), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized)
 		{
 		}
@@ -81,25 +81,25 @@ namespace Engine
 	};
 
 	/// <summary>
-	/// Buffer的数据布局，存储多个BufferElement，规定了数据的分布方式。
+	/// VertexBuffer的数据布局，存储多个BufferElement，规定了数据的分布方式。
 	/// </summary>
-	class BufferLayout
+	class VertexBufferLayout
 	{
 	public:
-		BufferLayout() = default;
-		BufferLayout(const std::initializer_list<BufferElement>& elements) :
+		VertexBufferLayout() = default;
+		VertexBufferLayout(const std::initializer_list<VertexBufferElement>& elements) :
 			m_Elements(elements) 
 		{
 			CalculateOffsetsAndStride();
 		}
 
-		const std::vector<BufferElement>& GetElements() const { return m_Elements; }
+		const std::vector<VertexBufferElement>& GetElements() const { return m_Elements; }
 		uint32_t GetStride() const { return m_Stride; }
 
-		std::vector<BufferElement>::iterator begin() { return m_Elements.begin(); }
-		std::vector<BufferElement>::iterator end() { return m_Elements.end(); }
-		std::vector<BufferElement>::const_iterator begin() const { return m_Elements.begin(); }
-		std::vector<BufferElement>::const_iterator end() const { return m_Elements.end(); }
+		std::vector<VertexBufferElement>::iterator begin() { return m_Elements.begin(); }
+		std::vector<VertexBufferElement>::iterator end() { return m_Elements.end(); }
+		std::vector<VertexBufferElement>::const_iterator begin() const { return m_Elements.begin(); }
+		std::vector<VertexBufferElement>::const_iterator end() const { return m_Elements.end(); }
 	private:
 		/// <summary>
 		/// 计算各个Element的在布局中的偏移量以及布局整体大小
@@ -116,7 +116,7 @@ namespace Engine
 		}
 
 	private:
-		std::vector<BufferElement> m_Elements;
+		std::vector<VertexBufferElement> m_Elements;
 		uint32_t m_Stride = 0;
 	};
 
@@ -134,13 +134,12 @@ namespace Engine
 		virtual ~VertexBuffer() = default;
 
 		virtual uint32_t GetRendererID() const = 0;
+		virtual uint32_t GetSize() const = 0;
+
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		virtual const BufferLayout& GetLayout() const = 0;
-		virtual void SetLayout(const BufferLayout& layout) = 0;
 		virtual void SetData(void* data, uint32_t size, uint32_t offset = 0) = 0;
-		virtual uint32_t GetSize() const = 0;
 
 		/// <summary>
 		/// VertexBuffer工厂函数

@@ -29,27 +29,16 @@ namespace Engine
     OpenGLPipeline::OpenGLPipeline(const PipelineSpecification& spec)
 		:m_Specification(spec)
     {
-		Initialize();
     }
 
     OpenGLPipeline::~OpenGLPipeline()
     {
-		GLuint rendererID = m_VertexArrayRendererID;
-		Renderer::Submit([rendererID]()
-			{
-				RENDERCOMMAND_TRACE("RenderCommand: Destroy vertexArray({0})", rendererID);
-				glDeleteVertexArrays(1, &rendererID);
-			}
-		);
     }
 
-    void OpenGLPipeline::Bind()
-    {
+	void OpenGLPipeline::BindVertexLayout() const
+	{
 		Renderer::Submit([this]()
 			{
-				RENDERCOMMAND_TRACE("RenderCommand: Bind vertexArray({0})", m_VertexArrayRendererID);
-				glBindVertexArray(m_VertexArrayRendererID);
-
 				const auto& layout = m_Specification.Layout;
 				uint32_t attribIndex = 0;
 				for (const auto& element : layout)
@@ -79,23 +68,6 @@ namespace Engine
 					}
 					attribIndex++;
 				}
-			}
-		);
-    }
-
-    void OpenGLPipeline::Initialize()
-    {
-		ENGINE_ASSERT(m_Specification.Layout.GetElements().size(), "Layout is empty!");
-
-		Renderer::Submit([this]()
-			{
-				if (m_VertexArrayRendererID)
-					glDeleteVertexArrays(1, &m_VertexArrayRendererID);
-				
-				glGenVertexArrays(1, &m_VertexArrayRendererID);
-
-				RENDERCOMMAND_TRACE("RenderCommand: Construct vertexArray({0})", m_VertexArrayRendererID);
-			}
-		);
-    }
+			});
+	}
 }
