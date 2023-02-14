@@ -262,6 +262,14 @@ namespace Engine
         m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), m_StaticVertices.size() * sizeof(Vertex));
         m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), m_Indices.size() * sizeof(Index));
         m_VertexArray = VertexArray::Create();
+
+        m_BaseVertexLayout = {
+            { ShaderDataType::Float3, "a_Position" },
+            { ShaderDataType::Float3, "a_Normal" },
+            { ShaderDataType::Float3, "a_Tangent" },
+            { ShaderDataType::Float3, "a_Binormal" },
+            { ShaderDataType::Float2, "a_TexCoord" },
+        };
     }
 
     Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const glm::mat4& transform)
@@ -294,6 +302,14 @@ namespace Engine
         m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), m_StaticVertices.size() * sizeof(Vertex));
         m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), m_Indices.size() * sizeof(Index));
         m_VertexArray = VertexArray::Create();
+
+        m_BaseVertexLayout = {
+            { ShaderDataType::Float3, "a_Position" },
+            { ShaderDataType::Float3, "a_Normal" },
+            { ShaderDataType::Float3, "a_Tangent" },
+            { ShaderDataType::Float3, "a_Binormal" },
+            { ShaderDataType::Float2, "a_TexCoord" },
+        };
     }
 
     Mesh::~Mesh()

@@ -33,7 +33,7 @@ namespace Engine
 		uint32_t rendererID = m_RendererID;
 		Renderer::Submit([rendererID]()
 			{
-				RENDERCOMMAND_TRACE("RenderCommand: Destroy shader. ID: {1}", rendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Destroy shader({1})", rendererID);
 
 				glDeleteProgram(rendererID);
 			}
@@ -384,7 +384,7 @@ namespace Engine
 
 				m_Loaded = true;
 
-				RENDERCOMMAND_TRACE("RenderCommand: Construct shader. Name: [{0}], ID: ({1})", m_Name, m_RendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Construct shader. Name: '{0}', ID: ({1})", m_Name, m_RendererID);
 			}
 		);
 	}

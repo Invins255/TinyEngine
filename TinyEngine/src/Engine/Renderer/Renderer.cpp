@@ -1,7 +1,11 @@
 #include "pch.h"
 #include "Renderer.h"
-#include "Engine/Renderer/SceneRenderer.h"
 #include "Engine/Platforms/OpenGL/OpenGLRendererAPI.h"
+#include "Engine/Renderer/SceneRenderer.h"
+#include "Engine/Renderer/VertexBuffer.h"
+#include "Engine/Renderer/IndexBuffer.h"
+#include "Engine/Renderer/VertexArray.h"
+#include "Engine/Renderer/Pipeline.h"
 
 #include <glad/glad.h>
 
@@ -13,6 +17,12 @@ namespace Engine
 		Scope<RenderCommandQueue> m_CommandQueue;
 		Scope<ShaderLibrary> m_ShaderLibrary;
 		Ref<RenderPass> m_ActiveRenderPass;
+
+		Ref<VertexBuffer> m_FullScreenQuadVertexBuffer;
+		Ref<IndexBuffer> m_FullScreenQuadIndexBuffer;
+		Ref<VertexArray> m_FullScreenQuadVertexArray;
+		Ref<Pipeline> m_FullScreenQuadPipeline;
+		Ref<MaterialInstance> m_FullScreenQuadMaterial;
 	};
 	static Scope<RendererData> s_Data;
 
@@ -45,8 +55,45 @@ namespace Engine
 		//TEMP
 		s_Data->m_ShaderLibrary->Load("assets/shaders/BlinnPhong.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/Skybox.glsl");
+		s_Data->m_ShaderLibrary->Load("assets/shaders/FullScreenQuad.glsl");
 
 		SceneRenderer::Init();
+
+		//Create full screen quad
+		float x = -1;
+		float y = -1;
+		float width = 2, height = 2;
+		struct QuadVertex
+		{
+			glm::vec3 Position;
+			glm::vec2 TexCoord;
+		};
+
+		QuadVertex* data = new QuadVertex[4];
+		data[0].Position = glm::vec3(x, y, 0.0f);
+		data[0].TexCoord = glm::vec2(0, 0);
+		data[1].Position = glm::vec3(x + width, y, 0.0f);
+		data[1].TexCoord = glm::vec2(1, 0);
+		data[2].Position = glm::vec3(x + width, y + height, 0.0f);
+		data[2].TexCoord = glm::vec2(1, 1);
+		data[3].Position = glm::vec3(x, y + height, 0.0f);
+		data[3].TexCoord = glm::vec2(0, 1);
+
+		uint32_t indices[6] = { 0, 1, 2, 2, 3, 0, };
+
+		s_Data->m_FullScreenQuadVertexBuffer = VertexBuffer::Create(data, 4 * sizeof(QuadVertex));
+		s_Data->m_FullScreenQuadIndexBuffer = IndexBuffer::Create(indices, 6 * sizeof(uint32_t));
+		s_Data->m_FullScreenQuadVertexArray = VertexArray::Create();
+
+		PipelineSpecification spec;
+		spec.Layout = {
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float2, "a_TexCoord" }
+		};
+		s_Data->m_FullScreenQuadPipeline = Pipeline::Create(spec);
+
+		auto shader = GetShaderLibrary().Get("FullScreenQuad");
+		s_Data->m_FullScreenQuadMaterial = MaterialInstance::Create(Material::Create(shader));
 	}
 
 	void Renderer::Shutdown()
@@ -99,7 +146,6 @@ namespace Engine
 		{
 			//Material
 			auto material = overrideMaterial ? overrideMaterial : materials[submesh.MaterialIndex];
-			auto shader = material->GetShader();
 			material->Set("u_Transform", transform * submesh.Transform);
 			material->Bind();
 
@@ -123,9 +169,29 @@ namespace Engine
 						submesh.BaseVertex
 					);
 
-					RENDERCOMMAND_TRACE("RenderCommand: Submit mesh. Mesh: [{0}], Node: [{1}]", submesh.MeshName, submesh.NodeName);
+					RENDERCOMMAND_TRACE("RenderCommand: Submit mesh. Mesh: '{0}', Node: '{1}'", submesh.MeshName, submesh.NodeName);
 				}
 			);
 		}
 	}
+
+	void Renderer::SubmitFullScreenQuad(uint32_t textureID, Ref<MaterialInstance> overrideMaterial)
+	{
+		s_Data->m_FullScreenQuadVertexBuffer->Bind();
+		s_Data->m_FullScreenQuadVertexArray->Bind();
+		s_Data->m_FullScreenQuadPipeline->BindVertexLayout();
+		s_Data->m_FullScreenQuadIndexBuffer->Bind();
+
+		//auto& material = overrideMaterial ? overrideMaterial : s_Data->m_FullScreenQuadMaterial;
+		auto& material = s_Data->m_FullScreenQuadMaterial;
+		material->Bind();
+
+		Renderer::Submit([=]()
+			{
+				glBindTexture(GL_TEXTURE_2D, textureID);
+
+				s_Data->m_RendererAPI->DrawElements(6, PrimitiveType::Triangles, false);
+			});
+	}
+
 }

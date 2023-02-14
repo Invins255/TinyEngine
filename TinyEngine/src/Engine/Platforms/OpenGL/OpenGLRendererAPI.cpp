@@ -24,6 +24,18 @@ namespace Engine{
 		}
 	}
 
+	static GLenum GetGLPrimitiveType(PrimitiveType type)
+	{
+		switch (type)
+		{
+		case Engine::PrimitiveType::Triangles:	return GL_TRIANGLES;
+		case Engine::PrimitiveType::Lines:		return GL_LINES;
+		default:
+			ENGINE_ASSERT(false, "Unknown primitive type!");
+			return 0;
+		}
+	}
+
 	void OpenGLRendererAPI::Init()
 	{
 		//Debug Message
@@ -52,5 +64,16 @@ namespace Engine{
 	void OpenGLRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
 		glViewport(x, y, width, height);
+	}
+
+	void OpenGLRendererAPI::DrawElements(uint32_t count, PrimitiveType type, bool depthTest)
+	{
+		if (!depthTest)
+			glDisable(GL_DEPTH_TEST);
+
+		glDrawElements(GetGLPrimitiveType(type), count, GL_UNSIGNED_INT, nullptr);
+
+		if (!depthTest)
+			glEnable(GL_DEPTH_TEST);
 	}
 }

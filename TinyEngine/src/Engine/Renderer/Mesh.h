@@ -80,6 +80,7 @@ namespace Engine
 
 		const std::string& GetFilePath() const { return m_FilePath; }
 		std::vector<Submesh>& GetSubmeshes() { return m_Submeshes; }
+		const VertexBufferLayout& GetBaseVertexLayout() { return m_BaseVertexLayout; }
 		const std::vector<Submesh>& GetSubmeshes() const { return m_Submeshes; }
 		const std::vector<Vertex>& GetStaticVertices() const { return m_StaticVertices; }
 		const std::vector<Index>& GetIndices() const { return m_Indices; }
@@ -104,6 +105,8 @@ namespace Engine
 		Ref<VertexBuffer> m_VertexBuffer;
 		Ref<IndexBuffer> m_IndexBuffer;
 		Ref<VertexArray> m_VertexArray;
+
+		VertexBufferLayout m_BaseVertexLayout;
 
 		std::vector<Vertex> m_StaticVertices;
 		std::vector<Index> m_Indices;

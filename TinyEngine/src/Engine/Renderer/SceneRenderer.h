@@ -31,7 +31,8 @@ namespace Engine
 		static uint32_t GetFinalColorBufferRendererID();
 		static Ref<FrameBuffer> GetFinalFrameBuffer();
 	private:
-		static void RenderPass();
+		static void GeometryPass();
+		static void CompositePass();
 
 		static void FlushDrawList();
 	};

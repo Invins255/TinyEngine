@@ -26,7 +26,9 @@ namespace Engine
 		}m_SceneData;
 
 		//TEMP
-		Ref<RenderPass> m_RenderPass;
+		Ref<RenderPass> m_GeometryPass;
+		Ref<RenderPass> m_CompositePass;
+
 		Ref<Mesh> m_SkyboxMesh;
 
 		struct DrawCommand
@@ -46,18 +48,28 @@ namespace Engine
 	{		
 		s_Data = CreateScope<SceneRendererData>();
 		
-		//TEMP
+		//Geometry pass
 		FrameBufferSpecification geoFrameBufferSpec;
 		geoFrameBufferSpec.Width = 1280;
 		geoFrameBufferSpec.Height = 720;
 		geoFrameBufferSpec.ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
-		geoFrameBufferSpec.Attachments = { FrameBufferTextureFormat::RGBA16F, FrameBufferTextureFormat::RGBA16F, FrameBufferTextureFormat::DEPTH24STENCIL8 };
+		geoFrameBufferSpec.Attachments = { FrameBufferTextureFormat::RGBA16F, FrameBufferTextureFormat::DEPTH24STENCIL8 };
 		RenderPassSpecification geoRenderPassSpec;
 		geoRenderPassSpec.TargetFramebuffer = FrameBuffer::Create(geoFrameBufferSpec);
-		s_Data->m_RenderPass = RenderPass::Create(geoRenderPassSpec);
+		s_Data->m_GeometryPass = RenderPass::Create(geoRenderPassSpec);
+		//Composite pass
+		FrameBufferSpecification compFrameBufferSpec;
+		compFrameBufferSpec.Width = 1280;
+		compFrameBufferSpec.Height = 720;
+		compFrameBufferSpec.ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
+		compFrameBufferSpec.Attachments = { FrameBufferTextureFormat::RGBA16F };
+		RenderPassSpecification compRenderPassSpec;
+		compRenderPassSpec.TargetFramebuffer = FrameBuffer::Create(compFrameBufferSpec);
+		s_Data->m_CompositePass = RenderPass::Create(compRenderPassSpec);
 
 		s_Data->m_SkyboxMesh = CreateRef<Mesh>("assets/models/Cube/Cube.fbx");
 
+		//Create pipeline
 		VertexBufferLayout vertexLayout;
 		vertexLayout = {
 			{ ShaderDataType::Float3, "a_Position" },
@@ -100,7 +112,8 @@ namespace Engine
 
 	void SceneRenderer::SetViewportSize(uint32_t width, uint32_t height)
 	{
-		s_Data->m_RenderPass->GetSpecification().TargetFramebuffer->Resize(width, height);
+		s_Data->m_GeometryPass->GetSpecification().TargetFramebuffer->Resize(width, height);
+		s_Data->m_CompositePass->GetSpecification().TargetFramebuffer->Resize(width, height);
 	}
 
 	void SceneRenderer::SubmitMesh(Ref<Mesh>& mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial)
@@ -110,17 +123,17 @@ namespace Engine
 
 	uint32_t SceneRenderer::GetFinalColorBufferRendererID()
 	{
-		return s_Data->m_RenderPass->GetSpecification().TargetFramebuffer->GetColorAttachmentID();
+		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer->GetColorAttachmentID();
 	}
 
 	Ref<FrameBuffer> SceneRenderer::GetFinalFrameBuffer()
 	{
-		return s_Data->m_RenderPass->GetSpecification().TargetFramebuffer;
+		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer;
 	}
 
-	void SceneRenderer::RenderPass()
+	void SceneRenderer::GeometryPass()
 	{
-		Renderer::BeginRenderPass(s_Data->m_RenderPass);
+		Renderer::BeginRenderPass(s_Data->m_GeometryPass);
 
 		//Camera
 		auto& sceneCamera = s_Data->m_SceneData.SceneCamera;
@@ -156,12 +169,21 @@ namespace Engine
 		Renderer::EndRenderPass();
 	}
 
+	void SceneRenderer::CompositePass()
+	{
+		Renderer::BeginRenderPass(s_Data->m_CompositePass);
+
+		Renderer::SubmitFullScreenQuad(s_Data->m_GeometryPass->GetSpecification().TargetFramebuffer->GetColorAttachmentID());
+
+		Renderer::EndRenderPass();
+	}
+
 	void SceneRenderer::FlushDrawList()
 	{
 		ENGINE_ASSERT(!s_Data->m_ActiveScene, "");
 
-		//TEMP
-		RenderPass();
+		GeometryPass();
+		CompositePass();
 
 		s_Data->m_DrawList.clear();
 	}
