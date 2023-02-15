@@ -38,9 +38,7 @@ namespace Engine
 
 		const EntityMap& GetEntityMap() const { return m_EntityIDMap; }
 		Entity GetMainCameraEntity();
-		Light& GetLight() { return m_Light; }
-		const Light& GetLight() const { return m_Light; }
-		
+
 		const Environment& GetEnvironment() const { return m_Environment; }
 		void SetEnvironment(Environment& environment) { m_Environment = environment; }
 		void SetSkybox(const Ref<TextureCube>& skybox);
@@ -56,9 +54,6 @@ namespace Engine
 
 		EntityMap m_EntityIDMap;
 
-		//Lights
-		Light m_Light;
-		float m_LightMultiplier = 1.0f;
 		LightEnvironment m_LightEnvironment;
 
 		//Environment

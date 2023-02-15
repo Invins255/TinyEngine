@@ -17,15 +17,14 @@ namespace Engine
 		{
 			SceneRendererCamera SceneCamera;
 
-			Light ActiveLight;
 			LightEnvironment SceneLightEnvironment;
-
 			Environment SceneEnvironment;
 			Ref<MaterialInstance> SkyboxMaterial;
 
 		}m_SceneData;
 
 		//TEMP
+		Ref<RenderPass> m_ShadowMapPass;
 		Ref<RenderPass> m_GeometryPass;
 		Ref<RenderPass> m_CompositePass;
 
@@ -38,6 +37,7 @@ namespace Engine
 			glm::mat4 Transform;
 		};
 		std::vector<DrawCommand> m_DrawList;
+		std::vector<DrawCommand> m_ShadowPassDrawList;
 
 		//Pipeline
 		Ref<Pipeline> m_Pipeline;
@@ -48,6 +48,15 @@ namespace Engine
 	{		
 		s_Data = CreateScope<SceneRendererData>();
 		
+		//ShadowMap pass
+		FrameBufferSpecification shadowMapFrameBufferSpec;
+		shadowMapFrameBufferSpec.Width = 2048;
+		shadowMapFrameBufferSpec.Height = 2048;
+		shadowMapFrameBufferSpec.ClearColor = { 0.0f,0.0f,0.0f,1.0f };
+		shadowMapFrameBufferSpec.Attachments = { FrameBufferTextureFormat::DEPTH32F };
+		RenderPassSpecification shadowMapRenderPassSpec;
+		shadowMapRenderPassSpec.TargetFramebuffer = FrameBuffer::Create(shadowMapFrameBufferSpec);
+		s_Data->m_ShadowMapPass = RenderPass::Create(shadowMapRenderPassSpec);
 		//Geometry pass
 		FrameBufferSpecification geoFrameBufferSpec;
 		geoFrameBufferSpec.Width = 1280;
@@ -67,7 +76,7 @@ namespace Engine
 		compRenderPassSpec.TargetFramebuffer = FrameBuffer::Create(compFrameBufferSpec);
 		s_Data->m_CompositePass = RenderPass::Create(compRenderPassSpec);
 
-		s_Data->m_SkyboxMesh = CreateRef<Mesh>("assets/models/Cube/Cube.fbx");
+		s_Data->m_SkyboxMesh = MeshFactory::CreateBox({ 2.0f, 2.0f, 2.0f });
 
 		//Create pipeline
 		VertexBufferLayout vertexLayout;
@@ -94,10 +103,8 @@ namespace Engine
 
 		s_Data->m_ActiveScene = scene;
 		//Get scene data
-		s_Data->m_SceneData.SceneCamera = camera;
-		s_Data->m_SceneData.ActiveLight = scene->m_Light;
+		s_Data->m_SceneData.SceneCamera = camera;	
 		s_Data->m_SceneData.SceneLightEnvironment = scene->m_LightEnvironment;
-
 		s_Data->m_SceneData.SceneEnvironment = scene->m_Environment;
 		s_Data->m_SceneData.SkyboxMaterial = scene->m_SkyboxMaterial;
 	}
@@ -119,6 +126,7 @@ namespace Engine
 	void SceneRenderer::SubmitMesh(Ref<Mesh>& mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial)
 	{
 		s_Data->m_DrawList.push_back({ mesh, overrideMaterial, transform });
+		s_Data->m_ShadowPassDrawList.push_back({ mesh, overrideMaterial, transform });
 	}
 
 	uint32_t SceneRenderer::GetFinalColorBufferRendererID()
@@ -129,6 +137,25 @@ namespace Engine
 	Ref<FrameBuffer> SceneRenderer::GetFinalFrameBuffer()
 	{
 		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer;
+	}
+
+	void SceneRenderer::ShadowMapPass()
+	{
+		auto& directionalLights = s_Data->m_SceneData.SceneLightEnvironment.DirectionalLights;
+		if (directionalLights[0].Intensity == 0.0f || !directionalLights[0].CastShadows)
+		{
+			//Clear shadow map
+			Renderer::BeginRenderPass(s_Data->m_ShadowMapPass);
+			Renderer::EndRenderPass();
+
+			return;
+		}
+
+		Renderer::BeginRenderPass(s_Data->m_ShadowMapPass);
+
+		//TODO: ShadowMap Pass
+
+		Renderer::EndRenderPass();
 	}
 
 	void SceneRenderer::GeometryPass()
@@ -158,9 +185,10 @@ namespace Engine
 			baseMaterial->Set("u_CameraPosition", cameraPosition);
 			//TODO: More uniforms 
 			
-			//Set lights
+			//Set lights 
+			//TODO: 目前只使用了1个方向光, 需要补充为4个
 			auto directionalLight = s_Data->m_SceneData.SceneLightEnvironment.DirectionalLights[0];	//BUG: directionalLight方向可能出错
-			baseMaterial->Set("u_DirectionalLights", directionalLight); 
+			baseMaterial->Set("u_DirectionalLight", directionalLight); 
 
 			auto overrideMaterial = dc.Material;
 			Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data->m_Pipeline);
@@ -180,11 +208,14 @@ namespace Engine
 
 	void SceneRenderer::FlushDrawList()
 	{
-		ENGINE_ASSERT(!s_Data->m_ActiveScene, "");
+		ENGINE_ASSERT(!s_Data->m_ActiveScene, "No active scene!");
 
+		ShadowMapPass();
 		GeometryPass();
 		CompositePass();
 
 		s_Data->m_DrawList.clear();
+		s_Data->m_ShadowPassDrawList.clear();
+		s_Data->m_SceneData = {};
 	}
 }

@@ -68,14 +68,14 @@ namespace Engine
 		SceneCamera& camera = cameraEntity.GetComponent<CameraComponent>();
 		glm::mat4 cameraViewMatrix = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
 
-		//Process lights
+		//Process directional lights
 		m_LightEnvironment = LightEnvironment();
 		auto& lights = m_Registry.group<DirectionalLightComponent>(entt::get<TransformComponent>);
 		uint32_t directionalLightIndex = 0;
 		for (auto entity : lights)
 		{
 			if (directionalLightIndex >= 4) {
-				ENGINE_WARN("Too many directional lights!");
+				ENGINE_WARN("Too many directional lights! Only the first 4 lights are valid!");
 				break;
 			}
 
@@ -85,7 +85,8 @@ namespace Engine
 			{
 				direction,
 				lightComponent.Radiance,
-				lightComponent.Intensity
+				lightComponent.Intensity,
+				lightComponent.CastShadows
 			};
 		}
 

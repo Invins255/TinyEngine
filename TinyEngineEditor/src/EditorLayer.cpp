@@ -64,12 +64,12 @@ namespace Engine
             meshEntity.GetComponent<TransformComponent>().Scale = glm::vec3(0.5f, 0.5f, 0.5f);
         }
         
-        auto& camera = m_EditorScene->CreateEntity("Camera Entity");
+        auto& camera = m_EditorScene->CreateEntity("Camera");
         camera.AddComponent<CameraComponent>();
         camera.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 10.0f, 40.0f);
         camera.GetComponent<TransformComponent>().Rotation = glm::radians(glm::vec3(-15.0f, 0.0f, 0.0f));
 
-        auto& light = m_EditorScene->CreateEntity("Light Entity");
+        auto& light = m_EditorScene->CreateEntity("Directional Light");
         light.AddComponent<DirectionalLightComponent>();
         light.GetComponent<TransformComponent>().Rotation = glm::radians(glm::vec3(-180.0f, 0.0f, 0.0f));
     }

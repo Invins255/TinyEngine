@@ -44,7 +44,7 @@ struct DirectionalLight
 	float Multiplier;
 };
 
-uniform DirectionalLight u_DirectionalLights;
+uniform DirectionalLight u_DirectionalLight;
 uniform vec3 u_CameraPosition;
 
 uniform sampler2D u_AlbedoTexture;
@@ -54,12 +54,12 @@ uniform vec3 u_AlbedoColor;
 void main()
 {
 	float ambientStrength = 0.3;
-	vec3 ambient = ambientStrength * u_DirectionalLights.Radiance;
+	vec3 ambient = ambientStrength * u_DirectionalLight.Radiance;
 
 	vec3 normal = normalize(vs_Input.Normal);
-	vec3 lightDir = normalize(u_DirectionalLights.Direction); 
+	vec3 lightDir = normalize(u_DirectionalLight.Direction); 
 	float diff = max(dot(normal, lightDir), 0.0);
-	vec3 diffuse = diff * u_DirectionalLights.Radiance;
+	vec3 diffuse = diff * u_DirectionalLight.Radiance;
 
 	vec4 albedo = u_AlbedoTexToggle > 0.5 ? texture2D(u_AlbedoTexture, vs_Input.TexCoord) : vec4(u_AlbedoColor, 1.0);
 

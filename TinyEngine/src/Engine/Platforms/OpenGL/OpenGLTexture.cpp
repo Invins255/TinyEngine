@@ -42,7 +42,7 @@ namespace Engine
         }
         if (!m_Data.Data)
         {
-            ENGINE_ERROR("Could not read image {0}", path);
+            ENGINE_ERROR("Could not read image '{0}'", path);
             stbi_image_free(m_Data.Data);
             return;
         }
@@ -107,7 +107,7 @@ namespace Engine
                 }
                 stbi_image_free(m_Data.Data);
 
-                RENDERCOMMAND_TRACE("RenderCommand: Construct texture2D. Path: [{0}], ID: [{1}]", m_Path, m_RendererID);
+                RENDERCOMMAND_TRACE("RenderCommand: Construct texture2D. Path: '{0}', ID: ({1})", m_Path, m_RendererID);
             });
     }
 
@@ -139,7 +139,7 @@ namespace Engine
 
                 glBindTexture(GL_TEXTURE_2D, 0);
 
-                RENDERCOMMAND_TRACE("RenderCommand: Construct texture. ID: [{0}]", m_RendererID);
+                RENDERCOMMAND_TRACE("RenderCommand: Construct texture. ID: ({0})", m_RendererID);
             });
 
         m_Data.Allocate(width * height * Texture::GetBPP(m_Format));
@@ -150,7 +150,7 @@ namespace Engine
         uint32_t rendererID = m_RendererID;
         Renderer::Submit([rendererID]()
             {
-                RENDERCOMMAND_TRACE("RenderCommand: Destroy texture. ID: [{0}]", rendererID);
+                RENDERCOMMAND_TRACE("RenderCommand: Destroy texture({0})", rendererID);
                 glDeleteTextures(1, &rendererID);
             });
     }
@@ -164,7 +164,7 @@ namespace Engine
     {
         Renderer::Submit([this, slot]()
             {
-                RENDERCOMMAND_TRACE("RenderCommand: Bind texture. ID: [{0}]", m_RendererID);
+                RENDERCOMMAND_TRACE("RenderCommand: Bind texture({0})", m_RendererID);
                 glBindTextureUnit(slot, m_RendererID);
             });
     }
@@ -217,7 +217,7 @@ namespace Engine
             m_Data[i].Data = stbi_load(m_Path[i].c_str(), &width, &height, &channels, STBI_rgb);
             if (!m_Data[i].Data)
             {
-                ENGINE_ERROR("Could not read image {0}", m_Path[i]);
+                ENGINE_ERROR("Could not read image '{0}'", m_Path[i]);
                 for (uint32_t j = 0; j <= i; j++)
                     stbi_image_free(m_Data[j].Data);
                 return;
@@ -257,7 +257,7 @@ namespace Engine
                 for (uint32_t i = 0; i < 6; i++)
                     stbi_image_free(m_Data[i].Data);
 
-                RENDERCOMMAND_TRACE("RenderCommand: Construct textureCube. ID: [{0}]", m_RendererID);
+                RENDERCOMMAND_TRACE("RenderCommand: Construct textureCube. ID: ({0})", m_RendererID);
                 RENDERCOMMAND_TRACE("    Left:   {0}", m_Path[1]);
                 RENDERCOMMAND_TRACE("    Right:  {0}", m_Path[0]);
                 RENDERCOMMAND_TRACE("    Top:    {0}", m_Path[2]);

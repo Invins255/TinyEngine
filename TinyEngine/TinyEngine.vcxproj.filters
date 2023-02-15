@@ -988,6 +988,7 @@
     <ClInclude Include="src\Engine\Platforms\OpenGL\OpenGLIndexBuffer.h" />
     <ClInclude Include="src\Engine\Scene\Environment.h" />
     <ClInclude Include="src\Engine\ImGui\ImGuizmo.h" />
+    <ClInclude Include="src\Engine\Core\Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">

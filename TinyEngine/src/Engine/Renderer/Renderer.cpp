@@ -52,7 +52,7 @@ namespace Engine
 		s_Data->m_CommandQueue = CreateScope<RenderCommandQueue>();
 		s_Data->m_ShaderLibrary = CreateScope<ShaderLibrary>();
 		
-		//TEMP
+		//Load shader
 		s_Data->m_ShaderLibrary->Load("assets/shaders/BlinnPhong.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/Skybox.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/FullScreenQuad.glsl");
