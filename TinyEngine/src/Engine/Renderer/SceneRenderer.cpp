@@ -8,6 +8,8 @@
 #include "Engine/Renderer/Light.h"
 #include "Engine/Renderer/MeshFactory.h"
 
+#include <glad/glad.h>
+
 namespace Engine
 {
 	struct SceneRendererData
@@ -23,24 +25,29 @@ namespace Engine
 
 		}m_SceneData;
 
-		//TEMP
 		Ref<RenderPass> m_ShadowMapPass;
 		Ref<RenderPass> m_GeometryPass;
 		Ref<RenderPass> m_CompositePass;
 
 		Ref<Mesh> m_SkyboxMesh;
 
+		Ref<Material> m_ShadowMapMaterial;
+		uint32_t m_ShadowMapSampler;
+		glm::mat4 m_LightSpaceMatrix;
+
 		struct DrawCommand
 		{
 			Ref<Mesh> Mesh;
-			Ref<MaterialInstance> Material;
 			glm::mat4 Transform;
+			Ref<MaterialInstance> Material;
 		};
 		std::vector<DrawCommand> m_DrawList;
 		std::vector<DrawCommand> m_ShadowPassDrawList;
 
 		//Pipeline
-		Ref<Pipeline> m_Pipeline;
+		Ref<Pipeline> m_SkyboxPipeline;
+		Ref<Pipeline> m_ShadowMapPipeline;
+		Ref<Pipeline> m_GeometryPipeline;
 	};
 	static Scope<SceneRendererData> s_Data;
 
@@ -53,7 +60,7 @@ namespace Engine
 		shadowMapFrameBufferSpec.Width = 2048;
 		shadowMapFrameBufferSpec.Height = 2048;
 		shadowMapFrameBufferSpec.ClearColor = { 0.0f,0.0f,0.0f,1.0f };
-		shadowMapFrameBufferSpec.Attachments = { FrameBufferTextureFormat::DEPTH32F };
+		shadowMapFrameBufferSpec.Attachments = { FrameBufferTextureFormat::RGBA16F, FrameBufferTextureFormat::DEPTH32F };
 		RenderPassSpecification shadowMapRenderPassSpec;
 		shadowMapRenderPassSpec.TargetFramebuffer = FrameBuffer::Create(shadowMapFrameBufferSpec);
 		s_Data->m_ShadowMapPass = RenderPass::Create(shadowMapRenderPassSpec);
@@ -78,18 +85,63 @@ namespace Engine
 
 		s_Data->m_SkyboxMesh = MeshFactory::CreateBox({ 2.0f, 2.0f, 2.0f });
 
-		//Create pipeline
-		VertexBufferLayout vertexLayout;
-		vertexLayout = {
-			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float3, "a_Normal" },
-			{ ShaderDataType::Float3, "a_Tangent" },
-			{ ShaderDataType::Float3, "a_Binormal" },
-			{ ShaderDataType::Float2, "a_TexCoord" },
-		};
-		PipelineSpecification spec;
-		spec.Layout = vertexLayout;
-		s_Data->m_Pipeline = Pipeline::Create(spec);
+		auto shadowMapShader = Renderer::GetShaderLibrary().Get("ShadowMap");
+		s_Data->m_ShadowMapMaterial = Material::Create(shadowMapShader);
+		s_Data->m_ShadowMapMaterial->SetFlags(MaterialFlag::DepthTest);
+		
+		Renderer::Submit([]()
+			{
+				glGenSamplers(1, &(s_Data->m_ShadowMapSampler));
+
+				// Setup the shadowmap depth sampler
+				glSamplerParameteri(s_Data->m_ShadowMapSampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glSamplerParameteri(s_Data->m_ShadowMapSampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glSamplerParameteri(s_Data->m_ShadowMapSampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glSamplerParameteri(s_Data->m_ShadowMapSampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			});
+
+		//ShadowMap pipeline
+		{
+			VertexBufferLayout vertexLayout;
+			vertexLayout = {
+				{ ShaderDataType::Float3, "a_Position" },
+				{ ShaderDataType::Float3, "a_Normal" },
+				{ ShaderDataType::Float3, "a_Tangent" },
+				{ ShaderDataType::Float3, "a_Binormal" },
+				{ ShaderDataType::Float2, "a_TexCoord" }
+			};
+			PipelineSpecification spec;
+			spec.Layout = vertexLayout;
+			s_Data->m_ShadowMapPipeline = Pipeline::Create(spec);
+		}
+		//Skybox pipeline
+		{
+			VertexBufferLayout vertexLayout;
+			vertexLayout = {
+				{ ShaderDataType::Float3, "a_Position" },
+				{ ShaderDataType::Float3, "a_Normal" },
+				{ ShaderDataType::Float3, "a_Tangent" },
+				{ ShaderDataType::Float3, "a_Binormal" },
+				{ ShaderDataType::Float2, "a_TexCoord" }
+			};
+			PipelineSpecification spec;
+			spec.Layout = vertexLayout;
+			s_Data->m_SkyboxPipeline = Pipeline::Create(spec);
+		}
+		//Geometry pipeline
+		{
+			VertexBufferLayout vertexLayout;
+			vertexLayout = {
+				{ ShaderDataType::Float3, "a_Position" },
+				{ ShaderDataType::Float3, "a_Normal" },
+				{ ShaderDataType::Float3, "a_Tangent" },
+				{ ShaderDataType::Float3, "a_Binormal" },
+				{ ShaderDataType::Float2, "a_TexCoord" }
+			};
+			PipelineSpecification spec;
+			spec.Layout = vertexLayout;
+			s_Data->m_GeometryPipeline = Pipeline::Create(spec);
+		}
 	}
 
 	void SceneRenderer::Shutdown()
@@ -125,18 +177,107 @@ namespace Engine
 
 	void SceneRenderer::SubmitMesh(Ref<Mesh>& mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial)
 	{
-		s_Data->m_DrawList.push_back({ mesh, overrideMaterial, transform });
-		s_Data->m_ShadowPassDrawList.push_back({ mesh, overrideMaterial, transform });
+		s_Data->m_DrawList.push_back({ mesh, transform, overrideMaterial });
+		s_Data->m_ShadowPassDrawList.push_back({ mesh, transform, overrideMaterial });
 	}
 
 	uint32_t SceneRenderer::GetFinalColorBufferRendererID()
 	{
 		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer->GetColorAttachmentID();
+		//return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer->GetDepthAttachmentID();
+		//return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer->GetColorAttachmentID();
 	}
 
 	Ref<FrameBuffer> SceneRenderer::GetFinalFrameBuffer()
 	{
 		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer;
+		//return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer;
+	}
+
+	struct FrustumBounds
+	{
+		float Right, Left, Bottom, Top, FarClip, NearClip;
+	};
+
+	struct CascadeData
+	{
+		glm::mat4 ViewProjection;
+		glm::mat4 View;
+		float SplitDepth;
+	};
+
+	static CascadeData CalculateCascade(const glm::vec3& lightDirection)
+	{
+		auto& sceneCamera = s_Data->m_SceneData.SceneCamera;
+		auto viewProjection = sceneCamera.Camera.GetProjection() * sceneCamera.ViewMatrix;
+
+		// TODO: less hard-coding!
+		float nearClip = 0.1f;
+		float farClip = 1000.0f;
+		float clipRange = farClip - nearClip;
+
+		float minZ = nearClip;
+		float maxZ = nearClip + clipRange;
+
+		float range = maxZ - minZ;
+		float ratio = maxZ / minZ;
+
+		// Calculate orthographic projection matrix for each cascade
+		float lastSplitDist = 0.0;
+		float splitDist = 0.1f;
+		glm::vec3 frustumCorners[8] =
+		{
+			glm::vec3(-1.0f,  1.0f, -1.0f),
+			glm::vec3(1.0f,  1.0f, -1.0f),
+			glm::vec3(1.0f, -1.0f, -1.0f),
+			glm::vec3(-1.0f, -1.0f, -1.0f),
+			glm::vec3(-1.0f,  1.0f,  1.0f),
+			glm::vec3(1.0f,  1.0f,  1.0f),
+			glm::vec3(1.0f, -1.0f,  1.0f),
+			glm::vec3(-1.0f, -1.0f,  1.0f),
+		};
+		// Project frustum corners into world space
+		glm::mat4 invCam = glm::inverse(viewProjection);
+		for (uint32_t i = 0; i < 8; i++)
+		{
+			glm::vec4 invCorner = invCam * glm::vec4(frustumCorners[i], 1.0f);
+			frustumCorners[i] = invCorner / invCorner.w;
+		}
+
+		for (uint32_t i = 0; i < 4; i++)
+		{
+			glm::vec3 dist = frustumCorners[i + 4] - frustumCorners[i];
+			frustumCorners[i + 4] = frustumCorners[i] + (dist * splitDist);
+			frustumCorners[i] = frustumCorners[i] + (dist * lastSplitDist);
+		}
+
+		// Get frustum center
+		glm::vec3 frustumCenter = glm::vec3(0.0f);
+		for (uint32_t i = 0; i < 8; i++)
+			frustumCenter += frustumCorners[i];
+		frustumCenter /= 8.0f;
+
+		float radius = 0.0f;
+		for (uint32_t i = 0; i < 8; i++)
+		{
+			float distance = glm::length(frustumCorners[i] - frustumCenter);
+			radius = glm::max(radius, distance);
+		}
+		radius = std::ceil(radius * 16.0f) / 16.0f;
+
+		glm::vec3 maxExtents = glm::vec3(radius);
+		glm::vec3 minExtents = -maxExtents;
+
+		//Light matrix
+		glm::vec3 lightDir = -lightDirection;
+		glm::mat4 lightViewMatrix = glm::lookAt(frustumCenter - lightDir * -minExtents.z, frustumCenter, glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 lightOrthoMatrix = glm::ortho(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.0f, maxExtents.z - minExtents.z);
+
+		CascadeData cascade;
+		cascade.SplitDepth = (nearClip + splitDist * clipRange) * -1.0f;
+		cascade.View = lightViewMatrix;
+		cascade.ViewProjection = lightOrthoMatrix * lightViewMatrix;
+		return cascade;
 	}
 
 	void SceneRenderer::ShadowMapPass()
@@ -147,13 +288,22 @@ namespace Engine
 			//Clear shadow map
 			Renderer::BeginRenderPass(s_Data->m_ShadowMapPass);
 			Renderer::EndRenderPass();
-
 			return;
 		}
 
-		Renderer::BeginRenderPass(s_Data->m_ShadowMapPass);
+		CascadeData cascade = CalculateCascade(directionalLights[0].Direction);
+		glm::mat4 shadowMapVP = cascade.ViewProjection;
+		s_Data->m_LightSpaceMatrix = shadowMapVP;
 
-		//TODO: ShadowMap Pass
+		Renderer::BeginRenderPass(s_Data->m_ShadowMapPass);			
+		for (auto& dc : s_Data->m_ShadowPassDrawList)
+		{
+			auto material = s_Data->m_ShadowMapMaterial;
+			material->Set("u_ViewProjectionMatrix", shadowMapVP);
+			auto mi = MaterialInstance::Create(material);
+
+			Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data->m_ShadowMapPipeline, mi);
+		}	
 
 		Renderer::EndRenderPass();
 	}
@@ -174,7 +324,7 @@ namespace Engine
 			s_Data->m_SceneData.SkyboxMaterial->Set("u_ViewMatrix", glm::mat4(glm::mat3(sceneCamera.ViewMatrix)));
 			s_Data->m_SceneData.SkyboxMaterial->Set("u_ProjectionMatrix", sceneCamera.Camera.GetProjection());
 			
-			Renderer::SubmitMesh(s_Data->m_SkyboxMesh, glm::mat4(1.0f), s_Data->m_Pipeline, s_Data->m_SceneData.SkyboxMaterial);
+			Renderer::SubmitMesh(s_Data->m_SkyboxMesh, glm::mat4(1.0f), s_Data->m_SkyboxPipeline, s_Data->m_SceneData.SkyboxMaterial);
 		}
 
 		//Render entities
@@ -183,6 +333,7 @@ namespace Engine
 			auto baseMaterial = dc.Mesh->GetMaterial();
 			baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
 			baseMaterial->Set("u_CameraPosition", cameraPosition);
+			baseMaterial->Set("u_LightSpaceMatrix", s_Data->m_LightSpaceMatrix);
 			//TODO: More uniforms 
 			
 			//Set lights 
@@ -190,8 +341,22 @@ namespace Engine
 			auto directionalLight = s_Data->m_SceneData.SceneLightEnvironment.DirectionalLights[0];	//BUG: directionalLight方向可能出错
 			baseMaterial->Set("u_DirectionalLight", directionalLight); 
 
-			auto overrideMaterial = dc.Material;
-			Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data->m_Pipeline);
+			//Shadow map
+			auto resource = baseMaterial->FindShaderResource("u_ShadowMapTexture");
+			if (resource)
+			{
+				auto reg = resource->GetRegister();
+				uint32_t texID = s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer->GetDepthAttachmentID();
+				
+				Renderer::Submit([reg, texID]() mutable
+					{
+						//BUG:阴影未生效
+						glBindTextureUnit(reg, texID);
+
+					});
+			}
+
+			Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data->m_GeometryPipeline, dc.Material);
 		}
 
 		Renderer::EndRenderPass();
@@ -200,9 +365,7 @@ namespace Engine
 	void SceneRenderer::CompositePass()
 	{
 		Renderer::BeginRenderPass(s_Data->m_CompositePass);
-
 		Renderer::SubmitFullScreenQuad(s_Data->m_GeometryPass->GetSpecification().TargetFramebuffer->GetColorAttachmentID());
-
 		Renderer::EndRenderPass();
 	}
 
@@ -210,9 +373,17 @@ namespace Engine
 	{
 		ENGINE_ASSERT(!s_Data->m_ActiveScene, "No active scene!");
 
+		Renderer::Submit([]() {RENDERCOMMAND_TRACE("RenderCommand: ShadowMapPass Begin:"); });
 		ShadowMapPass();
+		Renderer::Submit([]() {RENDERCOMMAND_TRACE("RenderCommand: ShadowMapPass End"); });
+
+		Renderer::Submit([]() {RENDERCOMMAND_TRACE("RenderCommand: GeometryPass Begin:"); });
 		GeometryPass();
+		Renderer::Submit([]() {RENDERCOMMAND_TRACE("RenderCommand: GeometryPass End"); });
+
+		Renderer::Submit([]() {RENDERCOMMAND_TRACE("RenderCommand: CompositePass Begin:"); });
 		CompositePass();
+		Renderer::Submit([]() {RENDERCOMMAND_TRACE("RenderCommand: CompositePass End"); });
 
 		s_Data->m_DrawList.clear();
 		s_Data->m_ShadowPassDrawList.clear();

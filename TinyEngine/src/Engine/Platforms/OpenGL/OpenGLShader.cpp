@@ -50,7 +50,7 @@ namespace Engine
 	{
 		Renderer::Submit([this]()
 			{
-				RENDERCOMMAND_TRACE("RenderCommand: Bind shader({0})", m_RendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Bind shader({0}). Name: '{1}'", m_RendererID, m_Name);
 
 				glUseProgram(m_RendererID);
 			}
@@ -703,7 +703,7 @@ namespace Engine
 	{
 		int32_t result = glGetUniformLocation(m_RendererID, name.c_str());
 		if (result == -1)
-			ENGINE_WARN("Shader({0}): Uniform({1}) connot be found or unused", m_Name, name);
+			ENGINE_WARN("Shader '{0}': Uniform '{1}' connot be found or unused", m_Name, name);
 		return result;
 	}
 
@@ -993,7 +993,7 @@ namespace Engine
 
 				glDeleteShader(shaderID);
 
-				ENGINE_ERROR("Shader({0}) compilation failure:\n{1}", m_Path, &infoLog[0]);
+				ENGINE_ERROR("Shader '{0}' compilation failure:\n'{1}'", m_Path, &infoLog[0]);
 				return;
 			}
 
@@ -1019,7 +1019,7 @@ namespace Engine
 			for (auto id : shaderRendererIDs)
 				glDeleteShader(id);
 
-			ENGINE_ERROR("Shader({0}) link failure:\n{1}", m_Path, &infoLog[0]);
+			ENGINE_ERROR("Shader '{0}' link failure:\n'{1}'", m_Path, &infoLog[0]);
 			return;
 		}
 

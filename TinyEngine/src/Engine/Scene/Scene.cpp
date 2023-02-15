@@ -17,7 +17,7 @@ namespace Engine
 	{
 		//Skybox material
 		auto& skyboxShader = Renderer::GetShaderLibrary().Get("Skybox");
-		m_SkyboxMaterial = MaterialInstance::Create(Material::Create(skyboxShader));
+		m_SkyboxMaterial = MaterialInstance::Create(Material::Create(skyboxShader), "Skybox");
 		m_SkyboxMaterial->SetFlag(MaterialFlag::DepthTest, false);
 	}
 

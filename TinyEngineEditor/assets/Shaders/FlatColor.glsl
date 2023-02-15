@@ -7,15 +7,15 @@ layout(location = 2) in vec3 a_Tangent;
 layout(location = 3) in vec3 a_Bitangent;
 layout(location = 4) in vec2 a_TexCoord;
 
-uniform mat4 u_ViewProjectionMatrix;
-uniform mat4 u_Transform;
-
 out VertexOutput
 {
 	vec3 WorldPosition;
     vec3 Normal;
 	vec2 TexCoord;
 } vs_Output;
+
+uniform mat4 u_ViewProjectionMatrix;
+uniform mat4 u_Transform;
 
 void main()
 {
@@ -37,7 +37,7 @@ in VertexOutput
 	vec3 WorldPosition;
     vec3 Normal;
 	vec2 TexCoord;
-} vs_Input;
+} fs_Input;
 
 void main()
 {

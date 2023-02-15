@@ -27,6 +27,8 @@ namespace Engine
         return result;
     }
 
+    const std::string Mesh::m_InitShaderName = "BlinnPhong";
+
     struct LogStream : public Assimp::LogStream
     {
         static void Initialize()
@@ -40,7 +42,7 @@ namespace Engine
 
         virtual void write(const char* message) override
         {
-            ENGINE_WARN("Assimp: {0}", message);
+            ENGINE_WARN("Assimp: '{0}'", message);
         }
     };
 
@@ -52,7 +54,7 @@ namespace Engine
     {
         //BUG: ÖÐÎÄ×Ö·û¶ÁÈ¡´íÎó
 
-        MESH_INFO("Mesh: Loading mesh {0}", filename);
+        MESH_INFO("Mesh: Loading mesh '{0}'", filename);
 
         LogStream::Initialize();
         
@@ -68,14 +70,12 @@ namespace Engine
         const aiScene* scene = m_Importer->ReadFile(filename, meshImportFlags);
         if (!scene || !scene->HasMeshes())
         {
-            ENGINE_ERROR("Failed to load mesh file: {0}", filename);
+            ENGINE_ERROR("Failed to load mesh file: '{0}'", filename);
             return;
         }
         m_Scene = scene;
 
-        //TODO: Change to a better default shader
-        m_MeshShader = Renderer::GetShaderLibrary().Get("BlinnPhong");
-        
+        m_MeshShader = Renderer::GetShaderLibrary().Get(m_InitShaderName);
         m_BaseMaterial = Material::Create(m_MeshShader);
         m_BaseMaterial->SetFlags(MaterialFlag::DepthTest);
 
@@ -290,7 +290,7 @@ namespace Engine
         submesh.Transform = transform;
 
         //TEMP
-        m_MeshShader = Renderer::GetShaderLibrary().Get("BlinnPhong");
+        m_MeshShader = Renderer::GetShaderLibrary().Get(m_InitShaderName);
         
         m_BaseMaterial = Material::Create(m_MeshShader);
         m_BaseMaterial->SetFlags(MaterialFlag::DepthTest);

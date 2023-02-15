@@ -108,9 +108,9 @@ namespace Engine
 		static std::string TypeToString(Type type);
 
 	private:
-		std::string m_Name;
-		uint32_t m_Register = 0;
-		uint32_t m_Count = 0;
-		Type m_Type;
+		std::string m_Name;			//纹理名称
+		uint32_t m_Register = 0;	//纹理对应Unit
+		uint32_t m_Count = 0;		//纹理数量
+		Type m_Type;				//纹理类型
 	};
 }

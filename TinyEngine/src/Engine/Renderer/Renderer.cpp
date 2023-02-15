@@ -53,9 +53,11 @@ namespace Engine
 		s_Data->m_ShaderLibrary = CreateScope<ShaderLibrary>();
 		
 		//Load shader
+		s_Data->m_ShaderLibrary->Load("assets/shaders/FlatColor.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/BlinnPhong.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/Skybox.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/FullScreenQuad.glsl");
+		s_Data->m_ShaderLibrary->Load("assets/shaders/ShadowMap.glsl");
 
 		SceneRenderer::Init();
 
@@ -111,11 +113,15 @@ namespace Engine
 	{
 		ENGINE_ASSERT(renderPass, "Render pass is nullptr!");
 		s_Data->m_ActiveRenderPass = renderPass;
-		s_Data->m_ActiveRenderPass->GetSpecification().TargetFramebuffer->Bind();
-		const glm::vec4& clearColor = s_Data->m_ActiveRenderPass->GetSpecification().TargetFramebuffer->GetSpecification().ClearColor;
+		auto& frameBuffer = s_Data->m_ActiveRenderPass->GetSpecification().TargetFramebuffer;
+		frameBuffer->Bind();
+		const uint32_t width = frameBuffer->GetWidth();
+		const uint32_t height = frameBuffer->GetHeight();
+		const glm::vec4& clearColor = frameBuffer->GetSpecification().ClearColor;
 		Renderer::Submit([=]()
 			{
 				RENDERCOMMAND_TRACE("RenderCommand: Clear current frameBuffer");
+				s_Data->m_RendererAPI->SetViewport(0, 0, width, height);
 				s_Data->m_RendererAPI->SetClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 				s_Data->m_RendererAPI->Clear();
 			}
@@ -182,8 +188,7 @@ namespace Engine
 		s_Data->m_FullScreenQuadPipeline->BindVertexLayout();
 		s_Data->m_FullScreenQuadIndexBuffer->Bind();
 
-		//auto& material = overrideMaterial ? overrideMaterial : s_Data->m_FullScreenQuadMaterial;
-		auto& material = s_Data->m_FullScreenQuadMaterial;
+		auto& material = overrideMaterial ? overrideMaterial : s_Data->m_FullScreenQuadMaterial;
 		material->Bind();
 
 		Renderer::Submit([=]()
@@ -191,6 +196,8 @@ namespace Engine
 				glBindTexture(GL_TEXTURE_2D, textureID);
 
 				s_Data->m_RendererAPI->DrawElements(6, PrimitiveType::Triangles, false);
+
+				RENDERCOMMAND_TRACE("RenderCommand: Sumbit fullscreen quad");
 			});
 	}
 

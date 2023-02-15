@@ -1,5 +1,5 @@
 #type vertex
-#version 460
+#version 430
 
 layout(location = 0) in vec3 a_Position;
 
@@ -18,5 +18,5 @@ layout(location = 0) out vec4 fragColor;
 
 void main()
 {
-    
+    fragColor = vec4(gl_FragCoord.zzz, 1.0);
 }

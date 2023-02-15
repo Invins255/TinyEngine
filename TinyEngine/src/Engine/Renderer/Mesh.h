@@ -120,5 +120,8 @@ namespace Engine
 		//Assimp
 		std::unique_ptr<Assimp::Importer> m_Importer;
 		const aiScene* m_Scene;
+
+	private:
+		static const std::string m_InitShaderName;
 	};
 }

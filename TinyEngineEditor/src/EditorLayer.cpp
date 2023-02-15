@@ -46,14 +46,14 @@ namespace Engine
             auto& meshEntity = m_EditorScene->CreateEntity("Cube");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-3.0f, 1.0f, 1.0f);
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(3.0f, 3.0f, -1.0f);
         }     
         {
             auto mesh = CreateRef<Mesh>("assets/models/Sphere/Sphere.fbx");
             auto& meshEntity = m_EditorScene->CreateEntity("Sphere");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(1.0f, 3.0f, -1.0f);
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-3.0f, 3.0f, 1.0f);
         }
         {
             auto mesh = CreateRef<Mesh>("assets/models/Plane/Plane.fbx");
@@ -61,7 +61,7 @@ namespace Engine
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
             meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 0.0f, 0.0f);
-            meshEntity.GetComponent<TransformComponent>().Scale = glm::vec3(0.5f, 0.5f, 0.5f);
+            meshEntity.GetComponent<TransformComponent>().Scale = glm::vec3(0.3f, 0.3f, 0.3f);
         }
         
         auto& camera = m_EditorScene->CreateEntity("Camera");
