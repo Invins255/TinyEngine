@@ -366,6 +366,7 @@ namespace Engine
 				UI::BeginPropertyGrid();
 				UI::PropertyColor("Radiance", dlc.Radiance);
 				UI::Property("Intensity", dlc.Intensity);
+				UI::Property("Cast Shadows", dlc.CastShadows);
 				UI::EndPropertyGrid();
 			});
 	}

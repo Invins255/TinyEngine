@@ -251,10 +251,14 @@ namespace Engine
 			out << YAML::BeginMap;
 			auto& light = entity.GetComponent<DirectionalLightComponent>();
 			out << YAML::Key << "Radiance" << YAML::Value << light.Radiance;
+			out << YAML::Key << "Intensity" << YAML::Value << light.Intensity;
+			out << YAML::Key << "CastShadows" << YAML::Value << light.CastShadows;
 			out << YAML::EndMap; 
 
 			SERIALIZER_INFO("	DirectionalLight:");
 			SERIALIZER_INFO("		Radiance: {0}, {1}, {2}", light.Radiance.x, light.Radiance.y, light.Radiance.z);
+			SERIALIZER_INFO("		Intensity: {0}", light.Intensity);
+			SERIALIZER_INFO("		CastShadows: {0}", light.CastShadows);
 		}
 
 		out << YAML::EndMap;
@@ -454,9 +458,13 @@ namespace Engine
 				{
 					auto& light = deserializedEntity.AddComponent<DirectionalLightComponent>();
 					light.Radiance = directionalLightComponent["Radiance"].as<glm::vec3>();
+					light.Intensity = directionalLightComponent["Intensity"].as<float>();
+					light.CastShadows = directionalLightComponent["CastShadows"].as<bool>();
 
 					SERIALIZER_INFO("	DirectionalLight:");
 					SERIALIZER_INFO("		Radiance: {0}, {1}, {2}", light.Radiance.x, light.Radiance.y, light.Radiance.z);
+					SERIALIZER_INFO("		Intensity: {0}", light.Intensity);
+					SERIALIZER_INFO("		CastShadows: {0}", light.CastShadows);
 				}
 			}
 		}

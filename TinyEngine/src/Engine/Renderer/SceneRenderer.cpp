@@ -184,14 +184,11 @@ namespace Engine
 	uint32_t SceneRenderer::GetFinalColorBufferRendererID()
 	{
 		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer->GetColorAttachmentID();
-		//return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer->GetDepthAttachmentID();
-		//return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer->GetColorAttachmentID();
 	}
 
 	Ref<FrameBuffer> SceneRenderer::GetFinalFrameBuffer()
 	{
 		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer;
-		//return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer;
 	}
 
 	struct FrustumBounds
@@ -282,6 +279,7 @@ namespace Engine
 
 	void SceneRenderer::ShadowMapPass()
 	{
+		//Only use the first directional light to calculate shadow map
 		auto& directionalLights = s_Data->m_SceneData.SceneLightEnvironment.DirectionalLights;
 		if (directionalLights[0].Intensity == 0.0f || !directionalLights[0].CastShadows)
 		{
@@ -350,9 +348,7 @@ namespace Engine
 				
 				Renderer::Submit([reg, texID]() mutable
 					{
-						//BUG:“ı”∞Œ¥…˙–ß
 						glBindTextureUnit(reg, texID);
-
 					});
 			}
 
