@@ -2,6 +2,7 @@
 
 #include "TinyEngine.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 
 #include <glm/glm.hpp>
 
@@ -38,6 +39,7 @@ namespace Engine
 
 		//Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+		ContentBrowserPanel m_ContentBrowserPanel;
 	};
 
 }

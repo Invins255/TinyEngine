@@ -191,8 +191,9 @@ namespace Engine
             ImGui::End();
             ImGui::PopStyleVar();         
 
-            //Scene hierarchy---------------------------------------------------------------
+            //Panels------------------------------------------------------------------------ 
             m_SceneHierarchyPanel.OnImGuiRender();
+            m_ContentBrowserPanel.OnImGuiRender();
 
         }
         ImGui::End();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include "Engine/Core/Log.h"
 
 #ifdef ENGINE_PLATFORM_WINDOWS
 	#if ENGINE_DYNAMIC_LINK
