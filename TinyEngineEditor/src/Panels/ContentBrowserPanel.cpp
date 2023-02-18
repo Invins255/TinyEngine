@@ -15,9 +15,17 @@ namespace Engine
 
     void ContentBrowserPanel::OnImGuiRender()
     {
-        ImGui::Begin("Content Browser");
+        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoScrollbar;
+        ImGui::Begin("Content Browser",(bool*)0, windowFlags);
 
-        ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+        ImGuiTableFlags flags =
+            ImGuiTableFlags_SizingFixedFit
+            | ImGuiTableFlags_Borders
+            | ImGuiTableFlags_Resizable
+            | ImGuiTableFlags_Reorderable
+            | ImGuiTableFlags_Hideable
+            | ImGuiTableFlags_NoHostExtendX;
+
         if(ImGui::BeginTable("table", 2, flags))
         {
             ImGui::TableSetupColumn("column0", ImGuiTableColumnFlags_WidthFixed, 200.0f);
@@ -27,29 +35,24 @@ namespace Engine
             //Column0
             ImGui::TableSetColumnIndex(0);
             ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
-            if (ImGui::BeginChild("ChildL", ImVec2(0, 0), true, window_flags))
+            if (ImGui::BeginChild("ChildL"))
             {
-                //TODO: Directory Tree
                 if (ImGui::TreeNode(m_DefaultAssetPath.string().c_str()))
                 {
                     TraverseDirectoryTree(m_DefaultAssetPath);
-
                     ImGui::TreePop();
                 }
-
                 ImGui::EndChild();
             }
 
             //Column1
             ImGui::TableSetColumnIndex(1);
-            if (ImGui::BeginChild("ChildR"))
+            if (ImGui::BeginChild("ChildR",ImVec2(0, 0), false, ImGuiWindowFlags_MenuBar))
             {
-                if (m_CurrentDirectory != std::filesystem::path(m_DefaultAssetPath))
+                if (ImGui::BeginMenuBar())
                 {
-                    if (ImGui::Button("<<"))
-                    {
-                        m_CurrentDirectory = m_CurrentDirectory.parent_path();
-                    }
+                    ImGui::Text(m_CurrentDirectory.string().c_str());
+                    ImGui::EndMenuBar();
                 }
 
                 static float padding = 25.0f;
@@ -65,10 +68,16 @@ namespace Engine
                 {
                     const auto& path = directoryEntry.path();
                     auto relativePath = std::filesystem::relative(path, m_DefaultAssetPath);
-                    std::string filenameString = relativePath.filename().string();
+                    std::string fileStringStr = relativePath.filename().string();
+                    std::string stemStr = relativePath.stem().string();
 
                     Ref<Texture2D>& icon = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;
                     ImGui::ImageButton((ImTextureID)icon->GetRendererID(), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::SetTooltip(fileStringStr.c_str());
+                    }
 
                     if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
                     {
@@ -76,22 +85,22 @@ namespace Engine
                             m_CurrentDirectory /= path.filename();
                     }
 
-                    ImGui::TextWrapped(filenameString.c_str());
+                    ImGui::TextWrapped(stemStr.c_str());
 
                     ImGui::NextColumn();
                 }
                 ImGui::Columns(1);
+
                 ImGui::EndChild();
             }
             ImGui::EndTable();
         }
-
-
         ImGui::End();
     }
 
     void ContentBrowserPanel::TraverseDirectoryTree(std::filesystem::path rootPath)
     {
+        m_CurrentDirectory = rootPath;
         for (auto& directory : std::filesystem::directory_iterator(rootPath))
         {
             const auto& path = directory.path();
