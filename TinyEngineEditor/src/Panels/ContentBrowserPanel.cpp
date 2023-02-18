@@ -72,19 +72,15 @@ namespace Engine
                     std::string stemStr = relativePath.stem().string();
 
                     Ref<Texture2D>& icon = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;
+                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
                     ImGui::ImageButton((ImTextureID)icon->GetRendererID(), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+                    ImGui::PopStyleColor();
 
                     if (ImGui::IsItemHovered())
                     {
                         ImGui::SetTooltip(fileStringStr.c_str());
                     }
-
-                    if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-                    {
-                        if (directoryEntry.is_directory())
-                            m_CurrentDirectory /= path.filename();
-                    }
-
+ 
                     ImGui::TextWrapped(stemStr.c_str());
 
                     ImGui::NextColumn();
