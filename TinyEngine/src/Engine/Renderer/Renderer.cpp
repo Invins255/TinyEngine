@@ -55,6 +55,7 @@ namespace Engine
 		//Load shader
 		s_Data->m_ShaderLibrary->Load("assets/shaders/FlatColor.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/BlinnPhong.glsl");
+		s_Data->m_ShaderLibrary->Load("assets/shaders/PBR.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/Skybox.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/FullScreenQuad.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/ShadowMap.glsl");

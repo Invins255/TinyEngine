@@ -7,6 +7,13 @@
 
 namespace Engine
 {
+#define MATERIAL_DEBUG 0
+#if MATERIAL_DEBUG
+#define MATERIAL_WARN(...) ENGINE_WARN(__VA_ARGS__)
+#else
+#define MATERIAL_WARN(...)
+#endif
+
 	enum class MaterialFlag
 	{
 		None		= BIT(0),
@@ -43,7 +50,7 @@ namespace Engine
 			auto uniform = FindShaderUniform(name);
 			if(!uniform)
 			{
-				ENGINE_WARN("Conld not find uniform '{0}' in shader '{1}'!", name, m_Name);
+				MATERIAL_WARN("Conld not find uniform '{0}' in shader '{1}'!", name, m_Name);
 				return;
 			}
 			auto& buffer = GetUniformBufferTarget(uniform);
@@ -57,7 +64,7 @@ namespace Engine
 			auto resource = FindShaderResource(name);
 			if (!resource)
 			{
-				ENGINE_WARN("Conld not find uniform '{0}' in shader '{1}'!", name, m_Name);
+				MATERIAL_WARN("Conld not find uniform '{0}' in shader '{1}'!", name, m_Name);
 				return;
 			}
 			uint32_t slot = resource->GetRegister();
@@ -146,7 +153,7 @@ namespace Engine
 			//ENGINE_ASSERT(uniform, "Conld not find uniform in shader!");
 			if (!uniform) 
 			{
-				ENGINE_WARN("Material: Shader '{0}' does not have uniform '{1}'", m_Material->GetShader()->GetName(), name);
+				MATERIAL_WARN("Material: Shader '{0}' does not have uniform '{1}'", m_Material->GetShader()->GetName(), name);
 				return;
 			}
 			auto& buffer = GetUniformBufferTarget(uniform);
@@ -160,7 +167,7 @@ namespace Engine
 			//ENGINE_ASSERT(resource, "Conld not find uniform in shader!");
 			if (!resource)
 			{
-				ENGINE_WARN("Material: Shader '{0}' does not have resource '{1}'", m_Material->GetShader()->GetName(), name);
+				MATERIAL_WARN("Material: Shader '{0}' does not have resource '{1}'", m_Material->GetShader()->GetName(), name);
 				return;
 			}
 			uint32_t slot = resource->GetRegister();

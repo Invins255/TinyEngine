@@ -27,7 +27,7 @@ namespace Engine
         return result;
     }
 
-    const std::string Mesh::m_InitShaderName = "BlinnPhong";
+    const std::string Mesh::m_InitShaderName = "PBR";
 
     struct LogStream : public Assimp::LogStream
     {

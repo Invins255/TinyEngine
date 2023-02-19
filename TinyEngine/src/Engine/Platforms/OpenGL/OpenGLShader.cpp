@@ -703,7 +703,7 @@ namespace Engine
 	{
 		int32_t result = glGetUniformLocation(m_RendererID, name.c_str());
 		if (result == -1)
-			ENGINE_WARN("Shader '{0}': Uniform '{1}' connot be found or unused", m_Name, name);
+			SHADER_WARN("Shader '{0}': Uniform '{1}' connot be found or unused", m_Name, name);
 		return result;
 	}
 

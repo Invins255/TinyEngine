@@ -10,6 +10,13 @@
 
 namespace Engine
 {
+#define SHADER_DEBUG 0
+#if SHADER_DEBUG
+#define SHADER_WARN(...) ENGINE_WARN(__VA_ARGS__)
+#else
+#define SHADER_WARN(...)
+#endif
+
 	enum class UniformType
 	{
 		None = 0,
