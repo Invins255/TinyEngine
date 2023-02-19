@@ -36,7 +36,7 @@ namespace Engine
 		uint32_t m_RendererID = 0;
 		std::string m_Path;
 
-		TextureFormat m_Format;
+		TextureFormat m_Format = TextureFormat::RGB;
 		TextureWrap m_Wrap = TextureWrap::Clamp;
 		uint32_t m_Width, m_Height, m_Channels;
 

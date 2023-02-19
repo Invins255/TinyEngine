@@ -288,7 +288,7 @@ namespace Engine
 				ImGui::SetColumnWidth(0, 80);
 				ImGui::SetColumnWidth(1, 240);
 				ImGui::SetColumnWidth(2, 40);
-				ImGui::Text("File Path");
+				ImGui::Text("Path");
 				ImGui::NextColumn();
 				ImGui::PushItemWidth(-1);
 				if (mc.Mesh)

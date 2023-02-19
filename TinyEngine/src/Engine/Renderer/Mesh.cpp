@@ -136,6 +136,9 @@ namespace Engine
             MESH_INFO("Mesh: ({0}) materials", filename);
 
             m_Textures.resize(scene->mNumMaterials);
+            m_NormalMaps.resize(scene->mNumMaterials);
+            m_RoughnessMaps.resize(scene->mNumMaterials);
+            m_MetalnessMaps.resize(scene->mNumMaterials);
             m_Materials.resize(scene->mNumMaterials);
             
             for (uint32_t i = 0; i < scene->mNumMaterials; i++)
@@ -197,7 +200,7 @@ namespace Engine
                     mi->Set("u_AlbedoColor", glm::vec3{ aiColor.r, aiColor.g, aiColor.b });
                     MESH_INFO("     No albedo map. Set albedo: {0}, {1}, {2}", aiColor.r, aiColor.g, aiColor.b);
                 }
-                
+
                 //Normal map
                 mi->Set("u_NormalTexToggle", 0.0f);
                 bool hasNormalMap = aiMaterial->GetTexture(aiTextureType_NORMALS, 0, &aiTexPath) == aiReturn_SUCCESS;
@@ -212,6 +215,7 @@ namespace Engine
                     auto texture = Texture2D::Create(texturePath); //TODO: Manage textures
                     if (texture->IsLoaded())
                     {
+                        m_NormalMaps[i] = texture;
                         mi->Set("u_NormalTexture", texture);
                         mi->Set("u_NormalTexToggle", 1.0f);
                     }
@@ -240,6 +244,7 @@ namespace Engine
                     auto texture = Texture2D::Create(texturePath);
                     if (texture->IsLoaded())
                     {
+                        m_RoughnessMaps[i] = texture;
                         mi->Set("u_RoughnessTexture", texture);
                         mi->Set("u_RoughnessTexToggle", 1.0f);
                     }
@@ -255,6 +260,52 @@ namespace Engine
                     MESH_INFO("     No roughness map. Set roughness: {0}", roughness);
                 }
                 
+                //Metalness map
+                mi->Set("u_MetalnessTexToggle", 0.0f);
+                bool hasMetalnessMap = false;
+                for (uint32_t j = 0; j < aiMaterial->mNumProperties; j++)
+                {
+                    auto prop = aiMaterial->mProperties[j];
+                    if (prop->mType == aiPTI_String)
+                    {
+                        uint32_t strLength = *(uint32_t*)prop->mData;
+                        std::string str(prop->mData + 4, strLength);
+
+                        std::string key = prop->mKey.data;
+                        if (key == "$raw.ReflectionFactor|file")
+                        {
+                            hasMetalnessMap = true;
+
+                            std::filesystem::path path = filename;
+                            auto parentPath = path.parent_path();
+                            parentPath /= str;
+                            std::string texturePath = parentPath.string();
+                            MESH_INFO("    Metalness map path = {0}", texturePath);
+                            auto texture = Texture2D::Create(texturePath);
+                            if (texture->IsLoaded())
+                            {
+                                m_MetalnessMaps[i] = texture;
+                                mi->Set("u_MetalnessTexture", texture);
+                                mi->Set("u_MetalnessTexToggle", 1.0f);
+                            }
+                            else
+                            {
+                                MESH_INFO("    Could not load texture: {0}", texturePath);
+                                mi->Set("u_Metalness", metalness);
+                                mi->Set("u_MetalnessTexToggle", 0.0f);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if (!hasMetalnessMap)
+                {
+                    mi->Set("u_Metalness", metalness);
+                    mi->Set("u_MetalnessTexToggle", 0.0f);
+                    MESH_INFO("    No metalness map. Set metalness: {0}", metalness);
+                }
+
                 //TODO: Other textures
             }
         }

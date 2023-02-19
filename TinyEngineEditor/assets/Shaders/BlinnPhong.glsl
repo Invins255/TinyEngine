@@ -54,9 +54,9 @@ struct DirectionalLight
 uniform DirectionalLight u_DirectionalLight;
 uniform vec3 u_CameraPosition;
 
-uniform sampler2D u_AlbedoTexture;
-uniform float u_AlbedoTexToggle;
 uniform vec3 u_AlbedoColor;
+uniform float u_AlbedoTexToggle;
+uniform sampler2D u_AlbedoTexture;
 
 uniform sampler2D u_ShadowMapTexture;
 
@@ -98,10 +98,15 @@ void main()
 	float diff = max(dot(normal, lightDir), 0.0);
 	vec3 diffuse = diff * u_DirectionalLight.Radiance;
 
-	vec4 albedo = u_AlbedoTexToggle > 0.5 ? texture2D(u_AlbedoTexture, fs_Input.TexCoord) : vec4(u_AlbedoColor, 1.0);
+	float specularStrength = 0.5;
+	vec3 viewDir = normalize(u_CameraPosition - fs_Input.WorldPosition);
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float spec = pow(max(dot(normal, halfwayDir), 0.0), 32);
+	vec3 specular = specularStrength * spec * u_DirectionalLight.Radiance;
 
+	vec4 albedo = u_AlbedoTexToggle > 0.5 ? texture2D(u_AlbedoTexture, fs_Input.TexCoord) : vec4(u_AlbedoColor, 1.0);
 	float shadow = CalculateShadow(fs_Input.LightSpacePosition);
 
-	vec3 result = (ambient + (1.0 - shadow) * diffuse) * albedo.rgb * u_DirectionalLight.Intensity;
+	vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * albedo.rgb * u_DirectionalLight.Intensity;
 	fragColor = vec4(result, 1.0);
 }

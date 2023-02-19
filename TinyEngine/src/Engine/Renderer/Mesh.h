@@ -21,7 +21,7 @@ namespace Assimp {
 namespace Engine
 {
 
-#define MESH_DEBUG 0
+#define MESH_DEBUG 1
 #if MESH_DEBUG
 #define MESH_INFO(...) ENGINE_INFO(__VA_ARGS__)
 #else
@@ -116,6 +116,9 @@ namespace Engine
 		Ref<Material> m_BaseMaterial;
 		std::vector<Ref<MaterialInstance>> m_Materials;
 		std::vector<Ref<Texture2D>> m_Textures;
+		std::vector<Ref<Texture2D>> m_NormalMaps;
+		std::vector<Ref<Texture2D>> m_RoughnessMaps;
+		std::vector<Ref<Texture2D>> m_MetalnessMaps;
 
 		//Assimp
 		std::unique_ptr<Assimp::Importer> m_Importer;

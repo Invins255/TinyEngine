@@ -40,20 +40,13 @@ namespace Engine
             "assets/textures/skybox/CornellBox/back.jpg"
         );
         m_EditorScene->SetSkybox(skyboxTexture);
-
+   
         {
-            auto mesh = MeshFactory::CreateBox(glm::vec3(2.0f, 2.0f, 2.0f));
-            auto& meshEntity = m_EditorScene->CreateEntity("Cube");
+            auto mesh = CreateRef<Mesh>("assets/models/Can/SodaCan.fbx");
+            auto& meshEntity = m_EditorScene->CreateEntity("SodaCan");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(3.0f, 3.0f, -1.0f);
-        }     
-        {
-            auto mesh = CreateRef<Mesh>("assets/models/Sphere/Sphere.fbx");
-            auto& meshEntity = m_EditorScene->CreateEntity("Sphere");
-            meshEntity.AddComponent<MeshComponent>();
-            meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-3.0f, 3.0f, 1.0f);
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 1.0f, 0.0f);
         }
         {
             auto mesh = CreateRef<Mesh>("assets/models/Plane/Plane.fbx");
@@ -61,13 +54,13 @@ namespace Engine
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
             meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 0.0f, 0.0f);
-            meshEntity.GetComponent<TransformComponent>().Scale = glm::vec3(0.3f, 0.3f, 0.3f);
+            meshEntity.GetComponent<TransformComponent>().Scale = glm::vec3(0.5f, 0.5f, 0.5f);
         }
         
         auto& camera = m_EditorScene->CreateEntity("Camera");
         camera.AddComponent<CameraComponent>();
-        camera.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 10.0f, 40.0f);
-        camera.GetComponent<TransformComponent>().Rotation = glm::radians(glm::vec3(-15.0f, 0.0f, 0.0f));
+        camera.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 20.0f, 30.0f);
+        camera.GetComponent<TransformComponent>().Rotation = glm::radians(glm::vec3(-20.0f, 0.0f, 0.0f));
 
         auto& light = m_EditorScene->CreateEntity("Directional Light");
         light.AddComponent<DirectionalLightComponent>();
