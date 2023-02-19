@@ -30,7 +30,6 @@ namespace Engine
         NewScene();
 
         //TEMP
-
         auto skyboxTexture = TextureCube::Create(
             "assets/textures/skybox/CornellBox/right.jpg",
             "assets/textures/skybox/CornellBox/left.jpg",
