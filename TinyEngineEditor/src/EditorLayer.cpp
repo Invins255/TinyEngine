@@ -10,19 +10,22 @@
 
 #include <chrono>
 #include <filesystem>
+#include <functional>
 
 #include "Engine/Renderer/SceneRenderer.h"
 #include "Engine/Scene/SceneSerializer.h"
 #include "Engine/ImGui/ImGuizmo.h"
 #include "Engine/Renderer/MeshFactory.h"
 #include "Engine/Renderer/Texture.h"
-
+#include "Engine/Core/Math/Ray.h"
 
 namespace Engine
 {
     EditorLayer::EditorLayer():
 	    Layer("EditorLayer"), m_EditorCamera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 1000.0f))
     {
+        m_SceneHierarchyPanel.SetSelectionChangedCallback(std::bind(&EditorLayer::SelectEntity, this, std::placeholders::_1));
+        m_SceneHierarchyPanel.SetEntityDeletedCallback(std::bind(&EditorLayer::OnEntityDeleted, this, std::placeholders::_1));
     }
 
     void EditorLayer::OnAttach()
@@ -166,15 +169,26 @@ namespace Engine
                 m_ViewportHovered = ImGui::IsWindowHovered();
                 Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
                 
+                //Resize
                 ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-                m_ViewportSize = glm::vec2(viewportSize.x, viewportSize.y);
                 SceneRenderer::SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
                 m_EditorScene->SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
                 m_EditorCamera.SetProjection(glm::perspectiveFov(glm::radians(45.0f), viewportSize.x, viewportSize.y, 0.1f, 1000.0f));
                 m_EditorCamera.SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 
+                //Render final framebuffer to viewport
                 uint32_t textureID = SceneRenderer::GetFinalColorBufferRendererID();
-                ImGui::Image((void*)textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), { 0, 1 }, { 1, 0 });
+                ImGui::Image((void*)textureID, viewportSize, { 0, 1 }, { 1, 0 });
+                
+                //Calculate viewport bounds
+                ImVec2 viewportOffset = ImGui::GetCursorPos();
+                ImVec2 windowSize = ImGui::GetWindowSize();
+                ImVec2 minBound = ImGui::GetWindowPos();
+                minBound.x += viewportOffset.x;
+                minBound.y += viewportOffset.y;
+                ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y };
+                m_ViewportBounds[0] = { minBound.x, minBound.y };
+                m_ViewportBounds[1] = { maxBound.x, maxBound.y };
             }
             ImGui::End();
             ImGui::PopStyleVar();         
@@ -189,11 +203,88 @@ namespace Engine
 
     bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& e)
     {
+        if (Input::IsKeyPressed(ENGINE_KEY_LEFT_CONTROL))
+        {
+            switch (e.GetKeyCode())
+            {
+            case ENGINE_KEY_N:
+                NewScene();
+                break;
+            case ENGINE_KEY_O:
+                OpenScene();
+                break;
+            case ENGINE_KEY_S:
+                SaveScene();
+                break;
+            }
+        }
+        if (Input::IsKeyPressed(ENGINE_KEY_LEFT_SHIFT))
+        {
+            switch (e.GetKeyCode())
+            {
+            case ENGINE_KEY_S:
+                SaveSceneAs();
+                break;
+            }
+        }
+
         return false;
     }
 
     bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
     {
+        //Mouse pick 
+        if (e.GetMouseButton() == ENGINE_MOUSE_BUTTON_LEFT && m_ViewportHovered)
+        {
+            auto [mouseX, mouseY] = GetMouseViewportSpace();
+            if (mouseX > -1.0f && mouseX < 1.0f && mouseY > -1.0f && mouseY < 1.0f)
+            {
+                auto [origin, direction] = CastRay(mouseX, mouseY);
+
+                m_SelectionContext.clear();
+                m_EditorScene->SetSelectedEntity({});
+                auto meshEntities = m_EditorScene->GetAllEntitiesWith<MeshComponent>();
+                for (auto e : meshEntities)
+                {
+                    Entity entity(e, m_EditorScene.get());
+                    auto mesh = entity.GetComponent<MeshComponent>().Mesh;
+                    if (!mesh)
+                        continue;
+
+                    //查询Ray所碰撞的AABB
+                    auto& submeshes = mesh->GetSubmeshes();
+                    for (uint32_t i = 0; i < submeshes.size(); i++)
+                    {
+                        auto& submesh = submeshes[i];
+                        Ray ray(
+                            glm::inverse(entity.Transform().GetTransform() * submesh.Transform) * glm::vec4(origin, 1.0f),
+                            glm::inverse(glm::mat3(entity.Transform().GetTransform()) * glm::mat3(submesh.Transform)) * direction
+                        );
+
+                        float t;
+                        bool intersects = ray.IntersectsAABB(submesh.BoundingBox, t);
+                        if (intersects)
+                        {
+                            const auto& triangleCache = mesh->GetTriangleCache(i);
+                            for (const auto& triangle : triangleCache)
+                            {
+                                if (ray.IntersectsTriangle(triangle.V0.Position, triangle.V1.Position, triangle.V2.Position, t))
+                                {
+                                    m_SelectionContext.push_back({ entity, &submesh, t });
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //根据最小距离排序
+                std::sort(m_SelectionContext.begin(), m_SelectionContext.end(), [](auto& a, auto& b) { return a.Distance < b.Distance; });
+                if (m_SelectionContext.size())
+                    OnEntitySelected(m_SelectionContext[0]);
+            }
+        }
+
         return false;
     }
 
@@ -247,6 +338,69 @@ namespace Engine
             serializer.Serialize(filepath);
 
             m_SceneFilePath = filepath;
+        }
+    }
+
+    void EditorLayer::SelectEntity(Entity entity)
+    {
+        SelectedSubmesh selection;
+        selection.Entity = entity;
+        if (entity.HasComponent<MeshComponent>())
+        {
+            auto& mc = entity.GetComponent<MeshComponent>();
+            if (mc.Mesh)
+                selection.Mesh = &mc.Mesh->GetSubmeshes()[0];
+        }
+
+        m_SelectionContext.clear();
+        m_SelectionContext.push_back(selection);
+
+        m_EditorScene->SetSelectedEntity(entity);
+    }
+
+    std::pair<float, float> EditorLayer::GetMouseViewportSpace() const
+    {
+        auto [mx, my] = ImGui::GetMousePos();
+        mx -= m_ViewportBounds[0].x;
+        my -= m_ViewportBounds[0].y;
+
+        auto viewportWidth = m_ViewportBounds[1].x - m_ViewportBounds[0].x;
+        auto viewportHeight = m_ViewportBounds[1].y - m_ViewportBounds[0].y;
+
+        return { (mx / viewportWidth) * 2.0f - 1.0f, ((-my / viewportHeight) * 2.0f - 1.0f) };
+    }
+
+    std::pair<glm::vec3, glm::vec3> EditorLayer::CastRay(float mx, float my)
+    {
+        glm::vec4 mouseClipPos = { mx, my, -1.0f, 1.0f };
+
+        auto inverseProj = glm::inverse(m_EditorCamera.GetProjection());
+        auto inverseView = glm::inverse(glm::mat3(m_EditorCamera.GetViewMatrix()));
+
+        glm::vec4 ray = inverseProj * mouseClipPos;
+        glm::vec3 rayPos = m_EditorCamera.GetPosition();
+        glm::vec3 rayDir = inverseView * glm::vec3(ray);
+
+        return { rayPos, rayDir };
+    }
+
+    void EditorLayer::OnEntitySelected(SelectedSubmesh& selectionContext)
+    {
+        APP_TRACE("Select entity: '{0}', mesh: '{1}', submesh: '{2}'",
+            selectionContext.Entity.GetComponent<TagComponent>().Tag,
+            selectionContext.Mesh ? selectionContext.Mesh->MeshName : "",
+            selectionContext.Mesh ? selectionContext.Mesh->NodeName : ""
+        );
+        m_SceneHierarchyPanel.SetSelectedEntity(selectionContext.Entity);
+        m_EditorScene->SetSelectedEntity(selectionContext.Entity);
+    }
+
+    void EditorLayer::OnEntityDeleted(Entity e)
+    {
+        if (m_SelectionContext[0].Entity == e)
+        {
+            m_SelectionContext.clear();
+            m_EditorScene->SetSelectedEntity({});
         }
     }
 }

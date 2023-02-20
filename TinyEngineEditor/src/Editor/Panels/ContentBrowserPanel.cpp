@@ -113,7 +113,6 @@ namespace Engine
             }
             else
             {
-                filenameString = relativePath.stem().string();
                 if (ImGui::TreeNodeEx(filenameString.c_str(), ImGuiTreeNodeFlags_Leaf))
                 {
                     ImGui::TreePop();

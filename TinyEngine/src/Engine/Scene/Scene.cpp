@@ -57,7 +57,11 @@ namespace Engine
 
 	void Scene::OnUpdate(Timestep ts)
 	{
-		/*
+		//TODO: Update physics, scripts
+	}
+
+	void Scene::OnRenderRuntime(Timestep ts)
+	{
 		//Get main camera
 		Entity cameraEntity = GetMainCameraEntity();
 		if (!cameraEntity)
@@ -68,7 +72,40 @@ namespace Engine
 
 		SceneCamera& camera = cameraEntity.GetComponent<CameraComponent>();
 		glm::mat4 cameraViewMatrix = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
-		*/
+
+		//Process directional lights
+		m_LightEnvironment = LightEnvironment();
+		auto& lights = m_Registry.group<DirectionalLightComponent>(entt::get<TransformComponent>);
+		uint32_t directionalLightIndex = 0;
+		for (auto entity : lights)
+		{
+			if (directionalLightIndex >= 4) {
+				ENGINE_WARN("Too many directional lights! Only support the first 4 lights!");
+				break;
+			}
+
+			auto [transformComponent, lightComponent] = lights.get<TransformComponent, DirectionalLightComponent>(entity);
+			glm::vec3 direction = -glm::normalize(glm::mat3(transformComponent.GetTransform()) * glm::vec3(1.0f));
+			m_LightEnvironment.DirectionalLights[directionalLightIndex++] =
+			{
+				direction,
+				lightComponent.Radiance,
+				lightComponent.Intensity,
+				lightComponent.CastShadows
+			};
+		}
+
+		SceneRenderer::BeginScene(this, { camera, cameraViewMatrix });
+		auto group = m_Registry.group<MeshComponent>(entt::get<TransformComponent>);
+		for (auto entity : group)
+		{
+			auto& [meshComponent, transformComponent] = group.get<MeshComponent, TransformComponent>(entity);
+			if (meshComponent.Mesh)
+			{
+				SceneRenderer::SubmitMesh(meshComponent.Mesh, transformComponent.GetTransform());
+			}
+		}
+		SceneRenderer::EndScene();
 	}
 
 	void Scene::OnRenderEditor(Timestep ts, const Camera& editorCamera, const glm::mat4& viewMatrix)
@@ -108,23 +145,6 @@ namespace Engine
 		SceneRenderer::EndScene();
 	}
 
-	void Scene::OnViewportResize(uint32_t width, uint32_t height)
-	{
-		m_ViewportWidth = width;
-		m_ViewportHeight = height;
-
-		//Resize non-FixedAspectRatio camera
-		auto view = m_Registry.view<CameraComponent>();
-		for (auto entity : view)
-		{
-			auto& cameraComponent = view.get<CameraComponent>(entity);
-			if (!cameraComponent.FixedAspectRatio)
-			{
-				cameraComponent.Camera.SetViewportSize(width, height);
-			}
-		}
-	}
-
 	Entity Scene::GetMainCameraEntity()
 	{
 		auto view = m_Registry.view<CameraComponent>();
@@ -142,6 +162,11 @@ namespace Engine
 	{
 		m_Environment.SkyboxMap = skybox;
 		m_SkyboxMaterial->Set("u_Skybox", skybox);
+	}
+
+	Entity Scene::GetSelectedEntity()
+	{
+		return Entity(m_SelectedEntityHandle, this);
 	}
 
 	template<typename T>

@@ -10,6 +10,7 @@
 #include "Engine/Renderer/VertexArray.h"
 #include "Engine/Renderer/VertexBuffer.h"
 #include "Engine/Renderer/IndexBuffer.h"
+#include "Engine/Core/Math/AABB.h"
 
 struct aiScene;
 struct aiNode;
@@ -63,6 +64,7 @@ namespace Engine
 		uint32_t VertexCount	= 0;
 
 		glm::mat4 Transform = glm::mat4(1.0f);
+		AABB BoundingBox;
 	};
 
 	//------------------------------------------------------------------------------------
@@ -84,6 +86,12 @@ namespace Engine
 		const std::vector<Submesh>& GetSubmeshes() const { return m_Submeshes; }
 		const std::vector<Vertex>& GetStaticVertices() const { return m_StaticVertices; }
 		const std::vector<Index>& GetIndices() const { return m_Indices; }
+
+		/// <summary>
+		/// 获取某个Submesh的所有Triangle
+		/// </summary>
+		const std::vector<Triangle> GetTriangleCache(uint32_t index) const { return m_TriangleCache.at(index); }
+
 		/// <summary>
 		/// 获取Material
 		/// </summary>
@@ -110,6 +118,8 @@ namespace Engine
 
 		std::vector<Vertex> m_StaticVertices;
 		std::vector<Index> m_Indices;
+
+		std::unordered_map<uint32_t, std::vector<Triangle>> m_TriangleCache;
 
 		//Material
 		Ref<Shader> m_MeshShader;

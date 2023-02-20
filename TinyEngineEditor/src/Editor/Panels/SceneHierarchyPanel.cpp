@@ -215,6 +215,11 @@ namespace Engine
 		ImGui::End();
 	}
 
+	void SceneHierarchyPanel::SetSelectedEntity(Entity entity)
+	{
+		m_SelectionContext = entity;
+	}
+
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
 		auto& tag = entity.GetComponent<TagComponent>().Tag;
@@ -224,6 +229,8 @@ namespace Engine
 		if (ImGui::IsItemClicked())
 		{
 			m_SelectionContext = entity;
+			if (m_SelectionChangedCallback)
+				m_SelectionChangedCallback(m_SelectionContext);
 		}
 
 		bool entityDeleted = false;
@@ -245,6 +252,8 @@ namespace Engine
 			m_Context->DestroyEntity(entity);
 			if (m_SelectionContext == entity)
 				m_SelectionContext = {};
+
+			m_EntityDeletedCallback(entity);
 		}
 	}
 

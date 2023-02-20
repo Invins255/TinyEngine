@@ -27,13 +27,21 @@ namespace Engine
 		Scene(const std::string& name = "Empty Scene");
 		~Scene();
 
+		//Entity operations
 		Entity CreateEntity(const std::string& name = "Empty Entity");
 		Entity CreateEntity(UUID uuid, const std::string& name = "Empty Entity");
-		void DestroyEntity(Entity entity);
+		void DestroyEntity(Entity entity);	
+		void SetSelectedEntity(entt::entity entity) { m_SelectedEntityHandle = entity; }
+		Entity GetSelectedEntity();
+		template<typename T>
+		auto GetAllEntitiesWith()
+		{
+			return m_Registry.view<T>();
+		}
 
 		void OnUpdate(Timestep ts);
+		void OnRenderRuntime(Timestep ts);
 		void OnRenderEditor(Timestep ts, const Camera& editorCamera, const glm::mat4& viewMatrix);
-		void OnViewportResize(uint32_t width, uint32_t height);
 	
 		const std::string GetName() const { return m_Name; }
 		void SetName(const std::string& name) { m_Name = name; }
@@ -60,6 +68,7 @@ namespace Engine
 		entt::registry m_Registry;
 		uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 
+		entt::entity m_SelectedEntityHandle = entt::null;
 		EntityMap m_EntityIDMap;
 
 		//Lights

@@ -103,12 +103,23 @@ namespace Engine
             ENGINE_ASSERT(mesh->HasPositions(), "Mesh has no positions!");
             ENGINE_ASSERT(mesh->HasNormals(), "Mesh has no normals!");
 
+            auto& aabb = submesh.BoundingBox;
+            aabb.Min = { FLT_MAX, FLT_MAX, FLT_MAX };
+            aabb.Max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
             //Vertices
             for (uint32_t j = 0; j < mesh->mNumVertices; j++)
             {
                 Vertex vertex;
                 vertex.Position = { mesh->mVertices[j].x,mesh->mVertices[j].y ,mesh->mVertices[j].z };
+                aabb.Min.x = glm::min(vertex.Position.x, aabb.Min.x);
+                aabb.Min.y = glm::min(vertex.Position.y, aabb.Min.y);
+                aabb.Min.z = glm::min(vertex.Position.z, aabb.Min.z);
+                aabb.Max.x = glm::max(vertex.Position.x, aabb.Max.x);
+                aabb.Max.y = glm::max(vertex.Position.y, aabb.Max.y);
+                aabb.Max.z = glm::max(vertex.Position.z, aabb.Max.z);
+                
                 vertex.Normal = { mesh->mNormals[j].x,mesh->mNormals[j].y, mesh->mNormals[j].z };
+                
                 if (mesh->HasTangentsAndBitangents())
                 {
                     vertex.Tangent = { mesh->mTangents[j].x, mesh->mTangents[j].y ,mesh->mTangents[j].z };
@@ -125,6 +136,12 @@ namespace Engine
                 ENGINE_ASSERT(mesh->mFaces[j].mNumIndices == 3, "Face must have 3 indices!");
                 Index index = { mesh->mFaces[j].mIndices[0], mesh->mFaces[j].mIndices[1] ,mesh->mFaces[j].mIndices[2] };
                 m_Indices.push_back(index);
+
+                m_TriangleCache[i].emplace_back(
+                    m_StaticVertices[index.V1 + submesh.BaseVertex],
+                    m_StaticVertices[index.V2 + submesh.BaseVertex],
+                    m_StaticVertices[index.V3 + submesh.BaseVertex]
+                );
             }
         }
 
@@ -339,6 +356,28 @@ namespace Engine
         submesh.IndexCount = indices.size() * 3;
         submesh.VertexCount = vertices.size();
         submesh.Transform = transform;
+
+        auto& aabb = submesh.BoundingBox;
+        aabb.Min = { FLT_MAX, FLT_MAX, FLT_MAX };
+        aabb.Max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+        for (auto& vertex : m_StaticVertices)
+        {
+            aabb.Min.x = glm::min(vertex.Position.x, aabb.Min.x);
+            aabb.Min.y = glm::min(vertex.Position.y, aabb.Min.y);
+            aabb.Min.z = glm::min(vertex.Position.z, aabb.Min.z);
+            aabb.Max.x = glm::max(vertex.Position.x, aabb.Max.x);
+            aabb.Max.y = glm::max(vertex.Position.y, aabb.Max.y);
+            aabb.Max.z = glm::max(vertex.Position.z, aabb.Max.z);
+        }
+
+        for (auto& index : m_Indices)
+        {
+            m_TriangleCache[0].emplace_back(
+                m_StaticVertices[index.V1 + submesh.BaseVertex],
+                m_StaticVertices[index.V2 + submesh.BaseVertex],
+                m_StaticVertices[index.V3 + submesh.BaseVertex]
+            );
+        }
 
         //TEMP
         m_MeshShader = Renderer::GetShaderLibrary().Get(m_InitShaderName);

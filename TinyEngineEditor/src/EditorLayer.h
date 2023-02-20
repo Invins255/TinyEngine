@@ -11,6 +11,19 @@ namespace Engine
 {
 	class EditorLayer : public Engine::Layer
 	{
+	private:
+		enum class SelectionMode
+		{
+			None = 0, Entity, SubMesh
+		};
+		
+		struct SelectedSubmesh
+		{
+			Engine::Entity Entity;
+			Submesh* Mesh = nullptr;
+			float Distance = 0.0f;
+		};
+
 	public:
 		EditorLayer();
 		virtual ~EditorLayer() = default;
@@ -29,8 +42,17 @@ namespace Engine
 		void SaveScene();
 		void SaveSceneAs();
 
+		void SelectEntity(Entity entity);
+
 	private:
-		glm::vec2 m_ViewportSize = {0.0f, 0.0f};
+		std::pair<float, float> GetMouseViewportSpace() const;
+		std::pair<glm::vec3, glm::vec3> CastRay(float mx, float my);
+
+		void OnEntitySelected(SelectedSubmesh& selectionContext);
+		void OnEntityDeleted(Entity e);
+
+	private:
+		glm::vec2 m_ViewportBounds[2];
 		bool m_ViewportFocused = false;
 		bool m_ViewportHovered = false;
 			
@@ -45,17 +67,7 @@ namespace Engine
 		ContentBrowserPanel m_ContentBrowserPanel;
 
 		//Selection
-		enum class SelectionMode
-		{
-			None = 0, Entity, SubMesh
-		};
 		SelectionMode m_SelectionMode = SelectionMode::Entity;
-
-		struct SelectedSubmesh
-		{
-			Engine::Entity Entity;
-			Submesh* Mesh = nullptr;
-		};
 		std::vector<SelectedSubmesh> m_SelectionContext;
 	};
 

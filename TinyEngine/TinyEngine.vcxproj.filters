@@ -989,6 +989,8 @@
     <ClInclude Include="src\Engine\Scene\Environment.h" />
     <ClInclude Include="src\Engine\ImGui\ImGuizmo.h" />
     <ClInclude Include="src\Engine\Core\Timer.h" />
+    <ClInclude Include="src\Engine\Core\Math\Ray.h" />
+    <ClInclude Include="src\Engine\Core\Math\AABB.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">

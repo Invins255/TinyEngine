@@ -20,6 +20,10 @@ namespace Engine
 		Ref<Scene> GetContext() const { return m_Context; }
 		Entity GetSelectedEntity() const { return m_SelectionContext; }
 
+		void SetSelectedEntity(Entity entity);
+		void SetSelectionChangedCallback(const std::function<void(Entity)>& func) { m_SelectionChangedCallback = func; }
+		void SetEntityDeletedCallback(const std::function<void(Entity)>& func) { m_EntityDeletedCallback = func; }
+
 	private:
 		void DrawEntityNode(Entity entity);
 		void DrawComponents(Entity entity);
@@ -34,5 +38,8 @@ namespace Engine
 	private:
 		Ref<Scene> m_Context;
 		Entity m_SelectionContext;
+
+		std::function<void(Entity)> m_SelectionChangedCallback;
+		std::function<void(Entity)> m_EntityDeletedCallback;
 	};
 }

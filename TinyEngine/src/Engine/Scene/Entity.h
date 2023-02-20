@@ -4,6 +4,7 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Scene/Scene.h"
 #include "Engine/Scene/Entity.h"
+#include "Engine/Scene/Component.h"
 
 namespace Engine
 {
@@ -45,6 +46,10 @@ namespace Engine
 			ENGINE_ASSERT(HasComponent<T>(), "Entity does not have component!");
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
+
+		IDComponent& ID() { return GetComponent<IDComponent>(); }
+		TagComponent& Tag() { return GetComponent<TagComponent>(); }
+		TransformComponent& Transform() { return GetComponent<TransformComponent>(); }
 
 		operator bool() const { return m_EntityHandle != entt::null; }
 		operator uint32_t() const { return (uint32_t)m_EntityHandle; }

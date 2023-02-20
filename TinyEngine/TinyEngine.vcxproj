@@ -146,6 +146,8 @@
     <ClInclude Include="src\Engine\Core\Layer.h" />
     <ClInclude Include="src\Engine\Core\LayerStack.h" />
     <ClInclude Include="src\Engine\Core\Log.h" />
+    <ClInclude Include="src\Engine\Core\Math\AABB.h" />
+    <ClInclude Include="src\Engine\Core\Math\Ray.h" />
     <ClInclude Include="src\Engine\Core\MouseButtonCodes.h" />
     <ClInclude Include="src\Engine\Core\Timer.h" />
     <ClInclude Include="src\Engine\Core\TimeStep.h" />
