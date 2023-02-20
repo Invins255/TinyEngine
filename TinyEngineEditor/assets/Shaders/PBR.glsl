@@ -211,7 +211,10 @@ void main()
 	vec3 ambient = vec3(0.03) * params.Albedo;	
 	vec3 Lo = CalculateLight();
 
-	vec3 result = ambient + Lo;
+	float shadow = CalculateShadow(fs_Input.LightSpacePosition);
+
+	vec3 result = ambient + Lo * (1 - shadow);
+	
 	//Gamma correct
 	result = pow(result, vec3(1.0 / 2.2));
 	fragColor = vec4(result, 1.0);
