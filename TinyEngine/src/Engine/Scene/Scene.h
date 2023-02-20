@@ -7,6 +7,7 @@
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Renderer/Material.h"
 #include "Engine/Scene/Environment.h"
+#include "Engine/Renderer/Camera.h"
 
 #include <unordered_map>
 
@@ -31,11 +32,17 @@ namespace Engine
 		void DestroyEntity(Entity entity);
 
 		void OnUpdate(Timestep ts);
-		void OnRenderEditor(Timestep ts, const Camera& editorCamera);
+		void OnRenderEditor(Timestep ts, const Camera& editorCamera, const glm::mat4& viewMatrix);
 		void OnViewportResize(uint32_t width, uint32_t height);
 	
 		const std::string GetName() const { return m_Name; }
 		void SetName(const std::string& name) { m_Name = name; }
+
+		void SetViewportSize(uint32_t width, uint32_t height)
+		{
+			m_ViewportWidth = width;
+			m_ViewportHeight = height;
+		}
 
 		const EntityMap& GetEntityMap() const { return m_EntityIDMap; }
 		Entity GetMainCameraEntity();

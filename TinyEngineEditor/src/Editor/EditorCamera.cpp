@@ -18,7 +18,7 @@ namespace Engine
 		m_Rotation = glm::vec3(90.0f, 0.0f, 0.0f);
 		m_FocalPoint = glm::vec3(0.0f);
 
-		glm::vec3 position = { -5, 5, 5 };
+		glm::vec3 position = { -50, 50, 50 };
 		m_Distance = glm::distance(position, m_FocalPoint);
 
 		m_Yaw = 3.0f * (float)M_PI / 4.0f;
@@ -33,19 +33,16 @@ namespace Engine
 
 	void EditorCamera::OnUpdate(Timestep ts)
 	{
-		if (Input::IsKeyPressed(ENGINE_KEY_LEFT_ALT))
-		{
-			const glm::vec2& mouse{ Input::GetMouseX(), Input::GetMouseY() };
-			glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
-			m_InitialMousePosition = mouse;
+		const glm::vec2& mouse{ Input::GetMouseX(), Input::GetMouseY() };
+		glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
+		m_InitialMousePosition = mouse;
 
-			if (Input::IsMouseButtonPressed(ENGINE_MOUSE_BUTTON_MIDDLE))
-				MousePan(delta);
-			else if (Input::IsMouseButtonPressed(ENGINE_MOUSE_BUTTON_LEFT))
-				MouseRotate(delta);
-			else if (Input::IsMouseButtonPressed(ENGINE_MOUSE_BUTTON_RIGHT))
-				MouseZoom(delta.y);
-		}
+		if (Input::IsMouseButtonPressed(ENGINE_MOUSE_BUTTON_MIDDLE))
+			MousePan(delta);
+		else if (Input::IsMouseButtonPressed(ENGINE_MOUSE_BUTTON_LEFT))
+			MouseRotate(delta);
+		else if (Input::IsMouseButtonPressed(ENGINE_MOUSE_BUTTON_RIGHT))
+			MouseZoom(delta.y);
 
 		UpdateCameraView();
 	}

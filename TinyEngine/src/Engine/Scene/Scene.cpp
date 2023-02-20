@@ -57,6 +57,7 @@ namespace Engine
 
 	void Scene::OnUpdate(Timestep ts)
 	{
+		/*
 		//Get main camera
 		Entity cameraEntity = GetMainCameraEntity();
 		if (!cameraEntity)
@@ -67,7 +68,11 @@ namespace Engine
 
 		SceneCamera& camera = cameraEntity.GetComponent<CameraComponent>();
 		glm::mat4 cameraViewMatrix = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+		*/
+	}
 
+	void Scene::OnRenderEditor(Timestep ts, const Camera& editorCamera, const glm::mat4& viewMatrix)
+	{
 		//Process directional lights
 		m_LightEnvironment = LightEnvironment();
 		auto& lights = m_Registry.group<DirectionalLightComponent>(entt::get<TransformComponent>);
@@ -75,7 +80,7 @@ namespace Engine
 		for (auto entity : lights)
 		{
 			if (directionalLightIndex >= 4) {
-				ENGINE_WARN("Too many directional lights! Only the first 4 lights are valid!");
+				ENGINE_WARN("Too many directional lights! Only support the first 4 lights!");
 				break;
 			}
 
@@ -90,7 +95,7 @@ namespace Engine
 			};
 		}
 
-		SceneRenderer::BeginScene(this, {camera, cameraViewMatrix});
+		SceneRenderer::BeginScene(this, {editorCamera, viewMatrix});
 		auto group = m_Registry.group<MeshComponent>(entt::get<TransformComponent>);
 		for (auto entity : group)
 		{
@@ -101,10 +106,6 @@ namespace Engine
 			}
 		}
 		SceneRenderer::EndScene();
-	}
-
-	void Scene::OnRenderEditor(Timestep ts, const Camera& editorCamera)
-	{
 	}
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)

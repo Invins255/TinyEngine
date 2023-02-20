@@ -71,23 +71,22 @@ namespace Engine
     }
 
     void EditorLayer::OnUpdate(Timestep ts)
-    {    
-        //Resize
-        auto spec = SceneRenderer::GetFinalFrameBuffer()->GetSpecification();
-        if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
-        {
-            SceneRenderer::SetViewportSize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-            m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-            ENGINE_INFO("Viewport window size: ({0}, {1})", (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-        }
-               
-        //Update scene
-        m_EditorScene->OnUpdate(ts);
+    {      
+        //Update editor scene
+        if(m_ViewportFocused)
+            m_EditorCamera.OnUpdate(ts);
+
+        m_EditorScene->OnRenderEditor(ts, m_EditorCamera, m_EditorCamera.GetViewMatrix());
     }
 
     void EditorLayer::OnEvent(Engine::Event& e)
     {
+        if (m_ViewportFocused)
+            m_EditorCamera.OnEvent(e); 
 
+        EventDispatcher dispatcher(e);
+        dispatcher.Dispatch<KeyPressedEvent>(ENGINE_BIND_EVENT_FN(EditorLayer::OnKeyPressedEvent));
+        dispatcher.Dispatch<MouseButtonPressedEvent>(ENGINE_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
     }
 
     void EditorLayer::OnImGuiRender()
@@ -169,6 +168,10 @@ namespace Engine
                 
                 ImVec2 viewportSize = ImGui::GetContentRegionAvail();
                 m_ViewportSize = glm::vec2(viewportSize.x, viewportSize.y);
+                SceneRenderer::SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+                m_EditorScene->SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+                m_EditorCamera.SetProjection(glm::perspectiveFov(glm::radians(45.0f), viewportSize.x, viewportSize.y, 0.1f, 1000.0f));
+                m_EditorCamera.SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 
                 uint32_t textureID = SceneRenderer::GetFinalColorBufferRendererID();
                 ImGui::Image((void*)textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), { 0, 1 }, { 1, 0 });
@@ -182,6 +185,16 @@ namespace Engine
 
         }
         ImGui::End();
+    }
+
+    bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& e)
+    {
+        return false;
+    }
+
+    bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+    {
+        return false;
     }
 
 

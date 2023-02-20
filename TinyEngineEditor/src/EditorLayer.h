@@ -17,10 +17,11 @@ namespace Engine
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
-
 		virtual void OnUpdate(Engine::Timestep ts) override;
 		virtual void OnEvent(Engine::Event& e) override;
 		virtual void OnImGuiRender() override;
+		bool OnKeyPressedEvent(KeyPressedEvent& e);
+		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
 		void NewScene();
 		void OpenScene();
