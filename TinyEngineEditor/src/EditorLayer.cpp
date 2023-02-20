@@ -21,7 +21,7 @@
 namespace Engine
 {
     EditorLayer::EditorLayer():
-	    Layer("EditorLayer")
+	    Layer("EditorLayer"), m_EditorCamera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 1000.0f))
     {
     }
 
@@ -159,13 +159,6 @@ namespace Engine
 
             //ImGui::ShowDemoWindow();
 
-            //Settings----------------------------------------------------------------------
-            ImGui::Begin("Stats");
-            {
-
-            }
-            ImGui::End();
-
             //Viewport----------------------------------------------------------------------
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
             ImGui::Begin("Viewport");
@@ -191,11 +184,14 @@ namespace Engine
         ImGui::End();
     }
 
+
     void EditorLayer::NewScene()
     {
-        m_EditorScene = CreateRef<Scene>("Empty Scene");
+        m_EditorScene = CreateRef<Scene>("Untitled Scene");
         m_SceneHierarchyPanel.SetContext(m_EditorScene);
         m_SceneFilePath = "";
+
+        m_EditorCamera = EditorCamera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 1000.0f));
     }
 
     void EditorLayer::OpenScene()

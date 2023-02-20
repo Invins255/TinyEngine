@@ -31,6 +31,7 @@ namespace Engine
 		void DestroyEntity(Entity entity);
 
 		void OnUpdate(Timestep ts);
+		void OnRenderEditor(Timestep ts, const Camera& editorCamera);
 		void OnViewportResize(uint32_t width, uint32_t height);
 	
 		const std::string GetName() const { return m_Name; }
@@ -54,6 +55,7 @@ namespace Engine
 
 		EntityMap m_EntityIDMap;
 
+		//Lights
 		LightEnvironment m_LightEnvironment;
 
 		//Environment

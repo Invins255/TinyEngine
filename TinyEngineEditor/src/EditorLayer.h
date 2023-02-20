@@ -1,8 +1,9 @@
 #pragma once
 
 #include "TinyEngine.h"
-#include "Panels/SceneHierarchyPanel.h"
-#include "Panels/ContentBrowserPanel.h"
+#include "Editor/Panels/SceneHierarchyPanel.h"
+#include "Editor/Panels/ContentBrowserPanel.h"
+#include "Editor/EditorCamera.h"
 
 #include <glm/glm.hpp>
 
@@ -31,15 +32,30 @@ namespace Engine
 		glm::vec2 m_ViewportSize = {0.0f, 0.0f};
 		bool m_ViewportFocused = false;
 		bool m_ViewportHovered = false;
+			
+		EditorCamera m_EditorCamera;
 
 		//Scene
 		Ref<Scene> m_EditorScene;
-		Ref<Scene> m_RuntimeScene;
 		std::string m_SceneFilePath;
 
 		//Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		ContentBrowserPanel m_ContentBrowserPanel;
+
+		//Selection
+		enum class SelectionMode
+		{
+			None = 0, Entity, SubMesh
+		};
+		SelectionMode m_SelectionMode = SelectionMode::Entity;
+
+		struct SelectedSubmesh
+		{
+			Engine::Entity Entity;
+			Submesh* Mesh = nullptr;
+		};
+		std::vector<SelectedSubmesh> m_SelectionContext;
 	};
 
 }
