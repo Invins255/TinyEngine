@@ -139,6 +139,7 @@
     <ClInclude Include="src\Editor\EditorCamera.h" />
     <ClInclude Include="src\Editor\Panels\ContentBrowserPanel.h" />
     <ClInclude Include="src\EditorLayer.h" />
+    <ClInclude Include="src\Editor\Panels\MaterialEditorPanel.h" />
     <ClInclude Include="src\Editor\Panels\SceneHierarchyPanel.h" />
   </ItemGroup>
   <ItemGroup>
@@ -146,6 +147,7 @@
     <ClCompile Include="src\Editor\Panels\ContentBrowserPanel.cpp" />
     <ClCompile Include="src\EditorApp.cpp" />
     <ClCompile Include="src\EditorLayer.cpp" />
+    <ClCompile Include="src\Editor\Panels\MaterialEditorPanel.cpp" />
     <ClCompile Include="src\Editor\Panels\SceneHierarchyPanel.cpp" />
   </ItemGroup>
   <ItemGroup>

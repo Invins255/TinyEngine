@@ -3,6 +3,7 @@
 #include "TinyEngine.h"
 #include "Editor/Panels/SceneHierarchyPanel.h"
 #include "Editor/Panels/ContentBrowserPanel.h"
+#include "Editor/Panels/MaterialEditorPanel.h"
 #include "Editor/EditorCamera.h"
 
 #include <glm/glm.hpp>
@@ -46,7 +47,7 @@ namespace Engine
 
 	private:
 		std::pair<float, float> GetMouseViewportSpace() const;
-		std::pair<glm::vec3, glm::vec3> CastRay(float mx, float my);
+		std::pair<glm::vec3, glm::vec3> CastMouseRay(float mx, float my);
 
 		void OnEntitySelected(SelectedSubmesh& selectionContext);
 		void OnEntityDeleted(Entity e);
@@ -65,6 +66,7 @@ namespace Engine
 		//Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		ContentBrowserPanel m_ContentBrowserPanel;
+		MaterialEditorPanel m_MaterialEditorPanel;
 
 		//Selection
 		SelectionMode m_SelectionMode = SelectionMode::Entity;

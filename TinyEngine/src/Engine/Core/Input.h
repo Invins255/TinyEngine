@@ -6,7 +6,7 @@ namespace Engine
 {
 	/// <summary>
 	/// Input基类，基于不同平台对子类进行实现。Input是一个单例。
-	/// </summary>
+	/// </summary>  
 	class Input
 	{
 	public:

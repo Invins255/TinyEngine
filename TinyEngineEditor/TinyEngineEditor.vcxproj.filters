@@ -12,6 +12,7 @@
     </ClInclude>
     <ClInclude Include="src\Editor\Panels\ContentBrowserPanel.h" />
     <ClInclude Include="src\Editor\EditorCamera.h" />
+    <ClInclude Include="src\Editor\Panels\MaterialEditorPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApp.cpp" />
@@ -21,5 +22,6 @@
     </ClCompile>
     <ClCompile Include="src\Editor\Panels\ContentBrowserPanel.cpp" />
     <ClCompile Include="src\Editor\EditorCamera.cpp" />
+    <ClCompile Include="src\Editor\Panels\MaterialEditorPanel.cpp" />
   </ItemGroup>
 </Project>

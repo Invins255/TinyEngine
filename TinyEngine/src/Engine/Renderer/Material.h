@@ -97,7 +97,7 @@ namespace Engine
 			ENGINE_ASSERT(resource, "Conld not find uniform in shader!");
 			uint32_t slot = resource->GetRegister();
 			ENGINE_ASSERT(slot < m_Textures.size(), "Texture slot is invalid!");
-			return m_Textures[slot];
+			return std::dynamic_pointer_cast<T>(m_Textures[slot]);
 		}
 
 		ShaderUniform* FindShaderUniform(const std::string& name);
@@ -200,7 +200,18 @@ namespace Engine
 			ENGINE_ASSERT(resource, "Conld not find uniform in shader!");
 			uint32_t slot = resource->GetRegister();
 			ENGINE_ASSERT(slot < m_Textures.size(), "Texture slot is invalid!");
-			return m_Textures[slot];
+			return std::dynamic_pointer_cast<T>(m_Textures[slot]);
+		}
+		template<typename T>
+		Ref<T> TryGetResource(const std::string& name)
+		{
+			auto resource = m_Material->FindShaderResource(name);
+			if (!resource)
+				return nullptr;
+			uint32_t slot = resource->GetRegister();
+			if (slot >= m_Textures.size())
+				return nullptr;
+			return std::dynamic_pointer_cast<T>(m_Textures[slot]);
 		}
 
 	private:

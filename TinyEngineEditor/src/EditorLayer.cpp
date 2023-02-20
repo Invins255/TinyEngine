@@ -34,24 +34,31 @@ namespace Engine
 
         //TEMP
         auto skyboxTexture = TextureCube::Create(
-            "assets/textures/skybox/CornellBox/right.jpg",
-            "assets/textures/skybox/CornellBox/left.jpg",
-            "assets/textures/skybox/CornellBox/top.jpg",
-            "assets/textures/skybox/CornellBox/bottom.jpg",
-            "assets/textures/skybox/CornellBox/front.jpg",
-            "assets/textures/skybox/CornellBox/back.jpg"
+            "assets\\textures\\skybox\\CornellBox\\right.jpg",
+            "assets\\textures\\skybox\\CornellBox\\left.jpg",
+            "assets\\textures\\skybox\\CornellBox\\top.jpg",
+            "assets\\textures\\skybox\\CornellBox\\bottom.jpg",
+            "assets\\textures\\skybox\\CornellBox\\front.jpg",
+            "assets\\textures\\skybox\\CornellBox\\back.jpg"
         );
         m_EditorScene->SetSkybox(skyboxTexture);
    
         {
-            auto mesh = CreateRef<Mesh>("assets/models/Can/SodaCan.fbx");
-            auto& meshEntity = m_EditorScene->CreateEntity("SodaCan");
+            auto mesh = CreateRef<Mesh>("assets\\models\\Can\\SodaCan.fbx");
+            auto& meshEntity = m_EditorScene->CreateEntity("SodaCan 1");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 1.0f, 0.0f);
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(4.0f, 1.0f, 0.0f);
         }
         {
-            auto mesh = CreateRef<Mesh>("assets/models/Plane/Plane.fbx");
+            auto mesh = CreateRef<Mesh>("assets\\models\\Can\\SodaCan.fbx");
+            auto& meshEntity = m_EditorScene->CreateEntity("SodaCan 2");
+            meshEntity.AddComponent<MeshComponent>();
+            meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-4.0f, 1.0f, 0.0f);
+        }
+        {
+            auto mesh = CreateRef<Mesh>("assets\\models\\Plane\\Plane.fbx");
             auto& meshEntity = m_EditorScene->CreateEntity("Plane");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
@@ -193,9 +200,20 @@ namespace Engine
             ImGui::End();
             ImGui::PopStyleVar();         
 
+            //Material----------------------------------------------------------------------
+            if (!m_SelectionContext.empty())
+            {
+                Entity selectedEntity = m_SelectionContext.front().Entity;
+                m_MaterialEditorPanel.SetSelectedEntity(selectedEntity);
+            }
+            else
+                m_MaterialEditorPanel.SetSelectedEntity({});
+
+
             //Panels------------------------------------------------------------------------ 
             m_SceneHierarchyPanel.OnImGuiRender();
             m_ContentBrowserPanel.OnImGuiRender();
+            m_MaterialEditorPanel.OnImGuiRender();
 
         }
         ImGui::End();
@@ -239,7 +257,7 @@ namespace Engine
             auto [mouseX, mouseY] = GetMouseViewportSpace();
             if (mouseX > -1.0f && mouseX < 1.0f && mouseY > -1.0f && mouseY < 1.0f)
             {
-                auto [origin, direction] = CastRay(mouseX, mouseY);
+                auto [origin, direction] = CastMouseRay(mouseX, mouseY);
 
                 m_SelectionContext.clear();
                 m_EditorScene->SetSelectedEntity({});
@@ -296,6 +314,8 @@ namespace Engine
         m_SceneFilePath = "";
 
         m_EditorCamera = EditorCamera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 1000.0f));
+
+        APP_INFO("Create new scene");
     }
 
     void EditorLayer::OpenScene()
@@ -313,6 +333,8 @@ namespace Engine
         serializer.Deserialize(filepath);
         m_EditorScene = newScene;
         m_SceneHierarchyPanel.SetContext(m_EditorScene);
+
+        APP_INFO("Open scene '{0}'", filepath);
     }
 
     void EditorLayer::SaveScene()
@@ -326,6 +348,8 @@ namespace Engine
         {
             SaveSceneAs();
         }
+
+        APP_INFO("Save scene '{0}'", m_Name);
     }
 
     void EditorLayer::SaveSceneAs()
@@ -370,7 +394,7 @@ namespace Engine
         return { (mx / viewportWidth) * 2.0f - 1.0f, ((-my / viewportHeight) * 2.0f - 1.0f) };
     }
 
-    std::pair<glm::vec3, glm::vec3> EditorLayer::CastRay(float mx, float my)
+    std::pair<glm::vec3, glm::vec3> EditorLayer::CastMouseRay(float mx, float my)
     {
         glm::vec4 mouseClipPos = { mx, my, -1.0f, 1.0f };
 

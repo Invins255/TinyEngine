@@ -374,7 +374,7 @@ namespace Engine
 			{
 				UI::BeginPropertyGrid();
 				UI::PropertyColor("Radiance", dlc.Radiance);
-				UI::Property("Intensity", dlc.Intensity);
+				UI::Property("Intensity", dlc.Intensity, 0.1f, 0.0f, 100.0f);
 				UI::Property("Cast Shadows", dlc.CastShadows);
 				UI::EndPropertyGrid();
 			});
@@ -442,7 +442,7 @@ namespace Engine
 	{
 		if (!m_SelectionContext.HasComponent<T>())	
 		{
-			if (ImGui::Button(name.c_str()))
+			if (ImGui::Selectable(name.c_str()))
 			{
 				m_SelectionContext.AddComponent<T>();
 				ImGui::CloseCurrentPopup();

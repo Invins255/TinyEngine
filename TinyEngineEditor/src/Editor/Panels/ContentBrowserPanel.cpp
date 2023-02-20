@@ -9,8 +9,8 @@ namespace Engine
     ContentBrowserPanel::ContentBrowserPanel()
         :m_CurrentDirectory(m_DefaultAssetPath)
     {
-        m_DirectoryIcon = Texture2D::Create("resources/icons/ContentBrowser/Directory.png");
-        m_FileIcon = Texture2D::Create("resources/icons/ContentBrowser/File.png");
+        m_DirectoryIcon = Texture2D::Create("resources\\icons\\ContentBrowser\\Directory.png");
+        m_FileIcon = Texture2D::Create("resources\\icons\\ContentBrowser\\File.png");
     }
 
     void ContentBrowserPanel::OnImGuiRender()
@@ -80,7 +80,7 @@ namespace Engine
                     {
                         ImGui::SetTooltip(fileStringStr.c_str());
                     }
- 
+
                     ImGui::TextWrapped(stemStr.c_str());
 
                     ImGui::NextColumn();
