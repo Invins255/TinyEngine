@@ -373,7 +373,7 @@ void main()
 	}
 	params.View = normalize(u_CameraPosition - fs_Input.WorldPosition);
 
-	vec3 ambient = vec3(0.03) * params.Albedo;	
+	vec3 ambient = vec3(0.05) * params.Albedo;	
 	vec3 Lo = CalculateLight();
 
 	float shadow = CalculateShadow(fs_Input.LightSpacePosition);
@@ -389,10 +389,11 @@ void main()
 
 	// Reinhard tonemapping operator.
 	// see: "Photographic Tone Reproduction for Digital Images", eq. 4
-	float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
-	float mappedLuminance = (luminance * (1.0 + luminance / (pureWhite * pureWhite))) / (1.0 + luminance);
-	vec3 mappedColor = (mappedLuminance / luminance) * color;
-	//vec3 mappedColor = vec3(1.0) - exp(color * exposure);
+	
+	//float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
+	//float mappedLuminance = (luminance * (1.0 + luminance / (pureWhite * pureWhite))) / (1.0 + luminance);
+	//vec3 mappedColor = (mappedLuminance / luminance) * color;
+	vec3 mappedColor = vec3(1.0) - exp(color * exposure);
 
 	//Gamma correct
 	vec3 result = pow(mappedColor, vec3(1.0 / gamma));
