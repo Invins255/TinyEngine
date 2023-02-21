@@ -83,10 +83,17 @@ namespace Engine
 		None = 0, Directional = 1, Point = 2, Spot = 3
 	};
 
+	enum class ShadowsType
+	{
+		HardShadows = 0, PCF = 1, PCSS = 2
+	};
+
 	struct DirectionalLightComponent
 	{
 		glm::vec3 Radiance = { 1.0f, 1.0f, 1.0f };
 		float Intensity = 1.0f;
+		ShadowsType shadowsType = ShadowsType::HardShadows;
+		int SamplingRadius = 5;
 		bool CastShadows = true;
 	};
 }

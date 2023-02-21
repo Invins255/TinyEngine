@@ -1,5 +1,7 @@
 #include "SceneHierarchyPanel.h"
 
+#include <vector>
+
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 
@@ -372,11 +374,40 @@ namespace Engine
 			});
 		DrawComponent<DirectionalLightComponent>("Directional Light", entity, [](DirectionalLightComponent& dlc)
 			{
-				UI::BeginPropertyGrid();
-				UI::PropertyColor("Radiance", dlc.Radiance);
-				UI::Property("Intensity", dlc.Intensity, 0.1f, 0.0f, 100.0f);
-				UI::Property("Cast Shadows", dlc.CastShadows);
-				UI::EndPropertyGrid();
+				if (ImGui::CollapsingHeader("Emission", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					UI::BeginPropertyGrid();
+					UI::PropertyColor("Radiance", dlc.Radiance);
+					UI::Property("Intensity", dlc.Intensity, 0.1f, 0.0f, 100.0f);
+					UI::EndPropertyGrid();
+				}
+
+				if (ImGui::CollapsingHeader("Shadows", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::Columns(2);
+					UI::Property("Cast Shadows", dlc.CastShadows);					
+					{
+						const char* items[] = { "Hard Shadows", "PCF", "PCSS" };
+						static int item_current = static_cast<int>(dlc.shadowsType);
+						UI::PropertyDropdown("Shadow Type", items, 3, &item_current);
+						dlc.shadowsType = static_cast<ShadowsType>(item_current);
+					}
+
+					if(dlc.shadowsType == ShadowsType::PCF)
+					{
+						const std::vector<uint32_t> values= { 5, 10, 15, 20, 25 };
+						const char* items[] = { "5", "10", "15", "20", "25" };
+						int index = 0;
+						for (int i=0;i< values.size();i++)
+							if (values[i] == dlc.SamplingRadius)
+								index = i;						
+						static int item_current = index;
+						UI::PropertyDropdown("Sampling Radius", items, 5, &item_current);
+						dlc.SamplingRadius = values[item_current];
+					}
+					ImGui::Columns(1);
+				}
+				
 			});
 	}
 

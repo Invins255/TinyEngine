@@ -336,7 +336,7 @@ namespace Engine
 			
 			//Set lights 
 			//TODO: 目前只使用了1个方向光, 需要补充为4个
-			auto directionalLight = s_Data->m_SceneData.SceneLightEnvironment.DirectionalLights[0];	//BUG: directionalLight方向可能出错
+			auto directionalLight = s_Data->m_SceneData.SceneLightEnvironment.DirectionalLights[0];
 			baseMaterial->Set("u_DirectionalLight", directionalLight); 
 
 			//Shadow map

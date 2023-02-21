@@ -87,6 +87,9 @@ namespace Engine
 		void UploadUniformMat4(uint32_t location, const glm::mat4& matrix);
 		void UploadUniformMat4Array(uint32_t location, const glm::mat4& matrix, uint32_t count);
 		
+		/// <summary>
+		/// 上传struct变量。向Shader传递struct变量时，应保证struct内部变量紧密排列，并且本地定义struct应与shader内部struct变量顺序一致
+		/// </summary>
 		void UploadUniformStruct(OpenGLShaderUniform* uniform, uint8_t* buffer, uint32_t offset);
 
 	private:

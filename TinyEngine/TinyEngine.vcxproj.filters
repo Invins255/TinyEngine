@@ -991,6 +991,7 @@
     <ClInclude Include="src\Engine\Core\Timer.h" />
     <ClInclude Include="src\Engine\Core\Math\Ray.h" />
     <ClInclude Include="src\Engine\Core\Math\AABB.h" />
+    <ClInclude Include="src\Engine\Core\Math\Algorithm.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">

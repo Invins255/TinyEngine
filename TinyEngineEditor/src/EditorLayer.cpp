@@ -48,22 +48,20 @@ namespace Engine
             auto& meshEntity = m_EditorScene->CreateEntity("SodaCan 1");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(4.0f, 1.0f, 0.0f);
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(5.0f, 1.0f, 0.0f);
         }
         {
             auto mesh = CreateRef<Mesh>("assets\\models\\Can\\SodaCan.fbx");
             auto& meshEntity = m_EditorScene->CreateEntity("SodaCan 2");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-4.0f, 1.0f, 0.0f);
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-5.0f, 1.0f, 0.0f);
         }
         {
             auto mesh = CreateRef<Mesh>("assets\\models\\Plane\\Plane.fbx");
             auto& meshEntity = m_EditorScene->CreateEntity("Plane");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 0.0f, 0.0f);
-            meshEntity.GetComponent<TransformComponent>().Scale = glm::vec3(0.5f, 0.5f, 0.5f);
         }
         
         auto& camera = m_EditorScene->CreateEntity("Camera");

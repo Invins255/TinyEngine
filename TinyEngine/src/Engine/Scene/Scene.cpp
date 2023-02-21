@@ -85,12 +85,13 @@ namespace Engine
 			}
 
 			auto [transformComponent, lightComponent] = lights.get<TransformComponent, DirectionalLightComponent>(entity);
-			glm::vec3 direction = -glm::normalize(glm::mat3(transformComponent.GetTransform()) * glm::vec3(1.0f));
+			glm::vec3 direction = -glm::normalize(glm::mat3(transformComponent.GetTransform()) * glm::vec3(1.0f));			
 			m_LightEnvironment.DirectionalLights[directionalLightIndex++] =
 			{
 				direction,
 				lightComponent.Radiance,
 				lightComponent.Intensity,
+				static_cast<int>(lightComponent.shadowsType),
 				lightComponent.CastShadows
 			};
 		}
@@ -128,6 +129,8 @@ namespace Engine
 				direction,
 				lightComponent.Radiance,
 				lightComponent.Intensity,
+				static_cast<int>(lightComponent.shadowsType),
+				lightComponent.SamplingRadius,
 				lightComponent.CastShadows
 			};
 		}
