@@ -32,6 +32,7 @@ namespace Engine
 		uint32_t Height = 0;
 		glm::vec4 ClearColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		FrameBufferAttachmentSpecification Attachments;
+		glm::vec4 BorderColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		uint32_t Samples = 1; //BUG: Multisample
 
 		bool SwapChainTarget = false;

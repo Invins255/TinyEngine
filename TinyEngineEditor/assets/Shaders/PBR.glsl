@@ -185,6 +185,9 @@ float HardShadows(vec3 projCoords)
 
 	float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
+	if(projCoords.z > 1.0)
+        shadow = 0.0;
+
 	return shadow;
 }
 
@@ -347,7 +350,7 @@ float CalculateShadow(vec4 lightSpacePosition)
 			shadow = PCF(projCoords, u_DirectionalLight.SamplingRadius);
 			break;
 		case 2:
-			shadow = PCSS(projCoords, u_DirectionalLight.SamplingRadius); //BUG
+			shadow = PCSS(projCoords, u_DirectionalLight.SamplingRadius);
 			break;
 	}	
 		

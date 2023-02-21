@@ -54,6 +54,10 @@ namespace Engine
 
     void Material::OnShaderReloaded()
     {
+        //BUG: Shader重载后，MaterialInstance的属性被清空，需要在重载前进行保存并在重载后恢复。
+        //目前，直接返回不重新进行分配可以保证属性不变，但当Shader属性定义发生修改后可能产生错误。
+        return;
+
         AllocateStorage();
         for (auto mi : m_MaterialInstances)
             mi->OnShaderReloaded();

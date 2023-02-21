@@ -209,7 +209,7 @@ namespace Engine
 		auto viewProjection = sceneCamera.Camera.GetProjection() * sceneCamera.ViewMatrix;
 
 		// TODO: less hard-coding!
-		float nearClip = 0.1f;
+		float nearClip = 0.01f;
 		float farClip = 1000.0f;
 		float clipRange = farClip - nearClip;
 

@@ -161,6 +161,22 @@ namespace Engine
                     ImGui::EndMenu();
                 }
 
+                if (ImGui::BeginMenu("Shaders"))
+                {
+                    auto& shaders = Shader::s_AllShaders;
+                    for (auto& shader : shaders)
+                    {
+                        if (ImGui::TreeNode(shader->GetName().c_str()))
+                        {
+                            std::string buttonName = "Reload##" + shader->GetName();
+                            if (ImGui::Button(buttonName.c_str()))
+                                shader->Reload();
+                            ImGui::TreePop();
+                        }
+                    }
+                    ImGui::EndMenu();
+                }
+
                 ImGui::EndMenuBar();
             }
 

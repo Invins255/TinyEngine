@@ -393,16 +393,16 @@ namespace Engine
 						dlc.shadowsType = static_cast<ShadowsType>(item_current);
 					}
 
-					if(dlc.shadowsType == ShadowsType::PCF)
+					if(dlc.shadowsType == ShadowsType::PCF || dlc.shadowsType == ShadowsType::PCSS)
 					{
-						const std::vector<uint32_t> values= { 5, 10, 15, 20, 25 };
-						const char* items[] = { "5", "10", "15", "20", "25" };
+						const std::vector<uint32_t> values= { 5, 10, 15, 20, 25, 30};
+						const char* items[] = { "5", "10", "15", "20", "25", "30"};
 						int index = 0;
 						for (int i=0;i< values.size();i++)
 							if (values[i] == dlc.SamplingRadius)
 								index = i;						
 						static int item_current = index;
-						UI::PropertyDropdown("Sampling Radius", items, 5, &item_current);
+						UI::PropertyDropdown("Sampling Radius", items, 6, &item_current);
 						dlc.SamplingRadius = values[item_current];
 					}
 					ImGui::Columns(1);
