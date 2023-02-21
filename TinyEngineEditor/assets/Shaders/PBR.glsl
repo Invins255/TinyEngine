@@ -378,9 +378,23 @@ void main()
 
 	float shadow = CalculateShadow(fs_Input.LightSpacePosition);
 
-	vec3 result = ambient + Lo * (1 - shadow);
+	vec3 color = ambient + Lo * (1 - shadow);
 	
+	const float gamma = 2.2;
+	const float pureWhite = 1.0;
+	const float exposure = 1.0;
+
+	//HDR mapped
+	color *= exposure;
+
+	// Reinhard tonemapping operator.
+	// see: "Photographic Tone Reproduction for Digital Images", eq. 4
+	float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
+	float mappedLuminance = (luminance * (1.0 + luminance / (pureWhite * pureWhite))) / (1.0 + luminance);
+	vec3 mappedColor = (mappedLuminance / luminance) * color;
+	//vec3 mappedColor = vec3(1.0) - exp(color * exposure);
+
 	//Gamma correct
-	result = pow(result, vec3(1.0 / 2.2));
+	vec3 result = pow(mappedColor, vec3(1.0 / gamma));
 	fragColor = vec4(result, 1.0);
 }
