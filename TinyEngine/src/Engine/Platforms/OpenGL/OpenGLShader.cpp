@@ -11,6 +11,9 @@ namespace Engine
 			return GL_VERTEX_SHADER;
 		if (type == "fragment" || type == "pixel")
 			return GL_FRAGMENT_SHADER;
+		if (type == "compute")
+			return GL_COMPUTE_SHADER;
+
 		ENGINE_ASSERT(false, "Unknown shader type!");
 		return 0;
 	}
@@ -33,7 +36,7 @@ namespace Engine
 		uint32_t rendererID = m_RendererID;
 		Renderer::Submit([rendererID]()
 			{
-				RENDERCOMMAND_TRACE("RenderCommand: Destroy shader({1})", rendererID);
+				RENDERCOMMAND_TRACE("RenderCommand: Destroy shader({0})", rendererID);
 
 				glDeleteProgram(rendererID);
 			}
@@ -365,7 +368,8 @@ namespace Engine
 	void OpenGLShader::Load(const std::string& source)
 	{
 		m_ShaderSource = PreProcess(source);
-		Parse();
+		if(!m_IsCompute)
+			Parse();
 
 		Renderer::Submit([=]()
 			{
@@ -373,7 +377,8 @@ namespace Engine
 					glDeleteProgram(m_RendererID);
 
 				Compile();
-				ResolveUniforms();
+				if(!m_IsCompute)
+					ResolveUniforms();
 
 				//Reload callback
 				if (m_Loaded)
@@ -402,12 +407,20 @@ namespace Engine
 			ENGINE_ASSERT(eol != std::string::npos, "Syntax error!");
 			size_t begin = pos + typeTokenLength + 1;
 			std::string type = source.substr(begin, eol - begin);
-			ENGINE_ASSERT(ShaderTypeFromString(type), "Invaild shader type!");
+			auto shaderType = ShaderTypeFromString(type);
+			ENGINE_ASSERT(shaderType, "Invaild shader type!");
 
 			size_t nextLinePos = source.find_first_of("\r\n", eol);
 			pos = source.find(typeToken, nextLinePos);
-			shaderSources[ShaderTypeFromString(type)] =
+			shaderSources[shaderType] =
 				source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
+			
+			// Compute shaders cannot contain other types
+			if (shaderType == GL_COMPUTE_SHADER)
+			{
+				m_IsCompute = true;
+				break;
+			}
 		}
 
 		return shaderSources;

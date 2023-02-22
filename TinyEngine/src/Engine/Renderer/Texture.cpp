@@ -5,16 +5,21 @@
 
 namespace Engine
 {
+	//TODO: Move to resourceManager
+	std::vector<Ref<Texture>> Texture::s_AllTextures;
 
 	Ref<Texture2D> Texture2D::Create(const std::string& path, bool srgb)
 	{
+		Ref<Texture2D> result = nullptr;
 		switch (Renderer::GetAPIType())
 		{
 		case RendererAPI::RendererAPIType::None:
 			ENGINE_ASSERT(false, "RendererAPI::None is currently not supported!");
 			return nullptr;
 		case RendererAPI::RendererAPIType::OpenGL:
-			return CreateRef<OpenGLTexture2D>(path, srgb);
+			result = CreateRef<OpenGLTexture2D>(path, srgb);
+			s_AllTextures.push_back(result);
+			return result;
 		default:
 			ENGINE_ASSERT(false, "Unknown RendererAPI!");
 			return nullptr;
@@ -23,13 +28,16 @@ namespace Engine
 
 	Ref<Texture2D> Texture2D::Create(TextureFormat format, uint32_t width, uint32_t height, TextureWrap wrap)
 	{
+		Ref<Texture2D> result = nullptr;
 		switch (Renderer::GetAPIType())
 		{
 		case RendererAPI::RendererAPIType::None:
 			ENGINE_ASSERT(false, "RendererAPI::None is currently not supported!");
 			return nullptr;
 		case RendererAPI::RendererAPIType::OpenGL:
-			return CreateRef<OpenGLTexture2D>(format, width, height, wrap);
+			result = CreateRef<OpenGLTexture2D>(format, width, height, wrap);
+			s_AllTextures.push_back(result);
+			return result;
 		default:
 			ENGINE_ASSERT(false, "Unknown RendererAPI!");
 			return nullptr;
@@ -60,13 +68,34 @@ namespace Engine
 		const std::string& top, const std::string& bottom,
 		const std::string& front, const std::string& back)
 	{
+		Ref<TextureCube> result = nullptr;
 		switch (Renderer::GetAPIType())
 		{
 		case RendererAPI::RendererAPIType::None:
 			ENGINE_ASSERT(false, "RendererAPI::None is currently not supported!");
 			return nullptr;
 		case RendererAPI::RendererAPIType::OpenGL:
-			return CreateRef<OpenGLTextureCube>(right, left, top, bottom, front, back);
+			result = CreateRef<OpenGLTextureCube>(right, left, top, bottom, front, back);
+			s_AllTextures.push_back(result);
+			return result;
+		default:
+			ENGINE_ASSERT(false, "Unknown RendererAPI!");
+			return nullptr;
+		}
+	}
+
+	Ref<TextureCube> TextureCube::Create(TextureFormat format, uint32_t width, uint32_t height)
+	{
+		Ref<TextureCube> result = nullptr;
+		switch (Renderer::GetAPIType())
+		{
+		case RendererAPI::RendererAPIType::None:
+			ENGINE_ASSERT(false, "RendererAPI::None is currently not supported!");
+			return nullptr;
+		case RendererAPI::RendererAPIType::OpenGL:
+			result = CreateRef<OpenGLTextureCube>(format, width, height);
+			s_AllTextures.push_back(result);
+			return result;
 		default:
 			ENGINE_ASSERT(false, "Unknown RendererAPI!");
 			return nullptr;

@@ -13,7 +13,7 @@ namespace Engine
         {
         case Engine::TextureFormat::RGB:        return GL_RGB;
         case Engine::TextureFormat::RGBA:       return GL_RGBA;
-        case Engine::TextureFormat::Float16:    return GL_RGBA16F;
+        case Engine::TextureFormat::RGBA16F:    return GL_RGBA16F;
         }
         ENGINE_ASSERT(false, "Unknown texture format!");
         return 0;
@@ -32,7 +32,7 @@ namespace Engine
         {
             m_Data.Data = (uint8_t*)stbi_loadf(path.c_str(), &width, &height, &channels, 0);
             m_IsHDR = true;
-            m_Format = TextureFormat::Float16;
+            m_Format = TextureFormat::RGBA16F;
         }
         else
         {
@@ -264,6 +264,25 @@ namespace Engine
                 RENDERCOMMAND_TRACE("    Bottom: {0}", m_Path[3]);
                 RENDERCOMMAND_TRACE("    Front:  {0}", m_Path[4]);
                 RENDERCOMMAND_TRACE("    Back:   {0}", m_Path[5]);
+            });
+    }
+
+    OpenGLTextureCube::OpenGLTextureCube(TextureFormat format, uint32_t width, uint32_t height)
+    {
+        m_Width = width;
+        m_Height = height;
+        m_Format = format;
+
+        uint32_t levels = Texture::CalculateMipMapCount(width, height);
+        Renderer::Submit([this, levels]()
+            {
+                glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_RendererID);
+                glTextureStorage2D(m_RendererID, levels, TextureFormatToOpenGLTextureFormat(m_Format), m_Width, m_Height);
+                glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+                glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
             });
     }
 

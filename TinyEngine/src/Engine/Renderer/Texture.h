@@ -6,25 +6,33 @@
 
 namespace Engine
 {
+	//TODO: More options
+
 	enum class TextureFormat
 	{
 		None = 0,
-		RGB = 1,
-		RGBA = 2,
-		Float16 = 3
-		//TODO: More options
+		RGB,
+		RGBA,
+		RGBA16F
 	};
 
 	enum class TextureWrap
 	{
 		None = 0,
-		Clamp = 1,
-		Repeat = 2
-		//TODO: More options
+		Clamp,
+		Repeat
+	};
+
+	struct TextureSpecification
+	{
+
 	};
 
 	class Texture
 	{
+	public:
+		static std::vector<Ref<Texture>> s_AllTextures;
+
 	public:
 		static uint32_t GetBPP(TextureFormat format);
 		static uint32_t CalculateMipMapCount(uint32_t width, uint32_t height);
@@ -69,6 +77,8 @@ namespace Engine
 			const std::string& top, const std::string& bottom,
 			const std::string& front, const std::string& back
 		);
+
+		static Ref<TextureCube> Create(TextureFormat format, uint32_t width, uint32_t height);
 
 		virtual bool IsLoaded() const = 0;
 		virtual const std::vector<std::string> GetPath() const = 0;

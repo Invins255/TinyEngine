@@ -57,6 +57,9 @@ namespace Engine
 		s_Data->m_ShaderLibrary->Load("assets/shaders/Skybox.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/FullScreenQuad.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/ShadowMap.glsl");
+		s_Data->m_ShaderLibrary->Load("assets/shaders/EquirectangularToCubeMap.glsl");
+		s_Data->m_ShaderLibrary->Load("assets/shaders/EnvironmentMipFilter.glsl");
+		s_Data->m_ShaderLibrary->Load("assets/shaders/EnvironmentIrradiance.glsl");
 
 		SceneRenderer::Init();
 

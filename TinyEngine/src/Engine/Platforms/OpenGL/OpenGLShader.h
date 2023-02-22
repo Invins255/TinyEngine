@@ -97,6 +97,7 @@ namespace Engine
 		std::string m_Name;
 		std::string m_Path;
 		bool m_Loaded = false;
+		bool m_IsCompute = false;
 
 		ShaderUniformList m_VSRendererUniformBuffers;
 		ShaderUniformList m_PSRendererUniformBuffers;

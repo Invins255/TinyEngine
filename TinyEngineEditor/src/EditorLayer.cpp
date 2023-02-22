@@ -17,6 +17,7 @@
 #include "Engine/ImGui/ImGuizmo.h"
 #include "Engine/Renderer/MeshFactory.h"
 #include "Engine/Renderer/Texture.h"
+#include "Engine/Scene/Environment.h"
 #include "Engine/Core/Math/Ray.h"
 
 namespace Engine
@@ -33,6 +34,7 @@ namespace Engine
         NewScene();
 
         //TEMP
+        /*
         auto skyboxTexture = TextureCube::Create(
             "assets\\textures\\skybox\\CornellBox\\right.jpg",
             "assets\\textures\\skybox\\CornellBox\\left.jpg",
@@ -42,7 +44,11 @@ namespace Engine
             "assets\\textures\\skybox\\CornellBox\\back.jpg"
         );
         m_EditorScene->SetSkybox(skyboxTexture);
-   
+        */
+        
+        auto environment = Environment::Create("assets\\environment\\Room.hdr");
+        m_EditorScene->SetEnvironment(environment);
+
         {
             auto mesh = CreateRef<Mesh>("assets\\models\\Can\\SodaCan.fbx");
             auto& meshEntity = m_EditorScene->CreateEntity("SodaCan 1");

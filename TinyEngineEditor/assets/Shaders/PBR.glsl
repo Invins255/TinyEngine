@@ -385,15 +385,13 @@ void main()
 	const float exposure = 1.0;
 
 	//HDR mapped
-	color *= exposure;
-
 	// Reinhard tonemapping operator.
 	// see: "Photographic Tone Reproduction for Digital Images", eq. 4
-	
-	//float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
-	//float mappedLuminance = (luminance * (1.0 + luminance / (pureWhite * pureWhite))) / (1.0 + luminance);
-	//vec3 mappedColor = (mappedLuminance / luminance) * color;
-	vec3 mappedColor = vec3(1.0) - exp(color * exposure);
+	color *= exposure;
+	float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
+	float mappedLuminance = (luminance * (1.0 + luminance / (pureWhite * pureWhite))) / (1.0 + luminance);
+	vec3 mappedColor = (mappedLuminance / luminance) * color;
+	//vec3 mappedColor = vec3(1.0) - exp(color * exposure);
 
 	//Gamma correct
 	vec3 result = pow(mappedColor, vec3(1.0 / gamma));
