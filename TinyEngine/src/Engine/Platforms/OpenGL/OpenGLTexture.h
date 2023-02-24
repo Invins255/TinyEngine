@@ -8,8 +8,8 @@ namespace Engine
 	class OpenGLTexture2D : public Texture2D
 	{
 	public:
-		OpenGLTexture2D(const std::string& path, bool srgb);
-		OpenGLTexture2D(TextureFormat format, uint32_t width, uint32_t height, TextureWrap wrap);
+		OpenGLTexture2D(const std::string& path, bool srgb, TextureSpecification spec);
+		OpenGLTexture2D(TextureFormat format, uint32_t width, uint32_t height, TextureSpecification spec);
 		virtual ~OpenGLTexture2D();
 
 		virtual uint32_t GetWidth() const override { return m_Width; }
@@ -37,8 +37,8 @@ namespace Engine
 		std::string m_Path;
 
 		TextureFormat m_Format = TextureFormat::RGB;
-		TextureWrap m_Wrap = TextureWrap::Clamp;
 		uint32_t m_Width, m_Height, m_Channels;
+		TextureSpecification m_Specification;
 
 		Buffer m_Data;
 		bool m_IsHDR = false;

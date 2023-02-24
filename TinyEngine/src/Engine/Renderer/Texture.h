@@ -23,9 +23,16 @@ namespace Engine
 		Repeat
 	};
 
+	enum class TextureFlip
+	{
+		None = 0,
+		Vertical
+	};
+
 	struct TextureSpecification
 	{
-
+		TextureWrap Wrap = TextureWrap::Clamp;
+		TextureFlip Flip = TextureFlip::Vertical;
 	};
 
 	class Texture
@@ -55,8 +62,8 @@ namespace Engine
 	class Texture2D : public Texture
 	{
 	public:
-		static Ref<Texture2D> Create(const std::string& path, bool srgb = false);
-		static Ref<Texture2D> Create(TextureFormat format, uint32_t width, uint32_t height, TextureWrap wrap = TextureWrap::Clamp);
+		static Ref<Texture2D> Create(const std::string& path, bool srgb = false, TextureSpecification spec = {});
+		static Ref<Texture2D> Create(TextureFormat format, uint32_t width, uint32_t height, TextureSpecification spec = {});
 
 		virtual void Lock() = 0;
 		virtual void Unlock() = 0;

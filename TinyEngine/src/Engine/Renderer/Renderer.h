@@ -9,7 +9,7 @@
 namespace Engine
 {
 
-#define RENDERCOMMAND_DEBUG 1
+#define RENDERCOMMAND_DEBUG 0
 #if RENDERCOMMAND_DEBUG
 #define RENDERCOMMAND_TRACE(...)		ENGINE_TRACE(__VA_ARGS__)
 #else

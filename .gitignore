@@ -14,3 +14,4 @@ obj/
 # Save
 !vendor/bin/
 !TinyEngine/vendor/assimp/bin
+!TinyEngine/vendor/yaml-cpp/bin

@@ -8,7 +8,7 @@ namespace Engine
 	//TODO: Move to resourceManager
 	std::vector<Ref<Texture>> Texture::s_AllTextures;
 
-	Ref<Texture2D> Texture2D::Create(const std::string& path, bool srgb)
+	Ref<Texture2D> Texture2D::Create(const std::string& path, bool srgb, TextureSpecification spec)
 	{
 		Ref<Texture2D> result = nullptr;
 		switch (Renderer::GetAPIType())
@@ -17,7 +17,7 @@ namespace Engine
 			ENGINE_ASSERT(false, "RendererAPI::None is currently not supported!");
 			return nullptr;
 		case RendererAPI::RendererAPIType::OpenGL:
-			result = CreateRef<OpenGLTexture2D>(path, srgb);
+			result = CreateRef<OpenGLTexture2D>(path, srgb, spec);
 			s_AllTextures.push_back(result);
 			return result;
 		default:
@@ -26,7 +26,7 @@ namespace Engine
 		}
 	}
 
-	Ref<Texture2D> Texture2D::Create(TextureFormat format, uint32_t width, uint32_t height, TextureWrap wrap)
+	Ref<Texture2D> Texture2D::Create(TextureFormat format, uint32_t width, uint32_t height, TextureSpecification spec)
 	{
 		Ref<Texture2D> result = nullptr;
 		switch (Renderer::GetAPIType())
@@ -35,7 +35,7 @@ namespace Engine
 			ENGINE_ASSERT(false, "RendererAPI::None is currently not supported!");
 			return nullptr;
 		case RendererAPI::RendererAPIType::OpenGL:
-			result = CreateRef<OpenGLTexture2D>(format, width, height, wrap);
+			result = CreateRef<OpenGLTexture2D>(format, width, height, spec);
 			s_AllTextures.push_back(result);
 			return result;
 		default:

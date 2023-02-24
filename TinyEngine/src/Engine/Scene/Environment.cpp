@@ -8,13 +8,15 @@ namespace Engine
 {
 	Environment Environment::Create(const std::string& filepath)
 	{
-		//Create skybox map and irradiance map from HDR image by using compute shader
 
+		//Create skybox map and irradiance map from HDR image by using compute shader
 		const uint32_t cubemapSize = 2048;
 		const uint32_t irradianceMapSize = 32;
 
 		//Convert Equirectangular map to Cube map
-		Ref<Texture2D> envEquirect = Texture2D::Create(filepath);
+		TextureSpecification spec;
+		spec.Flip = TextureFlip::None;
+		Ref<Texture2D> envEquirect = Texture2D::Create(filepath, false, spec);
 		ENGINE_ASSERT(envEquirect->GetFormat() == TextureFormat::RGBA16F, "Texture is not HDR");
 
 		Ref<TextureCube> envUnfiltered = TextureCube::Create(TextureFormat::RGBA16F, cubemapSize, cubemapSize);		
@@ -27,16 +29,9 @@ namespace Engine
 				glDispatchCompute(cubemapSize / 32, cubemapSize / 32, 6);
 				glGenerateTextureMipmap(envUnfiltered->GetRendererID());
 			});
-		
+			
 		Ref<TextureCube> envFiltered = TextureCube::Create(TextureFormat::RGBA16F, cubemapSize, cubemapSize);		
-		auto envFilteringShader = Renderer::GetShaderLibrary().Get("EnvironmentMipFilter");	
-		
-		Renderer::Submit([envUnfiltered, envFiltered]()
-			{
-				glCopyImageSubData(envUnfiltered->GetRendererID(), GL_TEXTURE_CUBE_MAP, 0, 0, 0, 0,
-					envFiltered->GetRendererID(), GL_TEXTURE_CUBE_MAP, 0, 0, 0, 0,
-					envFiltered->GetWidth(), envFiltered->GetHeight(), 6);
-			});
+		auto envFilteringShader = Renderer::GetShaderLibrary().Get("EnvironmentMipFilter");			
 		
 		//Genarate mipmap
 		envFilteringShader->Bind();
@@ -52,21 +47,32 @@ namespace Engine
 					glDispatchCompute(numGroups, numGroups, 6);
 				}			
 			});
-
+		
+		
 		//Genarate irradiance map
+		/*
 		Ref<TextureCube> irradianceMap = TextureCube::Create(TextureFormat::RGBA16F, irradianceMapSize, irradianceMapSize);		
 		auto envIrradianceShader = Renderer::GetShaderLibrary().Get("EnvironmentIrradiance");		
 		envIrradianceShader->Bind();
 		envFiltered->Bind();
-		irradianceMap->Bind();
 		Renderer::Submit([irradianceMap]()
 			{
 				glBindImageTexture(0, irradianceMap->GetRendererID(), 0, GL_TRUE, 0, GL_WRITE_ONLY, GL_RGBA16F);
 				glDispatchCompute(irradianceMap->GetWidth() / 32, irradianceMap->GetHeight() / 32, 6);	
 				glGenerateTextureMipmap(irradianceMap->GetRendererID());
 			});
+		*/
+		Ref<TextureCube> irradianceMap = TextureCube::Create(TextureFormat::RGBA16F, 32, 32);
+		auto envIrradianceShader = Renderer::GetShaderLibrary().Get("EnvironmentIrradianceDiffuse");
+		envIrradianceShader->Bind();
+		envUnfiltered->Bind();
+		Renderer::Submit([irradianceMap]()
+			{
+				glBindImageTexture(0, irradianceMap->GetRendererID(), 0, GL_TRUE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+				glDispatchCompute(irradianceMap->GetWidth() / 32, irradianceMap->GetHeight() / 32, 6);
+				glGenerateTextureMipmap(irradianceMap->GetRendererID());
+			});
 		
-		//BUG£ºenvfiltered¿ÉÄÜ´æÔÚ´íÎó
-		return Environment{filepath, envUnfiltered, irradianceMap};
+		return Environment{filepath, irradianceMap, irradianceMap};
 	}
 }

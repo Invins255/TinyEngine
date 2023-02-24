@@ -76,6 +76,7 @@ vec3 tangentToWorld(const vec3 v, const vec3 N, const vec3 S, const vec3 T)
 	return S * v.x + T * v.y + N * v.z;
 }
 
+
 layout(local_size_x=32, local_size_y=32, local_size_z=1) in;
 void main(void)
 {
@@ -83,7 +84,7 @@ void main(void)
 	
 	vec3 S, T;
 	computeBasisVectors(N, S, T);
-
+	
 	// Monte Carlo integration of hemispherical irradiance.
 	// As a small optimization this also includes Lambertian BRDF assuming perfectly white surface (albedo of 1.0)
 	// so we don't need to normalize in PBR fragment shader (so technically it encodes exitant radiance rather than irradiance).
@@ -91,13 +92,14 @@ void main(void)
 	for(uint i = 0; i < NumSamples; i++)
 	{
 		vec2 u  = sampleHammersley(i);
-		vec3 Li = tangentToWorld(sampleHemisphere(u.x, u.y), N, S, T);
+		//vec3 Li = tangentToWorld(sampleHemisphere(u.x, u.y), N, S, T);
+		vec3 Li = tangentToWorld(sampleHemisphere(0.0, 0.0), N, S, T);	
 		float cosTheta = max(0.0, dot(Li, N));
 
 		// PIs here cancel out because of division by pdf.
 		irradiance += 2.0 * textureLod(inputTexture, Li, 0).rgb * cosTheta;
 	}
-	irradiance /= vec3(NumSamples);
+	irradiance /= vec3(NumSamples);	
 
 	imageStore(outputTexture, ivec3(gl_GlobalInvocationID), vec4(irradiance, 1.0));
 }

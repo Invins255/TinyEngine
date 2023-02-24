@@ -60,6 +60,7 @@ namespace Engine
 		s_Data->m_ShaderLibrary->Load("assets/shaders/EquirectangularToCubeMap.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/EnvironmentMipFilter.glsl");
 		s_Data->m_ShaderLibrary->Load("assets/shaders/EnvironmentIrradiance.glsl");
+		s_Data->m_ShaderLibrary->Load("assets/shaders/EnvironmentIrradianceDiffuse.glsl");
 
 		SceneRenderer::Init();
 

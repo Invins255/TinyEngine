@@ -22,10 +22,13 @@ namespace Engine
     //-----------------------------------------------------------------------------------
     //OpenGLTexture2D
     //-----------------------------------------------------------------------------------
-    OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool srgb)
-        :m_Path(path)
+    OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool srgb, TextureSpecification spec)
+        :m_Path(path), m_Specification(spec)
     {
-        stbi_set_flip_vertically_on_load(true);
+        if(m_Specification.Flip == TextureFlip::None)
+            stbi_set_flip_vertically_on_load(false);
+        if (m_Specification.Flip == TextureFlip::Vertical)
+            stbi_set_flip_vertically_on_load(true);
 
         int width, height, channels;
         if (stbi_is_hdr(path.c_str()))
@@ -111,8 +114,8 @@ namespace Engine
             });
     }
 
-    OpenGLTexture2D::OpenGLTexture2D(TextureFormat format, uint32_t width, uint32_t height, TextureWrap wrap)
-        :m_Format(format), m_Width(width), m_Height(height), m_Wrap(wrap)
+    OpenGLTexture2D::OpenGLTexture2D(TextureFormat format, uint32_t width, uint32_t height, TextureSpecification spec)
+        :m_Format(format), m_Width(width), m_Height(height), m_Specification(spec)
     {
         Renderer::Submit([this]()
             {
@@ -121,7 +124,7 @@ namespace Engine
 
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-                GLenum wrap = m_Wrap == TextureWrap::Clamp ? GL_CLAMP_TO_EDGE : GL_REPEAT;
+                GLenum wrap = m_Specification.Wrap == TextureWrap::Clamp ? GL_CLAMP_TO_EDGE : GL_REPEAT;
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
 
@@ -256,14 +259,6 @@ namespace Engine
 
                 for (uint32_t i = 0; i < 6; i++)
                     stbi_image_free(m_Data[i].Data);
-
-                RENDERCOMMAND_TRACE("RenderCommand: Construct textureCube. ID: ({0})", m_RendererID);
-                RENDERCOMMAND_TRACE("    Left:   {0}", m_Path[1]);
-                RENDERCOMMAND_TRACE("    Right:  {0}", m_Path[0]);
-                RENDERCOMMAND_TRACE("    Top:    {0}", m_Path[2]);
-                RENDERCOMMAND_TRACE("    Bottom: {0}", m_Path[3]);
-                RENDERCOMMAND_TRACE("    Front:  {0}", m_Path[4]);
-                RENDERCOMMAND_TRACE("    Back:   {0}", m_Path[5]);
             });
     }
 
@@ -277,12 +272,17 @@ namespace Engine
         Renderer::Submit([this, levels]()
             {
                 glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_RendererID);
-                glTextureStorage2D(m_RendererID, levels, TextureFormatToOpenGLTextureFormat(m_Format), m_Width, m_Height);
+                glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
+
+                auto format = TextureFormatToOpenGLTextureFormat(m_Format);
+                glTextureStorage2D(m_RendererID, levels, format, m_Width, m_Height);
                 glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
                 glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                 glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
                 glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+                glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
             });
     }
 
