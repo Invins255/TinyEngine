@@ -48,7 +48,7 @@ namespace Engine
         
         auto environment = Environment::Create("assets\\environment\\Room.hdr");
         m_EditorScene->SetEnvironment(environment);
-
+        /*
         {
             auto mesh = CreateRef<Mesh>("assets\\models\\Can\\SodaCan.fbx");
             auto& meshEntity = m_EditorScene->CreateEntity("SodaCan 1");
@@ -62,6 +62,15 @@ namespace Engine
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
             meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-5.0f, 1.0f, 0.0f);
+        }
+        */
+        {
+            //auto mesh = CreateRef<Mesh>("assets\\models\\Sphere\\Sphere.fbx");
+            auto mesh = MeshFactory::CreateSphere(5.0f);
+            auto& meshEntity = m_EditorScene->CreateEntity("Sphere");
+            meshEntity.AddComponent<MeshComponent>();
+            meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 8.0f, 0.0f);
         }
         {
             auto mesh = CreateRef<Mesh>("assets\\models\\Plane\\Plane.fbx");

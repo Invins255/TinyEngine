@@ -151,7 +151,7 @@ namespace Engine
 								if (ImGui::Checkbox("Use##MetalnessMap", &useMetalnessMap))
 									materialInstance->Set<float>("u_MetalnessTexToggle", useMetalnessMap ? 1.0f : 0.0f);
 								ImGui::SameLine();
-								ImGui::SliderFloat("Value##MetalnessInput", &metalnessValue, 0.0f, 1.0f);
+								ImGui::SliderFloat("##MetalnessInput", &metalnessValue, 0.0f, 1.0f);
 							}
 
 							// Roughness
@@ -185,7 +185,7 @@ namespace Engine
 								if (ImGui::Checkbox("Use##RoughnessMap", &useRoughnessMap))
 									materialInstance->Set<float>("u_RoughnessTexToggle", useRoughnessMap ? 1.0f : 0.0f);
 								ImGui::SameLine();
-								ImGui::SliderFloat("Value##RoughnessInput", &roughnessValue, 0.0f, 1.0f);
+								ImGui::SliderFloat("##RoughnessInput", &roughnessValue, 0.0f, 1.0f);
 							}
 						}
 					}

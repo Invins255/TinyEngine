@@ -73,6 +73,6 @@ namespace Engine
 				glGenerateTextureMipmap(irradianceMap->GetRendererID());
 			});
 		
-		return Environment{filepath, irradianceMap, irradianceMap};
+		return Environment{filepath, envUnfiltered, irradianceMap};
 	}
 }

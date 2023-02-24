@@ -84,6 +84,12 @@ uniform sampler2D u_MetalnessTexture;
 
 uniform sampler2D u_ShadowMapTexture;
 
+//-------------------------------------------------------------
+//Environment
+//-------------------------------------------------------------
+uniform samplerCube u_IrradianceMap;
+//-------------------------------------------------------------
+
 const float PI = 3.14159265359;
 const vec3 Fdielectric = vec3(0.4);
 
@@ -126,6 +132,11 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 vec3 FresnelSchlick(float cosTheta, vec3 F0)
 {
 	return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+{
+	return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
 struct PBRParameters
@@ -356,7 +367,7 @@ float CalculateShadow(vec4 lightSpacePosition)
 		
 	return shadow;
 }
-
+//-------------------------------------------------------------
 
 void main()
 {
@@ -373,9 +384,16 @@ void main()
 	}
 	params.View = normalize(u_CameraPosition - fs_Input.WorldPosition);
 
-	vec3 ambient = vec3(0.05) * params.Albedo;	
-	vec3 Lo = CalculateLight();
+	//vec3 ambient = vec3(0.05) * params.Albedo;
 
+	//Ambient
+	vec3 ks = FresnelSchlickRoughness(max(dot(params.Normal, params.View), 0.0), params.F0, params.Roughness);
+	vec3 kd = (1.0 - ks) * (1.0 - params.Metalness);
+	vec3 irradiance = texture(u_IrradianceMap, params.Normal).rgb;	
+	vec3 ambient = kd * irradiance * params.Albedo;	
+	//Lights
+	vec3 Lo = CalculateLight();
+	//Shadows
 	float shadow = CalculateShadow(fs_Input.LightSpacePosition);
 
 	vec3 color = ambient + Lo * (1 - shadow);

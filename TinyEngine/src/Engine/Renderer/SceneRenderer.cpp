@@ -335,9 +335,10 @@ namespace Engine
 			//TODO: More uniforms 
 			
 			//Set lights 
-			//TODO: 目前只使用了1个方向光, 需要补充为4个
+			//TODO: 目前只使用了1个方向光, 需要补充为4个; 部分变量不需要对每个mesh都进行设置, 可以移出循环
 			auto directionalLight = s_Data->m_SceneData.SceneLightEnvironment.DirectionalLights[0];
 			baseMaterial->Set("u_DirectionalLight", directionalLight); 
+			baseMaterial->Set("u_IrradianceMap", s_Data->m_SceneData.SceneEnvironment.IrradianceMap);
 
 			//Shadow map
 			auto resource = baseMaterial->FindShaderResource("u_ShadowMapTexture");
