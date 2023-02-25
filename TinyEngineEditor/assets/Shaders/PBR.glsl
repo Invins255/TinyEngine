@@ -88,6 +88,8 @@ uniform sampler2D u_ShadowMapTexture;
 //Environment
 //-------------------------------------------------------------
 uniform samplerCube u_IrradianceMap;
+uniform samplerCube u_EnvPrefliteredMap;
+uniform sampler2D u_BRDFLUTMap;
 //-------------------------------------------------------------
 
 const float PI = 3.14159265359;
@@ -178,6 +180,25 @@ vec3 CalculateLight()
 
 	result += (diffuseBRDF + specularBRDF) * radiance * cosL;
 	return result;
+}
+
+vec3 IBL()
+{
+	float NdotV = max(dot(params.Normal, params.View), 0.0);
+
+	vec3 ks = FresnelSchlickRoughness(NdotV, params.F0, params.Roughness);
+	vec3 kd = (1.0 - ks) * (1.0 - params.Metalness);
+	vec3 diffuseIrradiance = texture(u_IrradianceMap, params.Normal).rgb;	
+	vec3 diffuse = kd * diffuseIrradiance * params.Albedo;	
+
+	vec3 R = reflect(-params.View, params.Normal);
+	int texLevels = textureQueryLevels(u_EnvPrefliteredMap);
+	vec3 specularIrradiance = textureLod(u_EnvPrefliteredMap, R, params.Roughness * texLevels).rgb;
+
+	vec2 specularBRDF = texture2D(u_BRDFLUTMap, vec2(NdotV, params.Roughness)).rg;
+	vec3 specular = specularIrradiance * (ks * specularBRDF.x + specularBRDF.y);
+
+	return diffuse + specular;
 }
 
 //-------------------------------------------------------------
@@ -384,13 +405,8 @@ void main()
 	}
 	params.View = normalize(u_CameraPosition - fs_Input.WorldPosition);
 
-	//vec3 ambient = vec3(0.05) * params.Albedo;
-
 	//Ambient
-	vec3 ks = FresnelSchlickRoughness(max(dot(params.Normal, params.View), 0.0), params.F0, params.Roughness);
-	vec3 kd = (1.0 - ks) * (1.0 - params.Metalness);
-	vec3 irradiance = texture(u_IrradianceMap, params.Normal).rgb;	
-	vec3 ambient = kd * irradiance * params.Albedo;	
+	vec3 ambient = IBL();	
 	//Lights
 	vec3 Lo = CalculateLight();
 	//Shadows
@@ -414,4 +430,5 @@ void main()
 	//Gamma correct
 	vec3 result = pow(mappedColor, vec3(1.0 / gamma));
 	fragColor = vec4(result, 1.0);
+	//fragColor = vec4(params.Normal, 1.0);
 }

@@ -11,6 +11,8 @@ namespace Engine
     {
         switch (format)
         {
+        case Engine::TextureFormat::RG:         return GL_RG;
+        case Engine::TextureFormat::RG16F:      return GL_RG16F;
         case Engine::TextureFormat::RGB:        return GL_RGB;
         case Engine::TextureFormat::RGBA:       return GL_RGBA;
         case Engine::TextureFormat::RGBA16F:    return GL_RGBA16F;
@@ -276,7 +278,7 @@ namespace Engine
 
                 auto format = TextureFormatToOpenGLTextureFormat(m_Format);
                 glTextureStorage2D(m_RendererID, levels, format, m_Width, m_Height);
-                glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+                glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
                 glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                 glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

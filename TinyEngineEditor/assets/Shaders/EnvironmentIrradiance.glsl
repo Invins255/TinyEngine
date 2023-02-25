@@ -92,8 +92,7 @@ void main(void)
 	for(uint i = 0; i < NumSamples; i++)
 	{
 		vec2 u  = sampleHammersley(i);
-		//vec3 Li = tangentToWorld(sampleHemisphere(u.x, u.y), N, S, T);
-		vec3 Li = tangentToWorld(sampleHemisphere(0.0, 0.0), N, S, T);	
+		vec3 Li = tangentToWorld(sampleHemisphere(u.x, u.y), N, S, T);		
 		float cosTheta = max(0.0, dot(Li, N));
 
 		// PIs here cancel out because of division by pdf.

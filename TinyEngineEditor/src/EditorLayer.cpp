@@ -46,31 +46,29 @@ namespace Engine
         m_EditorScene->SetSkybox(skyboxTexture);
         */
         
-        auto environment = Environment::Create("assets\\environment\\Room.hdr");
+        auto environment = Environment::Create("assets\\environment\\InDoor.hdr");
         m_EditorScene->SetEnvironment(environment);
-        /*
         {
             auto mesh = CreateRef<Mesh>("assets\\models\\Can\\SodaCan.fbx");
             auto& meshEntity = m_EditorScene->CreateEntity("SodaCan 1");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(5.0f, 1.0f, 0.0f);
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(8.0f, 1.0f, 0.0f);
         }
         {
             auto mesh = CreateRef<Mesh>("assets\\models\\Can\\SodaCan.fbx");
             auto& meshEntity = m_EditorScene->CreateEntity("SodaCan 2");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-5.0f, 1.0f, 0.0f);
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-8.0f, 1.0f, 0.0f);
         }
-        */
         {
             //auto mesh = CreateRef<Mesh>("assets\\models\\Sphere\\Sphere.fbx");
             auto mesh = MeshFactory::CreateSphere(5.0f);
             auto& meshEntity = m_EditorScene->CreateEntity("Sphere");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 8.0f, 0.0f);
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 8.0f, 15.0f);
         }
         {
             auto mesh = CreateRef<Mesh>("assets\\models\\Plane\\Plane.fbx");
@@ -78,7 +76,6 @@ namespace Engine
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
         }
-        
         auto& camera = m_EditorScene->CreateEntity("Camera");
         camera.AddComponent<CameraComponent>();
         camera.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 20.0f, 30.0f);

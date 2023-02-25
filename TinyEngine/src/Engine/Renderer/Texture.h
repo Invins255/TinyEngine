@@ -11,6 +11,8 @@ namespace Engine
 	enum class TextureFormat
 	{
 		None = 0,
+		RG,
+		RG16F,
 		RGB,
 		RGBA,
 		RGBA16F

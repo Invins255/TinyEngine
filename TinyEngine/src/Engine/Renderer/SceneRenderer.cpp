@@ -22,7 +22,6 @@ namespace Engine
 			LightEnvironment SceneLightEnvironment;
 			Environment SceneEnvironment;
 			Ref<MaterialInstance> SkyboxMaterial;
-
 		}m_SceneData;
 
 		Ref<RenderPass> m_ShadowMapPass;
@@ -34,6 +33,8 @@ namespace Engine
 		Ref<Material> m_ShadowMapMaterial;
 		uint32_t m_ShadowMapSampler;
 		glm::mat4 m_LightSpaceMatrix;
+
+		Ref<Texture2D> m_BRDFLUTMap;
 
 		struct DrawCommand
 		{
@@ -88,6 +89,8 @@ namespace Engine
 		auto shadowMapShader = Renderer::GetShaderLibrary().Get("ShadowMap");
 		s_Data->m_ShadowMapMaterial = Material::Create(shadowMapShader);
 		s_Data->m_ShadowMapMaterial->SetFlags(MaterialFlag::DepthTest);
+
+		s_Data->m_BRDFLUTMap = Texture2D::Create("assets\\textures\\IBL_BRDF_LUT.png", true);
 		
 		Renderer::Submit([]()
 			{
@@ -338,7 +341,11 @@ namespace Engine
 			//TODO: 目前只使用了1个方向光, 需要补充为4个; 部分变量不需要对每个mesh都进行设置, 可以移出循环
 			auto directionalLight = s_Data->m_SceneData.SceneLightEnvironment.DirectionalLights[0];
 			baseMaterial->Set("u_DirectionalLight", directionalLight); 
+			
+			//Set environment
 			baseMaterial->Set("u_IrradianceMap", s_Data->m_SceneData.SceneEnvironment.IrradianceMap);
+			baseMaterial->Set("u_EnvPrefliteredMap", s_Data->m_SceneData.SceneEnvironment.PrefliteredMap);
+			baseMaterial->Set("u_BRDFLUTMap", s_Data->m_BRDFLUTMap);
 
 			//Shadow map
 			auto resource = baseMaterial->FindShaderResource("u_ShadowMapTexture");

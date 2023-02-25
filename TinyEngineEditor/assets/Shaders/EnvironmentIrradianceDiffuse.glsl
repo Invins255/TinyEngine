@@ -30,7 +30,7 @@ void main()
     vec3 up    = normalize(cross(N, right));
 
     vec3 irradiance = vec3(0.0, 0.0, 0.0);
-    float sampleDelta = 0.025;
+    float sampleDelta = 0.015;
     float nrSamples = 0.0;
     for(float phi = 0.0; phi < 2.0 * PI; phi += sampleDelta)
     {
