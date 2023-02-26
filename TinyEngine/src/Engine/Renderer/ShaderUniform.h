@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "Engine/Core/Core.h"
+#include "Engine/Core/Ref.h"
 #include "Engine/Core/Log.h"
 
 namespace Engine

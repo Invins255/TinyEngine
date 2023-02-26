@@ -992,6 +992,10 @@
     <ClInclude Include="src\Engine\Core\Math\Ray.h" />
     <ClInclude Include="src\Engine\Core\Math\AABB.h" />
     <ClInclude Include="src\Engine\Core\Math\Algorithm.h" />
+    <ClInclude Include="src\Engine\Core\Ref.h" />
+    <ClInclude Include="src\Engine\Asset\Asset.h" />
+    <ClInclude Include="src\Engine\Asset\AssetType.h" />
+    <ClInclude Include="src\Engine\Core\Assert.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">

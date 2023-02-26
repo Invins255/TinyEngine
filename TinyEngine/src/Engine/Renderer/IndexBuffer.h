@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Engine/Core/Ref.h"
+
 namespace Engine
 {
 	class IndexBuffer

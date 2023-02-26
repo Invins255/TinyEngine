@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 #include "Engine/Core/Core.h"
+#include "Engine/Core/Ref.h"
 
 namespace Engine
 {

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "SceneRenderer.h"
 #include "Engine/Core/Core.h"
+#include "Engine/Core/Ref.h"
 #include "Engine/Renderer/RenderPass.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Pipeline.h"

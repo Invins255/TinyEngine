@@ -2,6 +2,7 @@
 
 #include <string>
 #include "Engine/Core/Core.h"
+#include "Engine/Core/Ref.h"
 #include "Engine/Core/Buffer.h"
 
 namespace Engine

@@ -1,4 +1,6 @@
 #include "pch.h"
+#include "Engine/Core/Core.h"
+#include "Engine/Core/Ref.h"
 #include "Engine/Core/Input.h"
 #include "Engine/Core/Application.h"
 

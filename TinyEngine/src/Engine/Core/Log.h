@@ -4,6 +4,7 @@
 #include "spdlog/fmt/ostr.h"
 #include "Engine/Core/Core.h"
 
+#include <memory>
 
 namespace Engine
 {

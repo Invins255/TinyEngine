@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 
 #include "Engine/Core/Core.h"
+#include "Engine/Core/Ref.h"
 #include "Engine/Core/Buffer.h"
 #include "Engine/Renderer/ShaderUniform.h"
 

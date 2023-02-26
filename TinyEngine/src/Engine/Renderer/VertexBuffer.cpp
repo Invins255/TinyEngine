@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "VertexBuffer.h"
+#include "Engine/Core/Ref.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Platforms/OpenGL/OpenGLVertexBuffer.h"
 

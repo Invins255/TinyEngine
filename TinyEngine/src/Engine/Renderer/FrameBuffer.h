@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include "Engine/Core/Core.h"
+#include "Engine/Core/Ref.h"
 
 namespace Engine
 {
