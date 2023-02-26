@@ -11,7 +11,6 @@ namespace Engine
 		Renderer::Submit([this]()
 			{
 				glCreateVertexArrays(1, &m_RendererID);
-
 				RENDERCOMMAND_TRACE("RenderCommand: Construct vertexArray({0})", m_RendererID);
 			}
 		);
@@ -23,7 +22,6 @@ namespace Engine
 		Renderer::Submit([rendererID]()
 			{
 				RENDERCOMMAND_TRACE("RenderCommand: Destroy vertexArray({0})", rendererID);
-
 				glDeleteVertexArrays(1, &rendererID);
 			}
 		);
@@ -34,7 +32,6 @@ namespace Engine
 		Renderer::Submit([this]()
 			{
 				RENDERCOMMAND_TRACE("RenderCommand: Bind vertexArray({0})", m_RendererID);
-
 				glBindVertexArray(m_RendererID);
 			}
 		);
@@ -45,7 +42,6 @@ namespace Engine
 		Renderer::Submit([this]()
 			{
 				RENDERCOMMAND_TRACE("RenderCommand: Unind vertexArray({0})", m_RendererID);
-
 				glBindVertexArray(0);
 			}
 		);

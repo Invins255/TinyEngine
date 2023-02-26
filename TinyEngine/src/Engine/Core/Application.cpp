@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "Engine/Core/Input.h"
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Asset/AssetManager.h"
 
 #include <commdlg.h>
 
@@ -28,12 +29,18 @@ namespace Engine
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 
+		//Init renderer
 		Renderer::Init();
 		Renderer::WaitAndRender();
+
+		AssetManager::Init();
 	}
 
 	Application::~Application()
 	{
+		m_LayerStack.Clear();
+
+		AssetManager::Shutdown();
 		Renderer::Shutdown();
 	}
 

@@ -8,8 +8,7 @@ namespace Engine
 	enum class AssetFlag
 	{
 		None = 0,
-		Missing = BIT(0),
-		Invalid = BIT(1)
+		Invalid = BIT(0)
 	};
 
 	enum class AssetType
@@ -37,6 +36,7 @@ namespace Engine
 	{
 		switch (assetType)
 		{
+		case Engine::AssetType::None:		return "None";
 		case Engine::AssetType::Scene:		return "Scene";
 		case Engine::AssetType::Mesh:		return "Mesh";
 		case Engine::AssetType::Texture:	return "Texture";

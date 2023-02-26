@@ -8,7 +8,7 @@ namespace Engine
 {
 	using AssetHandle = UUID;
 
-	class Asset : public RefCounted
+	class Asset
 	{
 	public:
 		static AssetType GetStaticType() { return AssetType::None; }
@@ -21,7 +21,7 @@ namespace Engine
 
 		virtual AssetType GetAssetType() const { return AssetType::None; }
 
-		bool IsValid() const { return ((Flags & (uint16_t)AssetFlag::Missing) | (Flags & (uint16_t)AssetFlag::Invalid)) == 0; }
+		bool IsValid() const { return (Flags & (uint16_t)AssetFlag::Invalid) == 0; }
 		
 		bool IsFlagSet(AssetFlag flag) const { return (uint16_t)flag & Flags; }
 		void SetFlag(AssetFlag flag, bool value = true)

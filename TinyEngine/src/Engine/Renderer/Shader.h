@@ -155,11 +155,12 @@ namespace Engine
 	{
 	public:
 		void Add(const Ref<Shader>& shader);
-		void Add(const std::string& name, const Ref<Shader>& shader);
 		Ref<Shader> Load(const std::string& filepath);
-		Ref<Shader> Load(const std::string& name, const std::string& filepath);
 		Ref<Shader> Get(const std::string& name);
 		bool Exists(const std::string& name) const;
+
+		std::unordered_map<std::string, Ref<Shader>>& GetShaders() { return m_Shaders; }
+		const std::unordered_map<std::string, Ref<Shader>>& GetShaders() const { return m_Shaders; }
 	private:
 		std::unordered_map<std::string, Ref<Shader>> m_Shaders;
 	};

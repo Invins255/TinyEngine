@@ -56,7 +56,7 @@ namespace Engine
             auto& meshEntity = m_EditorScene->CreateEntity("Sphere");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 8.0f, 25.0f);
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 10.0f, 25.0f);
         }
         {
             auto mesh = CreateRef<Mesh>("assets\\models\\Plane\\Plane.fbx");
@@ -163,14 +163,14 @@ namespace Engine
 
                 if (ImGui::BeginMenu("Shaders"))
                 {
-                    auto& shaders = Shader::s_AllShaders;
+                    auto& shaders = Renderer::GetShaderLibrary().GetShaders();
                     for (auto& shader : shaders)
                     {
-                        if (ImGui::TreeNode(shader->GetName().c_str()))
+                        if (ImGui::TreeNode(shader.second->GetName().c_str()))
                         {
-                            std::string buttonName = "Reload##" + shader->GetName();
+                            std::string buttonName = "Reload##" + shader.second->GetName();
                             if (ImGui::Button(buttonName.c_str()))
-                                shader->Reload();
+                                shader.second->Reload();
                             ImGui::TreePop();
                         }
                     }
