@@ -140,7 +140,7 @@
     <ClInclude Include="src\Engine\Core\Application.h" />
     <ClInclude Include="src\Engine\Core\Buffer.h" />
     <ClInclude Include="src\Engine\Core\Core.h" />
-    <ClInclude Include="src\Engine\Core\EntryPoint.h" />
+    <ClInclude Include="src\Engine\EntryPoint.h" />
     <ClInclude Include="src\Engine\Core\Input.h" />
     <ClInclude Include="src\Engine\Core\KeyCodes.h" />
     <ClInclude Include="src\Engine\Core\Layer.h" />

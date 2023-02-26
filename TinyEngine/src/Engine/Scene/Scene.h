@@ -1,6 +1,7 @@
 #pragma once
 
 #include "entt.hpp"
+
 #include "Engine/Core/TimeStep.h"
 #include "Engine/Core/UUID.h"
 #include "Engine/Renderer/Light.h"
@@ -24,7 +25,7 @@ namespace Engine
 		friend class SceneSerializer;
 
 	public:
-		Scene(const std::string& name = "Empty Scene");
+		Scene(const std::string& name = "Untitled Scene");
 		~Scene();
 
 		//Entity operations

@@ -1,5 +1,5 @@
 #include <TinyEngine.h>
-#include "Engine/Core/EntryPoint.h"
+#include "Engine/EntryPoint.h"
 #include "EditorLayer.h"
 
 namespace Engine
