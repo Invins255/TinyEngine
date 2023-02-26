@@ -13,24 +13,8 @@ namespace Engine
 		const uint32_t cubemapSize = 2048;
 		const uint32_t irradianceMapSize = 32;
 
-		//Convert Equirectangular map to Cube map
-		TextureSpecification spec;
-		spec.Flip = TextureFlip::None;
-		Ref<Texture2D> envEquirect = Texture2D::Create(filepath, false, spec);
-		ENGINE_ASSERT(envEquirect->GetFormat() == TextureFormat::RGBA16F, "Texture is not HDR");
+		Ref<TextureCube> envUnfiltered = TextureCube::Create(filepath);
 
-		Ref<TextureCube> envUnfiltered = TextureCube::Create(TextureFormat::RGBA16F, cubemapSize, cubemapSize);		
-		auto equirectangularConversionShader = Renderer::GetShaderLibrary().Get("EquirectangularToCubeMap");		
-		equirectangularConversionShader->Bind();
-		envEquirect->Bind();
-		Renderer::Submit([envUnfiltered, cubemapSize] 
-			{
-				glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-				glBindImageTexture(0, envUnfiltered->GetRendererID(), 0, GL_TRUE, 0, GL_WRITE_ONLY, GL_RGBA16F);
-				glDispatchCompute(cubemapSize / 32, cubemapSize / 32, 6);
-				glGenerateTextureMipmap(envUnfiltered->GetRendererID());
-			});
-		
 		//Prefliter
 		Ref<TextureCube> envFiltered = TextureCube::Create(TextureFormat::RGBA16F, cubemapSize, cubemapSize);
 		auto envFilteringShader = Renderer::GetShaderLibrary().Get("EnvironmentMipFilter");

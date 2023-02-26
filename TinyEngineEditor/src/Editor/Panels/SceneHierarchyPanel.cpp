@@ -92,106 +92,22 @@ namespace Engine
 							
 							int width1 = 60, width2 = 250, width3 = 40;
 							{
-								//Left
-								ImGui::PushID(path[1].c_str());
+								ImGui::PushID(path.c_str());
 								ImGui::Columns(3);
 								ImGui::SetColumnWidth(0, width1);
 								ImGui::SetColumnWidth(1, width2);
 								ImGui::SetColumnWidth(2, width3);
-								ImGui::Text("Left");
+								ImGui::Text("Path");
 								ImGui::NextColumn();
 								ImGui::PushItemWidth(-1);
-								ImGui::InputText("##left", (char*)path[1].c_str(), 256, ImGuiInputTextFlags_ReadOnly);
-								ImGui::PopItemWidth();
-								ImGui::NextColumn();
-								if (ImGui::Button("...##openmesh"))
+								ImGui::InputText("##path", (char*)path.c_str(), 256, ImGuiInputTextFlags_ReadOnly);
+								if(ImGui::IsItemHovered())
 								{
-									//Get face path
+									ImGui::BeginTooltip();
+									ImGui::Text((char*)path.c_str());
+									ImGui::EndTooltip();
 								}
-								ImGui::PopID();
-								ImGui::NextColumn();
-								//Right
-								ImGui::PushID(path[0].c_str());
-								ImGui::Columns(3);
-								ImGui::SetColumnWidth(0, width1);
-								ImGui::SetColumnWidth(1, width2);
-								ImGui::SetColumnWidth(2, width3);
-								ImGui::Text("Right");
-								ImGui::NextColumn();
-								ImGui::PushItemWidth(-1);
-								ImGui::InputText("##right", (char*)path[0].c_str(), 256, ImGuiInputTextFlags_ReadOnly);
-								ImGui::PopItemWidth();
-								ImGui::NextColumn();
-								if (ImGui::Button("...##openmesh"))
-								{
-									//Get face path
-								}
-								ImGui::PopID();
-								ImGui::NextColumn();
-								//Top
-								ImGui::PushID(path[2].c_str());
-								ImGui::Columns(3);
-								ImGui::SetColumnWidth(0, width1);
-								ImGui::SetColumnWidth(1, width2);
-								ImGui::SetColumnWidth(2, width3);
-								ImGui::Text("Top");
-								ImGui::NextColumn();
-								ImGui::PushItemWidth(-1);
-								ImGui::InputText("##top", (char*)path[2].c_str(), 256, ImGuiInputTextFlags_ReadOnly);
-								ImGui::PopItemWidth();
-								ImGui::NextColumn();
-								if (ImGui::Button("...##openmesh"))
-								{
-									//Get face path
-								}
-								ImGui::PopID();
-								ImGui::NextColumn();
-								//Bottom
-								ImGui::PushID(path[3].c_str());
-								ImGui::Columns(3);
-								ImGui::SetColumnWidth(0, width1);
-								ImGui::SetColumnWidth(1, width2);
-								ImGui::SetColumnWidth(2, width3);
-								ImGui::Text("Bottom");
-								ImGui::NextColumn();
-								ImGui::PushItemWidth(-1);
-								ImGui::InputText("##bottom", (char*)path[3].c_str(), 256, ImGuiInputTextFlags_ReadOnly);
-								ImGui::PopItemWidth();
-								ImGui::NextColumn();
-								if (ImGui::Button("...##openmesh"))
-								{
-									//Get face path
-								}
-								ImGui::PopID();
-								ImGui::NextColumn();
-								//Front
-								ImGui::PushID(path[4].c_str());
-								ImGui::Columns(3);
-								ImGui::SetColumnWidth(0, width1);
-								ImGui::SetColumnWidth(1, width2);
-								ImGui::SetColumnWidth(2, width3);
-								ImGui::Text("Front");
-								ImGui::NextColumn();
-								ImGui::PushItemWidth(-1);
-								ImGui::InputText("##front", (char*)path[4].c_str(), 256, ImGuiInputTextFlags_ReadOnly);
-								ImGui::PopItemWidth();
-								ImGui::NextColumn();
-								if (ImGui::Button("...##openmesh"))
-								{
-									//Get face path
-								}
-								ImGui::PopID();
-								ImGui::NextColumn();
-								//Back
-								ImGui::PushID(path[5].c_str());
-								ImGui::Columns(3);
-								ImGui::SetColumnWidth(0, width1);
-								ImGui::SetColumnWidth(1, width2);
-								ImGui::SetColumnWidth(2, width3);
-								ImGui::Text("Back");
-								ImGui::NextColumn();
-								ImGui::PushItemWidth(-1);
-								ImGui::InputText("##back", (char*)path[5].c_str(), 256, ImGuiInputTextFlags_ReadOnly);
+																
 								ImGui::PopItemWidth();
 								ImGui::NextColumn();
 								if (ImGui::Button("...##openmesh"))

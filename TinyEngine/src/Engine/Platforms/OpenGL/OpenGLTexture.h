@@ -49,10 +49,7 @@ namespace Engine
 	class OpenGLTextureCube : public TextureCube
 	{
 	public:
-		OpenGLTextureCube(
-			const std::string& right, const std::string& left,
-			const std::string& top, const std::string& bottom,
-			const std::string& front, const std::string& back);
+		OpenGLTextureCube(const std::string& path, TextureSpecification spec);
 		OpenGLTextureCube(TextureFormat format, uint32_t width, uint32_t height);	
 		virtual ~OpenGLTextureCube();
 
@@ -61,7 +58,7 @@ namespace Engine
 		virtual uint32_t GetChannels() const override { return m_Channels; }
 		virtual uint32_t GetMipLevelCount() const override;
 		virtual TextureFormat GetFormat() const override { return m_Format; }
-		virtual const std::vector<std::string> GetPath() const override;
+		virtual const std::string GetPath() const override;
 
 		virtual bool IsLoaded() const { return m_Loaded; };
 
@@ -72,14 +69,17 @@ namespace Engine
 		{ return m_RendererID == ((OpenGLTextureCube&)other).m_RendererID; };
 
 	private:
+		void Allocate();
+
+	private:
 		uint32_t m_RendererID = 0;
-		TextureFormat m_Format;
+		std::string m_Path;
+
+		TextureFormat m_Format = TextureFormat::RGBA16F;
 		uint32_t m_Width, m_Height, m_Channels;
+		TextureSpecification m_Specification;
 
-		//right(+X), left(-X), top(+Y), bottom(-Y), front(+Z), back(-Z)
-		std::string m_Path[6]; 
-		Buffer m_Data[6];
-
+		Buffer m_Data;
 		bool m_Loaded = false;
 	};
 }

@@ -81,15 +81,10 @@ namespace Engine
 	class TextureCube : public Texture
 	{
 	public:
-		static Ref<TextureCube> Create(
-			const std::string& right, const std::string& left,
-			const std::string& top, const std::string& bottom,
-			const std::string& front, const std::string& back
-		);
-
+		static Ref<TextureCube> Create(const std::string& path, TextureSpecification spec = {});
 		static Ref<TextureCube> Create(TextureFormat format, uint32_t width, uint32_t height);
 
 		virtual bool IsLoaded() const = 0;
-		virtual const std::vector<std::string> GetPath() const = 0;
+		virtual const std::string GetPath() const = 0;
 	};
 }

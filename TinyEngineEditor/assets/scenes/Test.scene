@@ -1,29 +1,25 @@
-Scene: Empty Scene
+Scene: Untitled Scene
 Environment:
   Skybox:
-    AssetPath:
-      Left: assets/textures/skybox/Sky/left.jpg
-      Right: assets/textures/skybox/Sky/right.jpg
-      Top: assets/textures/skybox/Sky/top.jpg
-      Bottom: assets/textures/skybox/Sky/bottom.jpg
-      Front: assets/textures/skybox/Sky/front.jpg
-      Back: assets/textures/skybox/Sky/back.jpg
+    AssetPath: assets\environment\InDoor.hdr
 Entities:
-  - Entity: 9719204662643586920
+  - Entity: 13739424894716620299
     TagComponent:
-      Tag: Light Entity
+      Tag: Directional Light
     TransformComponent:
       Position: [0, 0, 0]
       Rotation: [-3.14159274, 0, 0]
       Scale: [1, 1, 1]
     DirectionalLightComponent:
       Radiance: [1, 1, 1]
-  - Entity: 325549879676859147
+      Intensity: 1
+      CastShadows: true
+  - Entity: 16459039834399214320
     TagComponent:
-      Tag: Camera Entity
+      Tag: Camera
     TransformComponent:
-      Position: [0, 10, 40]
-      Rotation: [-0.261799395, 0, 0]
+      Position: [0, 20, 30]
+      Rotation: [-0.34906584, 0, 0]
       Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -36,23 +32,32 @@ Entities:
           FOV: 45
           Near: 0.00999999978
           Far: 1000
-        AspectRatio: 1.04408348
+        AspectRatio: 0
       Primary: true
-  - Entity: 15044778169313957766
+  - Entity: 4993681800987033142
     TagComponent:
       Tag: Plane
     TransformComponent:
       Position: [0, 0, 0]
       Rotation: [0, 0, 0]
-      Scale: [0.5, 0.5, 0.5]
+      Scale: [1, 1, 1]
     MeshComponent:
-      AssetPath: assets/models/Plane/Plane.fbx
-  - Entity: 13141930797571755004
+      AssetPath: assets\models\Plane\Plane.fbx
+  - Entity: 16074447828787009284
     TagComponent:
-      Tag: Sphere
+      Tag: SodaCan 2
     TransformComponent:
-      Position: [1, 3, -1]
+      Position: [-8, 1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
-      AssetPath: assets/models/Sphere/Sphere.fbx
+      AssetPath: assets\models\Can\SodaCan.fbx
+  - Entity: 6181660965720742840
+    TagComponent:
+      Tag: SodaCan 1
+    TransformComponent:
+      Position: [8, 1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\Can\SodaCan.fbx

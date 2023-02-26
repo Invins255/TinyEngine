@@ -63,10 +63,7 @@ namespace Engine
 		return levels;
 	}
 
-	Ref<TextureCube> TextureCube::Create(
-		const std::string& right, const std::string& left,
-		const std::string& top, const std::string& bottom,
-		const std::string& front, const std::string& back)
+	Ref<TextureCube> TextureCube::Create(const std::string& path, TextureSpecification spec)
 	{
 		Ref<TextureCube> result = nullptr;
 		switch (Renderer::GetAPIType())
@@ -75,7 +72,7 @@ namespace Engine
 			ENGINE_ASSERT(false, "RendererAPI::None is currently not supported!");
 			return nullptr;
 		case RendererAPI::RendererAPIType::OpenGL:
-			result = CreateRef<OpenGLTextureCube>(right, left, top, bottom, front, back);
+			result = CreateRef<OpenGLTextureCube>(path, spec);
 			s_AllTextures.push_back(result);
 			return result;
 		default:

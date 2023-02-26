@@ -34,17 +34,6 @@ namespace Engine
         NewScene();
 
         //TEMP
-        /*
-        auto skyboxTexture = TextureCube::Create(
-            "assets\\textures\\skybox\\CornellBox\\right.jpg",
-            "assets\\textures\\skybox\\CornellBox\\left.jpg",
-            "assets\\textures\\skybox\\CornellBox\\top.jpg",
-            "assets\\textures\\skybox\\CornellBox\\bottom.jpg",
-            "assets\\textures\\skybox\\CornellBox\\front.jpg",
-            "assets\\textures\\skybox\\CornellBox\\back.jpg"
-        );
-        m_EditorScene->SetSkybox(skyboxTexture);
-        */
         
         auto environment = Environment::Create("assets\\environment\\InDoor.hdr");
         m_EditorScene->SetEnvironment(environment);
@@ -63,12 +52,11 @@ namespace Engine
             meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-8.0f, 1.0f, 0.0f);
         }
         {
-            //auto mesh = CreateRef<Mesh>("assets\\models\\Sphere\\Sphere.fbx");
-            auto mesh = MeshFactory::CreateSphere(5.0f);
+            auto mesh = CreateRef<Mesh>("assets\\models\\Sphere\\Sphere.fbx");
             auto& meshEntity = m_EditorScene->CreateEntity("Sphere");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
-            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 8.0f, 15.0f);
+            meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 8.0f, 25.0f);
         }
         {
             auto mesh = CreateRef<Mesh>("assets\\models\\Plane\\Plane.fbx");
@@ -447,6 +435,9 @@ namespace Engine
 
     void EditorLayer::OnEntityDeleted(Entity e)
     {
+        if (m_SelectionContext.empty())
+            return;
+
         if (m_SelectionContext[0].Entity == e)
         {
             m_SelectionContext.clear();

@@ -204,63 +204,28 @@ namespace Engine
     //--------------------------------------------------------------------------------
     // OpenGLTextureCube
     //--------------------------------------------------------------------------------
-    OpenGLTextureCube::OpenGLTextureCube(
-        const std::string& right, const std::string& left,
-        const std::string& top, const std::string& bottom,
-        const std::string& front, const std::string& back)
+    OpenGLTextureCube::OpenGLTextureCube(const std::string& path, TextureSpecification spec)
+        :m_Path(path), m_Specification(spec)
     {
-        m_Path[0] = right;
-        m_Path[1] = left;
-        m_Path[2] = top;
-        m_Path[3] = bottom;
-        m_Path[4] = front;
-        m_Path[5] = back;
+        TextureSpecification equirectTextureSpec;
+        equirectTextureSpec.Flip = TextureFlip::None;
+        Ref<Texture2D> equirectTexture = Texture2D::Create(path, false, equirectTextureSpec);
+        ENGINE_ASSERT(equirectTexture->GetFormat() == TextureFormat::RGBA16F, "Texture is not HDR");
 
-        int width, height, channels;
-        for (uint32_t i = 0; i < 6; i++)
-        {
-            m_Data[i].Data = stbi_load(m_Path[i].c_str(), &width, &height, &channels, STBI_rgb);
-            if (!m_Data[i].Data)
-            {
-                ENGINE_ERROR("Could not read image '{0}'", m_Path[i]);
-                for (uint32_t j = 0; j <= i; j++)
-                    stbi_image_free(m_Data[j].Data);
-                return;
-            }
-        }
+        m_Width = 2048;
+        m_Height = 2048;
+        m_Format = TextureFormat::RGBA16F;
 
-        m_Loaded = true;
-        m_Width = width;
-        m_Height = height;
-        m_Channels = channels;
-        m_Format = TextureFormat::RGB;
+        Allocate();
 
+        auto equirectangularConversionShader = Renderer::GetShaderLibrary().Get("EquirectangularToCubeMap");
+        equirectangularConversionShader->Bind();
+        equirectTexture->Bind();
         Renderer::Submit([this]()
             {
-                glGenTextures(1, &m_RendererID);
-                glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
-
-                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-            
-                auto format = TextureFormatToOpenGLTextureFormat(m_Format);
-
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, m_Data[0].Data);//right
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, m_Data[1].Data);//left
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, m_Data[2].Data);//top
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, m_Data[3].Data);//bottom
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, m_Data[4].Data);//front
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, m_Data[5].Data);//back
-            
-                glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-
-                glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
-                for (uint32_t i = 0; i < 6; i++)
-                    stbi_image_free(m_Data[i].Data);
+                glBindImageTexture(0, m_RendererID, 0, GL_TRUE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+                glDispatchCompute(m_Width / 32, m_Height / 32, 6);
+                glGenerateTextureMipmap(m_RendererID);
             });
     }
 
@@ -270,22 +235,7 @@ namespace Engine
         m_Height = height;
         m_Format = format;
 
-        uint32_t levels = Texture::CalculateMipMapCount(width, height);
-        Renderer::Submit([this, levels]()
-            {
-                glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_RendererID);
-                glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
-
-                auto format = TextureFormatToOpenGLTextureFormat(m_Format);
-                glTextureStorage2D(m_RendererID, levels, format, m_Width, m_Height);
-                glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-                glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-                glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-            });
+        Allocate();
     }
 
     OpenGLTextureCube::~OpenGLTextureCube()
@@ -297,12 +247,9 @@ namespace Engine
             });
     }
 
-    const std::vector<std::string> OpenGLTextureCube::GetPath() const
+    const std::string OpenGLTextureCube::GetPath() const
     {
-        std::vector<std::string> path;
-        for (uint32_t i = 0; i < 6; i++)
-            path.push_back(std::string(m_Path[i]));
-        return path;
+        return m_Path;
     }
 
     uint32_t OpenGLTextureCube::GetMipLevelCount() const
@@ -315,6 +262,32 @@ namespace Engine
         Renderer::Submit([this, slot]()
             {
                 glBindTextureUnit(slot, m_RendererID);
+            });
+    }
+
+    void OpenGLTextureCube::Allocate()
+    {
+        Renderer::Submit([this]()
+            {
+                if (m_RendererID)
+                {
+                    glDeleteTextures(1, &m_RendererID);
+                    m_RendererID = 0;
+                }
+
+                glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_RendererID);
+                glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
+
+                uint32_t levels = Texture::CalculateMipMapCount(m_Width, m_Height);
+                auto format = TextureFormatToOpenGLTextureFormat(m_Format);                
+                glTextureStorage2D(m_RendererID, levels, format, m_Width, m_Height);
+                glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+                glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
             });
     }
 }
