@@ -38,28 +38,28 @@ namespace Engine
         auto environment = Environment::Create("assets\\environment\\InDoor.hdr");
         m_EditorScene->SetEnvironment(environment);
         {
-            auto mesh = CreateRef<Mesh>("assets\\models\\Can\\SodaCan.fbx");
+            auto mesh = AssetManager::CreateNewAsset<Mesh>("assets\\models\\Can\\SodaCan.fbx");
             auto& meshEntity = m_EditorScene->CreateEntity("SodaCan 1");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
             meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(8.0f, 1.0f, 0.0f);
         }
         {
-            auto mesh = CreateRef<Mesh>("assets\\models\\Can\\SodaCan.fbx");
+            auto mesh = AssetManager::CreateNewAsset<Mesh>("assets\\models\\Can\\SodaCan.fbx");
             auto& meshEntity = m_EditorScene->CreateEntity("SodaCan 2");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
             meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(-8.0f, 1.0f, 0.0f);
         }
         {
-            auto mesh = CreateRef<Mesh>("assets\\models\\Sphere\\Sphere.fbx");
+            auto mesh = AssetManager::CreateNewAsset<Mesh>("assets\\models\\Sphere\\Sphere.fbx");
             auto& meshEntity = m_EditorScene->CreateEntity("Sphere");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
             meshEntity.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 10.0f, 25.0f);
         }
         {
-            auto mesh = CreateRef<Mesh>("assets\\models\\Plane\\Plane.fbx");
+            auto mesh = AssetManager::CreateNewAsset<Mesh>("assets\\models\\Plane\\Plane.fbx");
             auto& meshEntity = m_EditorScene->CreateEntity("Plane");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;

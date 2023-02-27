@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Environment.h"
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Asset/AssetManager.h"
 
 #include <glad/glad.h>
 
@@ -13,10 +14,10 @@ namespace Engine
 		const uint32_t cubemapSize = 2048;
 		const uint32_t irradianceMapSize = 32;
 
-		Ref<TextureCube> envUnfiltered = TextureCube::Create(filepath);
+		Ref<TextureCube> envUnfiltered = AssetManager::CreateNewAsset<TextureCube>(filepath);
 
 		//Prefliter
-		Ref<TextureCube> envFiltered = TextureCube::Create(TextureFormat::RGBA16F, cubemapSize, cubemapSize);
+		Ref<TextureCube> envFiltered = AssetManager::CreateMemoryAsset<TextureCube>(TextureFormat::RGBA16F, cubemapSize, cubemapSize);
 		auto envFilteringShader = Renderer::GetShaderLibrary().Get("EnvironmentMipFilter");
 		envFilteringShader->Bind();
 		envUnfiltered->Bind(); 
@@ -34,7 +35,7 @@ namespace Engine
 			});
 
 		//BUG: 可能导致崩溃，原因可能在于对图片的读取格式或相关存储分配错误
-		Ref<TextureCube> irradianceMap = TextureCube::Create(TextureFormat::RGBA16F, irradianceMapSize, irradianceMapSize);
+		Ref<TextureCube> irradianceMap = AssetManager::CreateMemoryAsset<TextureCube>(TextureFormat::RGBA16F, irradianceMapSize, irradianceMapSize);
 		auto envIrradianceShader = Renderer::GetShaderLibrary().Get("EnvironmentIrradianceDiffuse");
 		envIrradianceShader->Bind();
 		envUnfiltered->Bind();

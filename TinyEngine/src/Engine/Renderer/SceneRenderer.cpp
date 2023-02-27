@@ -8,6 +8,7 @@
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Light.h"
 #include "Engine/Renderer/MeshFactory.h"
+#include "Engine/Asset/AssetManager.h"
 
 #include <glad/glad.h>
 
@@ -91,8 +92,8 @@ namespace Engine
 		s_Data->m_ShadowMapMaterial = Material::Create(shadowMapShader);
 		s_Data->m_ShadowMapMaterial->SetFlags(MaterialFlag::DepthTest);
 
-		s_Data->m_BRDFLUTMap = Texture2D::Create("assets\\textures\\IBL_BRDF_LUT.png", true);
-		
+		s_Data->m_BRDFLUTMap = AssetManager::CreateNewAsset<Texture2D>("assets\\textures\\IBL_BRDF_LUT.png", true);
+
 		Renderer::Submit([]()
 			{
 				glGenSamplers(1, &(s_Data->m_ShadowMapSampler));

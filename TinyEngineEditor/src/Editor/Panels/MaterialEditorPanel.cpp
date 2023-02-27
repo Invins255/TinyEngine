@@ -74,7 +74,7 @@ namespace Engine
 										std::string filename = Application::Get().OpenFile("");
 										if (filename != "")
 										{
-											albedoMap = Texture2D::Create(filename, true/*m_AlbedoInput.SRGB*/);
+											albedoMap = Texture2D::Create(filename, true);
 											materialInstance->Set("u_AlbedoTexture", albedoMap);
 										}
 									}

@@ -4,6 +4,7 @@
 #include "Engine/Core/Ref.h"
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Texture.h"
+#include "Engine/Asset/Asset.h"
 #include <unordered_set>
 
 namespace Engine
@@ -26,7 +27,7 @@ namespace Engine
 	/// <summary>
 	/// Material
 	/// </summary>
-	class Material
+	class Material : public Asset
 	{
 		friend class MaterialInstance;
 

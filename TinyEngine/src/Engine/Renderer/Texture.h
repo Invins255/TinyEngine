@@ -89,6 +89,7 @@ namespace Engine
 	{
 	public:
 		static AssetType GetStaticType() { return AssetType::Texture; }
+		virtual AssetType GetAssetType() const override { return GetStaticType(); }
 
 	public:
 		static Ref<TextureCube> Create(const std::string& path, TextureSpecification spec = {});
@@ -96,7 +97,5 @@ namespace Engine
 
 		virtual bool IsLoaded() const = 0;
 		virtual const std::string GetPath() const = 0;
-
-		virtual AssetType GetAssetType() const override { return GetStaticType(); }
 	};
 }

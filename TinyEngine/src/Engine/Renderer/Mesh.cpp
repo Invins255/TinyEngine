@@ -3,6 +3,7 @@
 #include "Engine/Renderer/VertexBuffer.h"
 #include "Engine/Renderer/IndexBuffer.h"
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Asset/AssetManager.h"
 
 #include <filesystem>
 #include <locale>
@@ -49,6 +50,16 @@ namespace Engine
     //-----------------------------------------------------------------------------------
     //Mesh
     //-----------------------------------------------------------------------------------
+    Ref<Mesh> Mesh::Create(const std::string& filename)
+    {
+        return CreateRef<Mesh>(filename);
+    }
+
+    Ref<Mesh> Mesh::Create(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const glm::mat4& transform)
+    {
+        return CreateRef<Mesh>(vertices, indices, transform);
+    }
+
     Mesh::Mesh(const std::string& filename)
         :m_FilePath(filename)
     {
@@ -198,7 +209,7 @@ namespace Engine
                     std::string texturePath = parentPath.string();
                     MESH_INFO("     Albedo map path = {0}", texturePath);
                     
-                    auto texture = Texture2D::Create(texturePath, true);
+                    auto texture = AssetManager::CreateNewAsset<Texture2D>(texturePath, true);
                     if (texture->IsLoaded())
                     {
                         m_Textures[i] = texture;
@@ -229,7 +240,7 @@ namespace Engine
                     std::string texturePath = parentPath.string();
                     MESH_INFO("     Normal map path = {0}", texturePath);
                     
-                    auto texture = Texture2D::Create(texturePath); //TODO: Manage textures
+                    auto texture = AssetManager::CreateNewAsset<Texture2D>(texturePath);
                     if (texture->IsLoaded())
                     {
                         m_NormalMaps[i] = texture;
@@ -258,7 +269,7 @@ namespace Engine
                     std::string texturePath = parentPath.string();
                     MESH_INFO("     Roughness map path = {0}", texturePath);
                     
-                    auto texture = Texture2D::Create(texturePath);
+                    auto texture = AssetManager::CreateNewAsset<Texture2D>(texturePath);
                     if (texture->IsLoaded())
                     {
                         m_RoughnessMaps[i] = texture;
@@ -298,7 +309,8 @@ namespace Engine
                             parentPath /= str;
                             std::string texturePath = parentPath.string();
                             MESH_INFO("    Metalness map path = {0}", texturePath);
-                            auto texture = Texture2D::Create(texturePath);
+
+                            auto texture = AssetManager::CreateNewAsset<Texture2D>(texturePath);
                             if (texture->IsLoaded())
                             {
                                 m_MetalnessMaps[i] = texture;

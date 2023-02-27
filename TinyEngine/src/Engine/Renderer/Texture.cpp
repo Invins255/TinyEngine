@@ -43,8 +43,11 @@ namespace Engine
 	{
 		switch (format)
 		{
-		case Engine::TextureFormat::RGB:	return 3;
-		case Engine::TextureFormat::RGBA:	return 4;
+		case Engine::TextureFormat::RG:		
+		case Engine::TextureFormat::RG16F:		return 2;
+		case Engine::TextureFormat::RGB:		return 3;
+		case Engine::TextureFormat::RGBA:
+		case Engine::TextureFormat::RGBA16F:	return 4;
 		}
 		ENGINE_ASSERT(false, "Unknown texture format!");
 		return 0;

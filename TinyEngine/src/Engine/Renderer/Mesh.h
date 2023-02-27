@@ -4,6 +4,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include "Engine/Core/TimeStep.h"
+#include "Engine/Asset/Asset.h"
 #include "Engine/Renderer/Pipeline.h"
 #include "Engine/Renderer/Material.h"
 #include "Engine/Renderer/Shader.h"
@@ -70,10 +71,17 @@ namespace Engine
 	//------------------------------------------------------------------------------------
 	//Mesh
 	//------------------------------------------------------------------------------------
-	class Mesh
+	class Mesh : public Asset
 	{
 		friend class Renderer;
 		friend class SceneHierarchyPanel;
+
+	public:
+		static Ref<Mesh> Create(const std::string& filename);
+		static Ref<Mesh> Create(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const glm::mat4& transform = glm::mat4(1.0f));
+
+		static AssetType GetStaticType() { return AssetType::Mesh; }
+		virtual AssetType GetAssetType() const override { return GetStaticType(); }
 
 	public:
 		Mesh(const std::string& filename);

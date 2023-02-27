@@ -210,7 +210,6 @@ namespace Engine
     {
         TextureSpecification equirectTextureSpec;
         equirectTextureSpec.Flip = TextureFlip::None;
-        //Ref<Texture2D> equirectTexture = Texture2D::Create(path, false, equirectTextureSpec);
         Ref<Texture2D> equirectTexture = AssetManager::CreateNewAsset<Texture2D>(path, false, equirectTextureSpec);
         ENGINE_ASSERT(equirectTexture->GetFormat() == TextureFormat::RGBA16F, "Texture is not HDR");
 
