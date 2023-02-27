@@ -4,6 +4,7 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Core/Ref.h"
 #include "Engine/Core/Buffer.h"
+#include "Engine/Asset/Asset.h"
 
 namespace Engine
 {
@@ -38,7 +39,7 @@ namespace Engine
 		TextureFlip Flip = TextureFlip::Vertical;
 	};
 
-	class Texture
+	class Texture : public Asset
 	{
 	public:
 		static std::vector<Ref<Texture>> s_AllTextures;
@@ -65,6 +66,9 @@ namespace Engine
 	class Texture2D : public Texture
 	{
 	public:
+		static AssetType GetStaticType() { return AssetType::Texture; }
+
+	public:
 		static Ref<Texture2D> Create(const std::string& path, bool srgb = false, TextureSpecification spec = {});
 		static Ref<Texture2D> Create(TextureFormat format, uint32_t width, uint32_t height, TextureSpecification spec = {});
 
@@ -77,15 +81,22 @@ namespace Engine
 		virtual bool IsLoaded() const = 0;
 
 		virtual const std::string& GetPath() const = 0;
+
+		virtual AssetType GetAssetType() const override { return GetStaticType(); }
 	};
 
 	class TextureCube : public Texture
 	{
+	public:
+		static AssetType GetStaticType() { return AssetType::Texture; }
+
 	public:
 		static Ref<TextureCube> Create(const std::string& path, TextureSpecification spec = {});
 		static Ref<TextureCube> Create(TextureFormat format, uint32_t width, uint32_t height);
 
 		virtual bool IsLoaded() const = 0;
 		virtual const std::string GetPath() const = 0;
+
+		virtual AssetType GetAssetType() const override { return GetStaticType(); }
 	};
 }

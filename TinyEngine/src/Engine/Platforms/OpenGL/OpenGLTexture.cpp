@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "OpenGLTexture.h"
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Asset/AssetManager.h"
 
 #include "stb_image.h"
 #include <glad/glad.h>
@@ -209,7 +210,8 @@ namespace Engine
     {
         TextureSpecification equirectTextureSpec;
         equirectTextureSpec.Flip = TextureFlip::None;
-        Ref<Texture2D> equirectTexture = Texture2D::Create(path, false, equirectTextureSpec);
+        //Ref<Texture2D> equirectTexture = Texture2D::Create(path, false, equirectTextureSpec);
+        Ref<Texture2D> equirectTexture = AssetManager::CreateNewAsset<Texture2D>(path, false, equirectTextureSpec);
         ENGINE_ASSERT(equirectTexture->GetFormat() == TextureFormat::RGBA16F, "Texture is not HDR");
 
         m_Width = 2048;

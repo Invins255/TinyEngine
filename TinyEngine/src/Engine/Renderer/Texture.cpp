@@ -5,9 +5,6 @@
 
 namespace Engine
 {
-	//TODO: Move to resourceManager
-	std::vector<Ref<Texture>> Texture::s_AllTextures;
-
 	Ref<Texture2D> Texture2D::Create(const std::string& path, bool srgb, TextureSpecification spec)
 	{
 		Ref<Texture2D> result = nullptr;
@@ -18,7 +15,6 @@ namespace Engine
 			return nullptr;
 		case RendererAPI::RendererAPIType::OpenGL:
 			result = CreateRef<OpenGLTexture2D>(path, srgb, spec);
-			s_AllTextures.push_back(result);
 			return result;
 		default:
 			ENGINE_ASSERT(false, "Unknown RendererAPI!");
@@ -36,7 +32,6 @@ namespace Engine
 			return nullptr;
 		case RendererAPI::RendererAPIType::OpenGL:
 			result = CreateRef<OpenGLTexture2D>(format, width, height, spec);
-			s_AllTextures.push_back(result);
 			return result;
 		default:
 			ENGINE_ASSERT(false, "Unknown RendererAPI!");
@@ -73,7 +68,6 @@ namespace Engine
 			return nullptr;
 		case RendererAPI::RendererAPIType::OpenGL:
 			result = CreateRef<OpenGLTextureCube>(path, spec);
-			s_AllTextures.push_back(result);
 			return result;
 		default:
 			ENGINE_ASSERT(false, "Unknown RendererAPI!");
@@ -91,7 +85,6 @@ namespace Engine
 			return nullptr;
 		case RendererAPI::RendererAPIType::OpenGL:
 			result = CreateRef<OpenGLTextureCube>(format, width, height);
-			s_AllTextures.push_back(result);
 			return result;
 		default:
 			ENGINE_ASSERT(false, "Unknown RendererAPI!");

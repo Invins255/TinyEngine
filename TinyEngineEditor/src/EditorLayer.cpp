@@ -19,6 +19,7 @@
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Scene/Environment.h"
 #include "Engine/Core/Math/Ray.h"
+#include "Engine/Asset/AssetManager.h"
 
 namespace Engine
 {
@@ -34,7 +35,6 @@ namespace Engine
         NewScene();
 
         //TEMP
-        
         auto environment = Environment::Create("assets\\environment\\InDoor.hdr");
         m_EditorScene->SetEnvironment(environment);
         {
