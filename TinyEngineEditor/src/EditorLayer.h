@@ -52,6 +52,7 @@ namespace Engine
 		void OnEntitySelected(SelectedSubmesh& selectionContext);
 		void OnEntityDeleted(Entity e);
 
+		float GetSnapValue();
 	private:
 		glm::vec2 m_ViewportBounds[2];
 		bool m_ViewportFocused = false;
@@ -71,6 +72,9 @@ namespace Engine
 		//Selection
 		SelectionMode m_SelectionMode = SelectionMode::Entity;
 		std::vector<SelectedSubmesh> m_SelectionContext;
+
+		//Gizmo
+		int m_GizmoType = -1; //No gizmo
 	};
 
 }

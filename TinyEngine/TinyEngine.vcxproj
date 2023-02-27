@@ -144,6 +144,7 @@
     <ClInclude Include="src\Engine\Core\Assert.h" />
     <ClInclude Include="src\Engine\Core\Buffer.h" />
     <ClInclude Include="src\Engine\Core\Core.h" />
+    <ClInclude Include="src\Engine\Core\Math\Matrix.h" />
     <ClInclude Include="src\Engine\Core\Ref.h" />
     <ClInclude Include="src\Engine\EntryPoint.h" />
     <ClInclude Include="src\Engine\Core\Input.h" />
@@ -466,6 +467,7 @@
     <ClCompile Include="src\Engine\Core\Layer.cpp" />
     <ClCompile Include="src\Engine\Core\LayerStack.cpp" />
     <ClCompile Include="src\Engine\Core\Log.cpp" />
+    <ClCompile Include="src\Engine\Core\Math\Matrix.cpp" />
     <ClCompile Include="src\Engine\Core\UUID.cpp" />
     <ClCompile Include="src\Engine\Core\Window.cpp" />
     <ClCompile Include="src\Engine\ImGui\ImGuiBuild.cpp" />

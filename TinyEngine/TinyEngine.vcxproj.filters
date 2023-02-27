@@ -997,6 +997,7 @@
     <ClInclude Include="src\Engine\Asset\AssetType.h" />
     <ClInclude Include="src\Engine\Core\Assert.h" />
     <ClInclude Include="src\Engine\Asset\AssetManager.h" />
+    <ClInclude Include="src\Engine\Core\Math\Matrix.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -1130,5 +1131,6 @@
     <ClCompile Include="src\Engine\Scene\Environment.cpp" />
     <ClCompile Include="src\Engine\ImGui\ImGuizmo.cpp" />
     <ClCompile Include="src\Engine\Asset\AssetManager.cpp" />
+    <ClCompile Include="src\Engine\Core\Math\Matrix.cpp" />
   </ItemGroup>
 </Project>

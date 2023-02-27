@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 #include <iostream>
 
-namespace Engine
+namespace Engine::Math
 {
 	class Random
 	{

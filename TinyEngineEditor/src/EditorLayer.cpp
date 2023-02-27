@@ -1,6 +1,7 @@
 #include "EditorLayer.h"
 
 #include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
@@ -20,6 +21,7 @@
 #include "Engine/Scene/Environment.h"
 #include "Engine/Core/Math/Ray.h"
 #include "Engine/Asset/AssetManager.h"
+#include "Engine/Core/Math/Matrix.h"
 
 namespace Engine
 {
@@ -210,6 +212,61 @@ namespace Engine
                 ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y };
                 m_ViewportBounds[0] = { minBound.x, minBound.y };
                 m_ViewportBounds[1] = { maxBound.x, maxBound.y };
+
+                //Gizmos
+                if (m_GizmoType != -1 && m_SelectionContext.size())
+                {
+                    auto& selection = m_SelectionContext[0];
+
+                    float rw = (float)ImGui::GetWindowWidth();
+                    float rh = (float)ImGui::GetWindowHeight();
+
+                    ImGuizmo::SetOrthographic(false);
+                    ImGuizmo::SetDrawlist();
+                    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, rw, rh);
+
+                    bool snap = Input::IsKeyPressed(ENGINE_KEY_LEFT_CONTROL);
+
+                    auto& entityTransform = selection.Entity.Transform();
+                    glm::mat4 transform = entityTransform.GetTransform();
+                    float snapValue = GetSnapValue();
+                    float snapValues[3] = { snapValue, snapValue, snapValue };
+
+                    if (m_SelectionMode == SelectionMode::Entity)
+                    {
+                        ImGuizmo::Manipulate(glm::value_ptr(m_EditorCamera.GetViewMatrix()),
+                            glm::value_ptr(m_EditorCamera.GetProjection()),
+                            (ImGuizmo::OPERATION)m_GizmoType,
+                            ImGuizmo::LOCAL,
+                            glm::value_ptr(transform),
+                            nullptr,
+                            snap ? snapValues : nullptr);
+
+                        if (ImGuizmo::IsUsing())
+                        {
+                            glm::vec3 translation, rotation, scale;
+                            Math::DecomposeTransform(transform, translation, rotation, scale);
+
+                            glm::vec3 deltaRotation = rotation - entityTransform.Rotation;
+                            entityTransform.Translation = translation;
+                            entityTransform.Rotation += deltaRotation;
+                            entityTransform.Scale = scale;
+                        }
+                    }
+                    else 
+                    {
+                        glm::mat4 transformBase = transform * selection.Mesh->Transform;
+                        ImGuizmo::Manipulate(glm::value_ptr(m_EditorCamera.GetViewMatrix()),
+                            glm::value_ptr(m_EditorCamera.GetProjection()),
+                            (ImGuizmo::OPERATION)m_GizmoType,
+                            ImGuizmo::LOCAL,
+                            glm::value_ptr(transformBase),
+                            nullptr,
+                            snap ? snapValues : nullptr);
+
+                        selection.Mesh->Transform = glm::inverse(transform) * transformBase;
+                    }
+                }
             }
             ImGui::End();
             ImGui::PopStyleVar();         
@@ -235,6 +292,31 @@ namespace Engine
 
     bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& e)
     {
+        //Gizmos
+        if (GImGui->ActiveId == 0)
+        {
+            if (m_ViewportFocused)
+            {
+                switch (e.GetKeyCode())
+                {
+                case ENGINE_KEY_Q:
+                    m_GizmoType = -1;
+                    break;
+                case ENGINE_KEY_W:
+                    m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+                    break;
+                case ENGINE_KEY_E:
+                    m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+                    break;
+                case ENGINE_KEY_R:
+                    m_GizmoType = ImGuizmo::OPERATION::SCALE;
+                    break;
+                }
+            }
+        }
+
+
+        //New, open, save scene
         if (Input::IsKeyPressed(ENGINE_KEY_LEFT_CONTROL))
         {
             switch (e.GetKeyCode())
@@ -249,14 +331,15 @@ namespace Engine
                 SaveScene();
                 break;
             }
-        }
-        if (Input::IsKeyPressed(ENGINE_KEY_LEFT_SHIFT))
-        {
-            switch (e.GetKeyCode())
+
+            if (Input::IsKeyPressed(ENGINE_KEY_LEFT_SHIFT))
             {
-            case ENGINE_KEY_S:
-                SaveSceneAs();
-                break;
+                switch (e.GetKeyCode())
+                {
+                case ENGINE_KEY_S:
+                    SaveSceneAs();
+                    break;
+                }
             }
         }
 
@@ -443,5 +526,16 @@ namespace Engine
             m_SelectionContext.clear();
             m_EditorScene->SetSelectedEntity({});
         }
+    }
+
+    float EditorLayer::GetSnapValue()
+    {
+        switch (m_GizmoType)
+        {
+        case  ImGuizmo::OPERATION::TRANSLATE: return 0.5f;
+        case  ImGuizmo::OPERATION::ROTATE: return 45.0f;
+        case  ImGuizmo::OPERATION::SCALE: return 0.5f;
+        }
+        return 0.0f;
     }
 }

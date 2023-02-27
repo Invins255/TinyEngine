@@ -48,7 +48,7 @@ namespace Engine
 							ImGui::Separator();
 
 							ImVec2 textureSize(64, 64);
-							float sizeMutiplier = 4.0f;
+							float sizeMutiplier = 2.0f;
 
 							//Albedo
 							if (ImGui::CollapsingHeader("Albedo", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
