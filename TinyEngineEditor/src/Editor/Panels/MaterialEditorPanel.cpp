@@ -4,12 +4,13 @@
 
 #include "Engine/Scene/Component.h"
 #include "Engine/Core/Application.h"
+#include "Engine/Asset/AssetManager.h"
 
 namespace Engine
 {
 	MaterialEditorPanel::MaterialEditorPanel()
 	{
-		m_CheckerboardTex = Texture2D::Create("resources\\textures\\Checkerboard.tga");
+		m_CheckerboardTex = AssetManager::CreateNewAsset<Texture2D>("resources\\textures\\Checkerboard.tga");
 	}
 
 	void MaterialEditorPanel::OnImGuiRender()

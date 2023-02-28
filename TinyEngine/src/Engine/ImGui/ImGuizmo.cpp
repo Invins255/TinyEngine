@@ -1057,8 +1057,8 @@ namespace ImGuizmo
 
       gContext.mRadiusSquareCenter = screenRotateSize * gContext.mHeight;
 
-      constexpr float circleLineThickness = 6.0f;
-      constexpr float lineThickness = 6.0f;
+      constexpr float circleLineThickness = 4.0f;
+      constexpr float lineThickness = 4.0f;
      for (int axis = 0; axis < 3; axis++)
       {
          ImVec2 circlePos[halfCircleSegmentCount];
@@ -1131,8 +1131,8 @@ namespace ImGuizmo
       if (gContext.mbUsing)
          scaleDisplay = gContext.mScale;
 
-      constexpr float lineThickness = 6.0f;
-      constexpr float circleSize = 12.0f;
+      constexpr float lineThickness = 4.0f;
+      constexpr float circleSize = 8.0f;
       for (unsigned int i = 0; i < 3; i++)
       {
         vec_t dirPlaneX, dirPlaneY, dirAxis;
@@ -1198,8 +1198,8 @@ namespace ImGuizmo
       // draw
       bool belowAxisLimit = false;
       bool belowPlaneLimit = false;
-      constexpr float arrowSize = 12.0f;
-      constexpr float lineThickness = 6.0f;
+      constexpr float arrowSize = 8.0f;
+      constexpr float lineThickness = 4.0f;
       for (unsigned int i = 0; i < 3; ++i)
       {
          vec_t dirPlaneX, dirPlaneY, dirAxis;

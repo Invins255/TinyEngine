@@ -5,6 +5,7 @@
 #include "Engine/Scene/Scene.h"
 #include "Engine/Scene/Entity.h"
 #include "Engine/Renderer/Mesh.h"
+#include <vector>
 
 namespace Engine
 {
@@ -38,6 +39,7 @@ namespace Engine
 	private:
 		Ref<Scene> m_Context;
 		Entity m_SelectionContext;
+		std::vector<Entity> m_ContextEntitiesOrder;
 
 		std::function<void(Entity)> m_SelectionChangedCallback;
 		std::function<void(Entity)> m_EntityDeletedCallback;

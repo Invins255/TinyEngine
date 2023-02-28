@@ -30,6 +30,11 @@ namespace Engine
     {
         m_SceneHierarchyPanel.SetSelectionChangedCallback(std::bind(&EditorLayer::SelectEntity, this, std::placeholders::_1));
         m_SceneHierarchyPanel.SetEntityDeletedCallback(std::bind(&EditorLayer::OnEntityDeleted, this, std::placeholders::_1));
+
+        m_ViewIcon = AssetManager::CreateNewAsset<Texture2D>("resources\\icons\\GizmosTools\\View.png");
+        m_MoveIcon = AssetManager::CreateNewAsset<Texture2D>("resources\\icons\\GizmosTools\\Move.png");
+        m_RotateIcon = AssetManager::CreateNewAsset<Texture2D>("resources\\icons\\GizmosTools\\Rotate.png");
+        m_ScaleIcon = AssetManager::CreateNewAsset<Texture2D>("resources\\icons\\GizmosTools\\Scale.png");
     }
 
     void EditorLayer::OnAttach()
@@ -270,7 +275,49 @@ namespace Engine
             }
             ImGui::End();
             ImGui::PopStyleVar();         
+            
+            //GizmosPanel-------------------------------------------------------------------
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+            ImGui::Begin("##Gizmos", (bool*)0, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDocking);
 
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("Tools");
+            ImGui::PopStyleVar();
+
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+
+            if (ImGui::ImageButton((ImTextureID)m_ViewIcon->GetRendererID(), { 20, 20 }, { 0, 1 }, { 1, 0 }))
+                m_GizmoType = -1;
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("View");
+            ImGui::PopStyleVar();
+
+            if (ImGui::ImageButton((ImTextureID)m_MoveIcon->GetRendererID(), { 20, 20 }, { 0, 1 }, { 1, 0 }))
+                m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("Move");
+            ImGui::PopStyleVar();
+
+            if (ImGui::ImageButton((ImTextureID)m_RotateIcon->GetRendererID(), { 20, 20 }, { 0, 1 }, { 1, 0 }))
+                m_GizmoType = ImGuizmo::OPERATION::ROTATE;            
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("Rotate");
+            ImGui::PopStyleVar();
+
+            if (ImGui::ImageButton((ImTextureID)m_ScaleIcon->GetRendererID(), { 20, 20 }, { 0, 1 }, { 1, 0 }))
+                m_GizmoType = ImGuizmo::OPERATION::SCALE;
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("Scale");
+            ImGui::PopStyleVar();
+            ImGui::PopStyleColor();
+
+            ImGui::End();
+            ImGui::PopStyleVar();
             //Material----------------------------------------------------------------------
             if (!m_SelectionContext.empty())
             {
@@ -314,7 +361,6 @@ namespace Engine
                 }
             }
         }
-
 
         //New, open, save scene
         if (Input::IsKeyPressed(ENGINE_KEY_LEFT_CONTROL))
@@ -532,9 +578,9 @@ namespace Engine
     {
         switch (m_GizmoType)
         {
-        case  ImGuizmo::OPERATION::TRANSLATE: return 0.5f;
-        case  ImGuizmo::OPERATION::ROTATE: return 45.0f;
-        case  ImGuizmo::OPERATION::SCALE: return 0.5f;
+        case  ImGuizmo::OPERATION::TRANSLATE: return 1.0f;
+        case  ImGuizmo::OPERATION::ROTATE: return 90.0f;
+        case  ImGuizmo::OPERATION::SCALE: return 1.0f;
         }
         return 0.0f;
     }

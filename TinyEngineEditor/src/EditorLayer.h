@@ -75,6 +75,10 @@ namespace Engine
 
 		//Gizmo
 		int m_GizmoType = -1; //No gizmo
+		Ref<Texture2D> m_ViewIcon;
+		Ref<Texture2D> m_MoveIcon;
+		Ref<Texture2D> m_RotateIcon;
+		Ref<Texture2D> m_ScaleIcon;
 	};
 
 }
