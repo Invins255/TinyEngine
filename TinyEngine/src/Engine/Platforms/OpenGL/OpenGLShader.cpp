@@ -599,8 +599,9 @@ namespace Engine
 		if (const char* s = strstr(name.c_str(), ";"))
 			name = std::string(name.c_str(), s - name.c_str());
 		//解析变量名、数组长度
+		std::string n(name);
 		int32_t count = 1;
-		const char* nameStr = name.c_str();
+		const char* nameStr = n.c_str();
 		if (const char* s = strstr(nameStr, "["))
 		{
 			name = std::string(nameStr, s - nameStr);
@@ -686,8 +687,9 @@ namespace Engine
 			if (const char* s = strstr(name.c_str(), ";"))
 				name = std::string(name.c_str(), s - name.c_str());
 			//解析变量名、数组长度
+			std::string n(name);
 			uint32_t count = 1;
-			const char* namestr = name.c_str();
+			const char* namestr = n.c_str();
 			if (const char* s = strstr(namestr, "["))
 			{
 				name = std::string(namestr, s - namestr);
