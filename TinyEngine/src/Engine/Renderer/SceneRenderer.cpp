@@ -36,6 +36,9 @@ namespace Engine
 		Ref<Material> m_ShadowMapMaterial;
 		uint32_t m_ShadowMapSampler;
 		glm::mat4 m_LightSpaceMatrix;
+		//CSM 
+		float m_CascadeSplits[4];
+		glm::mat4 m_LightCascadeMatrices[4];
 
 		Ref<Texture2D> m_BRDFLUTMap;
 
@@ -204,14 +207,14 @@ namespace Engine
 	{
 		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer->GetColorAttachmentID();
 		//return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer->GetDepthAttachmentID();
-		//return s_Data->m_ShadowMapPasses[2]->GetSpecification().TargetFramebuffer->GetDepthAttachmentID();
+		//return s_Data->m_ShadowMapPasses[1]->GetSpecification().TargetFramebuffer->GetDepthAttachmentID();
 	}
 
 	Ref<FrameBuffer> SceneRenderer::GetFinalFrameBuffer()
 	{
 		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer;
 		//return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer;
-		//return s_Data->m_ShadowMapPasses[2]->GetSpecification().TargetFramebuffer;
+		//return s_Data->m_ShadowMapPasses[1]->GetSpecification().TargetFramebuffer;
 	}
 
 	struct FrustumBounds
@@ -306,7 +309,7 @@ namespace Engine
 		auto viewProjection = sceneCamera.Camera.GetProjection() * sceneCamera.ViewMatrix;
 
 		float nearClip = 0.1f;
-		float farClip = 1000.0f;
+		float farClip = 1500.0f;
 		float clipRange = farClip - nearClip;
 
 		float minZ = nearClip;
@@ -328,6 +331,11 @@ namespace Engine
 			float d = cascadeSplitLambda * log + (1.0 - cascadeSplitLambda) * uniform;
 			cascadeSplits[i] = (d - nearClip) / clipRange;
 		}
+
+		//cascadeSplits[0] = 0.05f;
+		//cascadeSplits[1] = 0.15f;
+		//cascadeSplits[2] = 0.3f;
+		//cascadeSplits[3] = 1.0f;
 
 		//Calculate orthographic projection matrix for each cascade
 		float lastSplitDist = 0.0;
@@ -421,7 +429,6 @@ namespace Engine
 			for (auto& dc : s_Data->m_ShadowPassDrawList)
 			{
 				auto& material = s_Data->m_ShadowMapMaterial;
-				//material->Set("u_ViewProjectionMatrix", shadowMapVP);
 				auto mi = MaterialInstance::Create(material);
 				mi->Set("u_ViewProjectionMatrix", shadowMapVP);
 
@@ -432,18 +439,18 @@ namespace Engine
 
 		
 		{
-			//BUG: 在命令队列执行渲染命令前，Material属性被多次改变，导致仅有最后一次更改被实际使用
 			CascadeData cascades[4];
 			CalculateCascades(cascades, directionalLights[0].Direction);
 			for (int i = 0; i < 4; i++)
 			{
+				s_Data->m_CascadeSplits[i] = cascades[i].SplitDepth;
+				s_Data->m_LightCascadeMatrices[i] = cascades[i].ViewProjection;
+
 				glm::mat4 shadowMapVP = cascades[i].ViewProjection;
 				Renderer::BeginRenderPass(s_Data->m_ShadowMapPasses[i]);
 				for (auto& dc : s_Data->m_ShadowPassDrawList)
 				{
-					
 					auto& material = s_Data->m_ShadowMapMaterial;
-					//material->Set("u_ViewProjectionMatrix", shadowMapVP);
 					auto mi = MaterialInstance::Create(material);
 					mi->Set("u_ViewProjectionMatrix", shadowMapVP);
 
@@ -479,8 +486,14 @@ namespace Engine
 		{
 			auto baseMaterial = dc.Mesh->GetMaterial();
 			baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
+			baseMaterial->Set("u_ViewMatrix", sceneCamera.ViewMatrix);
 			baseMaterial->Set("u_CameraPosition", cameraPosition);
 			baseMaterial->Set("u_LightSpaceMatrix", s_Data->m_LightSpaceMatrix);
+			baseMaterial->Set("u_LightCascadeMatrix0", s_Data->m_LightCascadeMatrices[0]);
+			baseMaterial->Set("u_LightCascadeMatrix1", s_Data->m_LightCascadeMatrices[1]);
+			baseMaterial->Set("u_LightCascadeMatrix2", s_Data->m_LightCascadeMatrices[2]);
+			baseMaterial->Set("u_LightCascadeMatrix3", s_Data->m_LightCascadeMatrices[3]);
+			baseMaterial->Set("u_CascadeSplits", glm::vec4(s_Data->m_CascadeSplits[0], s_Data->m_CascadeSplits[1], s_Data->m_CascadeSplits[2], s_Data->m_CascadeSplits[3]));
 			//TODO: More uniforms 
 			
 			//Set lights 
@@ -503,6 +516,27 @@ namespace Engine
 				Renderer::Submit([reg, texID]() mutable
 					{
 						glBindTextureUnit(reg, texID);
+					});
+			}
+
+			auto res = baseMaterial->FindShaderResource("u_ShadowMapTextures");
+			if (res)
+			{
+				auto reg = res->GetRegister();
+				uint32_t texID[] =
+				{
+					s_Data->m_ShadowMapPasses[0]->GetSpecification().TargetFramebuffer->GetDepthAttachmentID(),
+					s_Data->m_ShadowMapPasses[1]->GetSpecification().TargetFramebuffer->GetDepthAttachmentID(),
+					s_Data->m_ShadowMapPasses[2]->GetSpecification().TargetFramebuffer->GetDepthAttachmentID(),
+					s_Data->m_ShadowMapPasses[3]->GetSpecification().TargetFramebuffer->GetDepthAttachmentID()
+				};
+
+				Renderer::Submit([reg, texID]() mutable
+					{
+						glBindTextureUnit(reg++, texID[0]);
+						glBindTextureUnit(reg++, texID[1]);
+						glBindTextureUnit(reg++, texID[2]);
+						glBindTextureUnit(reg++, texID[3]);
 					});
 			}
 

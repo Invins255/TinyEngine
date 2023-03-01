@@ -70,6 +70,7 @@ namespace Engine
             auto& meshEntity = m_EditorScene->CreateEntity("Plane");
             meshEntity.AddComponent<MeshComponent>();
             meshEntity.GetComponent<MeshComponent>().Mesh = mesh;
+            meshEntity.GetComponent<TransformComponent>().Scale = glm::vec3(5.0f, 5.0f, 5.0f);
         }
         auto& camera = m_EditorScene->CreateEntity("Camera");
         camera.AddComponent<CameraComponent>();

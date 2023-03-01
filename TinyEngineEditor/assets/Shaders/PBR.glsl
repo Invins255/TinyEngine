@@ -16,11 +16,18 @@ out VertexOutput
 	vec4 LightSpacePosition;
 	mat3 WorldTransform;
 	mat3 WorldNormals;
+	vec4 LightCascadePosition[4];
+	vec3 ViewPosition;
 } vs_Output;
 
 uniform mat4 u_ViewProjectionMatrix;
+uniform mat4 u_ViewMatrix;
 uniform mat4 u_Transform;
 uniform mat4 u_LightSpaceMatrix;
+uniform mat4 u_LightCascadeMatrix0;
+uniform mat4 u_LightCascadeMatrix1;
+uniform mat4 u_LightCascadeMatrix2;
+uniform mat4 u_LightCascadeMatrix3;
 
 void main()
 {
@@ -33,6 +40,12 @@ void main()
 	vs_Output.LightSpacePosition = u_LightSpaceMatrix * vec4(vs_Output.WorldPosition, 1.0);
 	vs_Output.WorldTransform = mat3(u_Transform);
 	vs_Output.WorldNormals = mat3(u_Transform) * mat3(a_Tangent, a_Bitangent, a_Normal);
+
+	vs_Output.LightCascadePosition[0] = u_LightCascadeMatrix0 * vec4(vs_Output.WorldPosition, 1.0);
+	vs_Output.LightCascadePosition[1] = u_LightCascadeMatrix1 * vec4(vs_Output.WorldPosition, 1.0);
+	vs_Output.LightCascadePosition[2] = u_LightCascadeMatrix2 * vec4(vs_Output.WorldPosition, 1.0);
+	vs_Output.LightCascadePosition[3] = u_LightCascadeMatrix3 * vec4(vs_Output.WorldPosition, 1.0);	 
+	vs_Output.ViewPosition = vec3(u_ViewMatrix * vec4(vs_Output.WorldPosition, 1.0));
 }
 
 #type fragment
@@ -49,6 +62,8 @@ in VertexOutput
 	vec4 LightSpacePosition;
 	mat3 WorldTransform;
 	mat3 WorldNormals;
+	vec4 LightCascadePosition[4];
+	vec3 ViewPosition;
 } fs_Input;
 
 struct DirectionalLight
@@ -83,6 +98,9 @@ uniform sampler2D u_MetalnessTexture;
 //-------------------------------------------------------------
 
 uniform sampler2D u_ShadowMapTexture;
+
+uniform sampler2D u_ShadowMapTextures[4];
+uniform vec4 u_CascadeSplits;
 
 //-------------------------------------------------------------
 //Environment
@@ -205,15 +223,24 @@ vec3 IBL()
 //Shadow
 //-------------------------------------------------------------
 
-//Hard Shadows
-float HardShadows(vec3 projCoords)
+const int MaxCascadeCount = 4;
+
+float GetBias(vec3 normal, vec3 lightDir)
 {
-	float closestDepth = texture2D(u_ShadowMapTexture, projCoords.xy).r;
+	float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+	return bias;
+}
+
+
+//Hard Shadows
+float HardShadows(sampler2D shadowMapTexture, vec3 projCoords)
+{
+	float closestDepth = texture2D(shadowMapTexture, projCoords.xy).r;
 	float currentDepth = projCoords.z;
 
 	vec3 normal = normalize(fs_Input.Normal);
 	vec3 lightDir = normalize(u_DirectionalLight.Direction); 
-	float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+	float bias = GetBias(normal, lightDir);
 
 	float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
@@ -296,22 +323,22 @@ vec2 SamplePoisson(int index)
 }
 
 //PCF
-float PCF(vec3 projCoords, int radius)
+float PCF(sampler2D shadowMapTexture, vec3 projCoords, int radius)
 {
-	float closestDepth = texture2D(u_ShadowMapTexture, projCoords.xy).r;
+	float closestDepth = texture2D(shadowMapTexture, projCoords.xy).r;
 	float currentDepth = projCoords.z;
 
 	vec3 normal = normalize(fs_Input.Normal);
 	vec3 lightDir = normalize(u_DirectionalLight.Direction); 
-	float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+	float bias = GetBias(normal, lightDir);
 
 	float shadow = 0.0; 
-	vec2 texelSize = 1.0 / textureSize(u_ShadowMapTexture, 0); 
+	vec2 texelSize = 1.0 / textureSize(shadowMapTexture, 0); 
 
 	int NUM_SAMPLES = 64;
 	for(int i = 0; i < NUM_SAMPLES; i++)
 	{
-		float pcfDepth = texture2D(u_ShadowMapTexture, projCoords.xy + radius * SamplePoisson(i) * texelSize).r; 
+		float pcfDepth = texture2D(shadowMapTexture, projCoords.xy + radius * SamplePoisson(i) * texelSize).r; 
 		shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;        
 	}
 	shadow /= NUM_SAMPLES;
@@ -329,7 +356,7 @@ float averageBlockerDistance(vec3 projCoords, int radius)
 
 	vec3 normal = normalize(fs_Input.Normal);
 	vec3 lightDir = normalize(u_DirectionalLight.Direction); 
-	float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+	float bias = GetBias(normal, lightDir);
 
 	vec2 texelSize = 1.0 / textureSize(u_ShadowMapTexture, 0);
 
@@ -351,7 +378,7 @@ float averageBlockerDistance(vec3 projCoords, int radius)
 }
 
 //PCSS
-float PCSS(vec3 projCoords, int radius)
+float PCSS(sampler2D shadowMapTexture, vec3 projCoords, int radius)
 {
 	float wLight = 10.0;
 	float zReceiver = projCoords.z;
@@ -361,33 +388,81 @@ float PCSS(vec3 projCoords, int radius)
 	//step2: Calculate pernumbra size
 	float wPenumbra = (zReceiver - zBlocker) * wLight / zBlocker;
 	//step3: PCF filtering 
-	float shadow = PCF(projCoords, int(wPenumbra));
+	float shadow = PCF(shadowMapTexture, projCoords, int(wPenumbra));
 
 	return shadow;
 }
 
-float CalculateShadow(vec4 lightSpacePosition)
+int cascadeIndex = 0;
+
+float CalculateShadow(sampler2D shadowMapTexture, vec4 lightSpacePosition)
 {
-	vec3 projCoords = lightSpacePosition.xyz / lightSpacePosition.w;
+	vec3 projCoords = lightSpacePosition.xyz / lightSpacePosition.w;	
 	projCoords = projCoords * 0.5 + 0.5;
 
 	float shadow;
-
 	switch(u_DirectionalLight.ShadowsType)
 	{
 		case 0:
-			shadow = HardShadows(projCoords);
+			shadow = HardShadows(shadowMapTexture, projCoords);
 			break;
 		case 1:
-			shadow = PCF(projCoords, u_DirectionalLight.SamplingRadius);
+			shadow = PCF(shadowMapTexture, projCoords, u_DirectionalLight.SamplingRadius);
 			break;
 		case 2:
-			shadow = PCSS(projCoords, u_DirectionalLight.SamplingRadius);
+			shadow = PCSS(shadowMapTexture, projCoords, u_DirectionalLight.SamplingRadius);
 			break;
-	}	
-		
+	}		
 	return shadow;
 }
+
+float CalculateShadow_CSM()
+{
+	if(abs(fs_Input.ViewPosition.z) < abs(u_CascadeSplits[3])) 
+		cascadeIndex = 3;		
+	if(abs(fs_Input.ViewPosition.z) < abs(u_CascadeSplits[2])) 
+		cascadeIndex = 2;		
+	if(abs(fs_Input.ViewPosition.z) < abs(u_CascadeSplits[1])) 
+		cascadeIndex = 1;		
+	if(abs(fs_Input.ViewPosition.z) < abs(u_CascadeSplits[0])) 
+		cascadeIndex = 0;
+
+	//TODO: 边界阴影处理不够好
+	const float cascadeTransitionFade = 10.0;
+	float c0 = smoothstep(u_CascadeSplits[0] + cascadeTransitionFade, u_CascadeSplits[0] - cascadeTransitionFade, fs_Input.ViewPosition.z);
+	float c1 = smoothstep(u_CascadeSplits[1] + cascadeTransitionFade, u_CascadeSplits[1] - cascadeTransitionFade, fs_Input.ViewPosition.z);
+	float c2 = smoothstep(u_CascadeSplits[2] + cascadeTransitionFade, u_CascadeSplits[2] - cascadeTransitionFade, fs_Input.ViewPosition.z);
+	
+	float shadow;
+	if (c0 > 0.0 && c0 < 1.0)
+	{	
+		//Sample 0 and 1
+		float shadow0 = CalculateShadow(u_ShadowMapTextures[0], fs_Input.LightCascadePosition[0]);
+		float shadow1 = CalculateShadow(u_ShadowMapTextures[1], fs_Input.LightCascadePosition[1]);		
+		shadow = mix(shadow0, shadow1, 1.0);
+
+	}
+	else if (c1 > 0.0 && c1 < 1.0)
+	{
+		//Sample 1 and 2
+		float shadow1 = CalculateShadow(u_ShadowMapTextures[1], fs_Input.LightCascadePosition[1]);
+		float shadow2 = CalculateShadow(u_ShadowMapTextures[2], fs_Input.LightCascadePosition[2]);		
+		shadow = mix(shadow1, shadow2, 1.0);
+	}
+	else if (c2 > 0.0 && c2 < 1.0)
+	{
+		//Sample 2 and 3
+		float shadow2 = CalculateShadow(u_ShadowMapTextures[2], fs_Input.LightCascadePosition[2]);
+		float shadow3 = CalculateShadow(u_ShadowMapTextures[3], fs_Input.LightCascadePosition[3]);		
+		shadow = mix(shadow2, shadow3, 1.0);
+	}
+	else
+	{
+		shadow = CalculateShadow(u_ShadowMapTextures[cascadeIndex], fs_Input.LightCascadePosition[cascadeIndex]);
+	}	
+	return shadow;
+}
+
 //-------------------------------------------------------------
 
 void main()
@@ -410,7 +485,8 @@ void main()
 	//Lights
 	vec3 Lo = CalculateLight();
 	//Shadows
-	float shadow = CalculateShadow(fs_Input.LightSpacePosition);
+	//float shadow = CalculateShadow(u_ShadowMapTexture, fs_Input.LightSpacePosition);
+	float shadow = CalculateShadow_CSM();
 
 	vec3 color = ambient + Lo * (1 - shadow);
 	
@@ -429,6 +505,18 @@ void main()
 
 	//Gamma correct
 	vec3 result = pow(mappedColor, vec3(1.0 / gamma));
-	fragColor = vec4(result, 1.0);
-	//fragColor = vec4(params.Normal, 1.0);
+	fragColor = vec4(result, 1.0);		
+
+
+		
+	if(cascadeIndex == 3)
+		fragColor *= vec4(1.0, 0.0, 0.0, 1.0);
+	else if(cascadeIndex == 2)
+		fragColor *= vec4(0.0, 1.0, 0.0, 1.0);
+	else if(cascadeIndex == 1)
+		fragColor *= vec4(0.0, 0.0, 1.0, 1.0);
+	else if(cascadeIndex == 0)
+		fragColor *= vec4(1.0, 1.0, 0.0, 1.0);
+	
+	
 }
