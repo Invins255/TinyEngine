@@ -188,12 +188,14 @@ namespace Engine
 
 	uint32_t SceneRenderer::GetFinalColorBufferRendererID()
 	{
-		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer->GetColorAttachmentID();
+		//return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer->GetColorAttachmentID();
+		return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer->GetDepthAttachmentID();
 	}
 
 	Ref<FrameBuffer> SceneRenderer::GetFinalFrameBuffer()
 	{
-		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer;
+		//return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer;
+		return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer;
 	}
 
 	struct FrustumBounds
@@ -282,6 +284,98 @@ namespace Engine
 		return cascade;
 	}
 
+	static void CalculateCascades(CascadeData* cascades, const glm::vec3& lightDirection)
+	{
+		auto& sceneCamera = s_Data->m_SceneData.SceneCamera;
+		auto viewProjection = sceneCamera.Camera.GetProjection() * sceneCamera.ViewMatrix;
+
+		float nearClip = 0.1f;
+		float farClip = 1000.0f;
+		float clipRange = farClip - nearClip;
+
+		float minZ = nearClip;
+		float maxZ = nearClip + clipRange;
+
+		float range = maxZ - minZ;
+		float ratio = maxZ / minZ;
+
+		const int SHADOW_MAP_CASCADE_COUNT = 4;
+		float cascadeSplits[SHADOW_MAP_CASCADE_COUNT];
+		const float cascadeSplitLambda = 0.91f;
+
+		//Calculate split depths based on view camera frustum
+		for (uint32_t i = 0; i < SHADOW_MAP_CASCADE_COUNT; i++)
+		{
+			float p = (i + 1) / static_cast<float>(SHADOW_MAP_CASCADE_COUNT);
+			float log = minZ * std::pow(ratio, p);
+			float uniform = minZ + p * range;
+			float d = cascadeSplitLambda * log + (1.0 - cascadeSplitLambda) * uniform;
+			cascadeSplits[i] = (d - nearClip) / clipRange;
+		}
+
+		//Calculate orthographic projection matrix for each cascade
+		float lastSplitDist = 0.0;
+		for (uint32_t i = 0; i < SHADOW_MAP_CASCADE_COUNT; i++)
+		{
+			float splitDist = cascadeSplits[i];
+
+			glm::vec3 frustumCorners[8] =
+			{
+				glm::vec3(-1.0f,  1.0f, -1.0f),
+				glm::vec3(1.0f,  1.0f, -1.0f),
+				glm::vec3(1.0f, -1.0f, -1.0f),
+				glm::vec3(-1.0f, -1.0f, -1.0f),
+				glm::vec3(-1.0f,  1.0f,  1.0f),
+				glm::vec3(1.0f,  1.0f,  1.0f),
+				glm::vec3(1.0f, -1.0f,  1.0f),
+				glm::vec3(-1.0f, -1.0f,  1.0f),
+			};
+
+			// Project frustum corners into world space
+			glm::mat4 invCam = glm::inverse(viewProjection);
+			for (uint32_t i = 0; i < 8; i++)
+			{
+				glm::vec4 invCorner = invCam * glm::vec4(frustumCorners[i], 1.0f);
+				frustumCorners[i] = invCorner / invCorner.w;
+			}
+
+			for (uint32_t i = 0; i < 4; i++)
+			{
+				glm::vec3 dist = frustumCorners[i + 4] - frustumCorners[i];
+				frustumCorners[i + 4] = frustumCorners[i] + (dist * splitDist);
+				frustumCorners[i] = frustumCorners[i] + (dist * lastSplitDist);
+			}
+
+			// Get frustum center
+			glm::vec3 frustumCenter = glm::vec3(0.0f);
+			for (uint32_t i = 0; i < 8; i++)
+				frustumCenter += frustumCorners[i];
+			frustumCenter /= 8.0f;
+
+			//Calculate light frustum size
+			float radius = 0.0f;
+			for (uint32_t i = 0; i < 8; i++)
+			{
+				float distance = glm::length(frustumCorners[i] - frustumCenter);
+				radius = glm::max(radius, distance);
+			}
+			radius = std::ceil(radius * 16.0f) / 16.0f;
+
+			glm::vec3 maxExtents = glm::vec3(radius);
+			glm::vec3 minExtents = -maxExtents;
+
+			glm::vec3 lightDir = -lightDirection;
+			glm::mat4 lightViewMatrix = glm::lookAt(frustumCenter - lightDir * -minExtents.z, frustumCenter, glm::vec3(0.0f, 1.0f, 0.0f));
+			glm::mat4 lightOrthoMatrix = glm::ortho(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.001f, maxExtents.z - minExtents.z);
+
+			cascades[i].SplitDepth = (nearClip + splitDist * clipRange) * -1.0f;
+			cascades[i].ViewProjection = lightOrthoMatrix * lightViewMatrix;
+			cascades[i].View = lightViewMatrix;
+
+			lastSplitDist = cascadeSplits[i];
+		}
+	}
+
 	void SceneRenderer::ShadowMapPass()
 	{
 		//Only use the first directional light to calculate shadow map
@@ -296,6 +390,11 @@ namespace Engine
 
 		CascadeData cascade = CalculateCascade(directionalLights[0].Direction);
 		glm::mat4 shadowMapVP = cascade.ViewProjection;
+		
+		//CascadeData cascades[4];
+		//CalculateCascades(cascades, directionalLights[0].Direction);
+		//glm::mat4 shadowMapVP = cascades[2].ViewProjection;
+
 		s_Data->m_LightSpaceMatrix = shadowMapVP;
 
 		Renderer::BeginRenderPass(s_Data->m_ShadowMapPass);			
