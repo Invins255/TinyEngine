@@ -234,6 +234,10 @@ namespace Engine
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
                 RENDERCOMMAND_TRACE("RenderCommand: Construct frameBuffer({0})", m_RendererID);
+                for(int i = 0; i < m_ColorAttachments.size(); i++)
+                    RENDERCOMMAND_TRACE("RenderCommand: FrameBuffer({0}) - ColorAttachment({1})", m_RendererID, m_ColorAttachments[i]);
+                if(m_DepthAttachmentFormat!=FrameBufferTextureFormat::None)
+                    RENDERCOMMAND_TRACE("RenderCommand: FrameBuffer({0}) - DepthAttachment({1})", m_RendererID, m_DepthAttachment);
             }
         );
     }

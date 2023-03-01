@@ -27,6 +27,7 @@ namespace Engine
 		}m_SceneData;
 
 		Ref<RenderPass> m_ShadowMapPass;
+		Ref<RenderPass> m_ShadowMapPasses[4];
 		Ref<RenderPass> m_GeometryPass;
 		Ref<RenderPass> m_CompositePass;
 
@@ -67,6 +68,19 @@ namespace Engine
 		RenderPassSpecification shadowMapRenderPassSpec;
 		shadowMapRenderPassSpec.TargetFramebuffer = FrameBuffer::Create(shadowMapFrameBufferSpec);
 		s_Data->m_ShadowMapPass = RenderPass::Create(shadowMapRenderPassSpec);
+
+		for (int i = 0; i < 4; i++)
+		{
+			FrameBufferSpecification shadowMapFrameBufferSpec;
+			shadowMapFrameBufferSpec.Width = 2048;
+			shadowMapFrameBufferSpec.Height = 2048;
+			shadowMapFrameBufferSpec.ClearColor = { 0.0f,0.0f,0.0f,1.0f };
+			shadowMapFrameBufferSpec.Attachments = { FrameBufferTextureFormat::RGBA16F, FrameBufferTextureFormat::DEPTH32F };
+			RenderPassSpecification shadowMapRenderPassSpec;
+			shadowMapRenderPassSpec.TargetFramebuffer = FrameBuffer::Create(shadowMapFrameBufferSpec);
+			s_Data->m_ShadowMapPasses[i] = RenderPass::Create(shadowMapRenderPassSpec);
+		}
+
 		//Geometry pass
 		FrameBufferSpecification geoFrameBufferSpec;
 		geoFrameBufferSpec.Width = 1280;
