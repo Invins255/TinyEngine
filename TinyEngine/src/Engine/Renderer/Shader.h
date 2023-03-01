@@ -11,8 +11,9 @@
 
 namespace Engine
 {
-#define SHADER_DEBUG 0
+#define SHADER_DEBUG 1
 #if SHADER_DEBUG
+#define SHADER_TRACE(...) ENGINE_TRACE(__VA_ARGS__)
 #define SHADER_WARN(...) ENGINE_WARN(__VA_ARGS__)
 #else
 #define SHADER_WARN(...)

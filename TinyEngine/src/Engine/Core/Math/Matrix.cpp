@@ -9,6 +9,21 @@
 
 namespace Engine::Math
 {
+	std::string MatrixToString(const glm::mat4& mat)
+	{
+		std::string matStr;
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				matStr += std::to_string(mat[i][j]);
+				if (!(i == 3 && j == 3))
+					matStr += ",";
+			}
+			matStr += "\n";
+		}
+		return matStr;
+	}
 	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)
 	{
 		using namespace glm;

@@ -202,14 +202,16 @@ namespace Engine
 
 	uint32_t SceneRenderer::GetFinalColorBufferRendererID()
 	{
-		//return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer->GetColorAttachmentID();
-		return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer->GetDepthAttachmentID();
+		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer->GetColorAttachmentID();
+		//return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer->GetDepthAttachmentID();
+		//return s_Data->m_ShadowMapPasses[2]->GetSpecification().TargetFramebuffer->GetDepthAttachmentID();
 	}
 
 	Ref<FrameBuffer> SceneRenderer::GetFinalFrameBuffer()
 	{
-		//return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer;
-		return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer;
+		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer;
+		//return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer;
+		//return s_Data->m_ShadowMapPasses[2]->GetSpecification().TargetFramebuffer;
 	}
 
 	struct FrustumBounds
@@ -399,29 +401,58 @@ namespace Engine
 			//Clear shadow map
 			Renderer::BeginRenderPass(s_Data->m_ShadowMapPass);
 			Renderer::EndRenderPass();
+
+			for (int i = 0; i < 4; i++)
+			{
+				Renderer::BeginRenderPass(s_Data->m_ShadowMapPasses[i]);
+				Renderer::EndRenderPass();
+			}
+
 			return;
 		}
 
-		CascadeData cascade = CalculateCascade(directionalLights[0].Direction);
-		glm::mat4 shadowMapVP = cascade.ViewProjection;
-		
-		//CascadeData cascades[4];
-		//CalculateCascades(cascades, directionalLights[0].Direction);
-		//glm::mat4 shadowMapVP = cascades[2].ViewProjection;
-
-		s_Data->m_LightSpaceMatrix = shadowMapVP;
-
-		Renderer::BeginRenderPass(s_Data->m_ShadowMapPass);			
-		for (auto& dc : s_Data->m_ShadowPassDrawList)
 		{
-			auto material = s_Data->m_ShadowMapMaterial;
-			material->Set("u_ViewProjectionMatrix", shadowMapVP);
-			auto mi = MaterialInstance::Create(material);
+			CascadeData cascade = CalculateCascade(directionalLights[0].Direction);
+			glm::mat4 shadowMapVP = cascade.ViewProjection;
 
-			Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data->m_ShadowMapPipeline, mi);
-		}	
+			s_Data->m_LightSpaceMatrix = shadowMapVP;
 
-		Renderer::EndRenderPass();
+			Renderer::BeginRenderPass(s_Data->m_ShadowMapPass);
+			for (auto& dc : s_Data->m_ShadowPassDrawList)
+			{
+				auto& material = s_Data->m_ShadowMapMaterial;
+				//material->Set("u_ViewProjectionMatrix", shadowMapVP);
+				auto mi = MaterialInstance::Create(material);
+				mi->Set("u_ViewProjectionMatrix", shadowMapVP);
+
+				Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data->m_ShadowMapPipeline, mi);
+			}
+			Renderer::EndRenderPass();
+		}
+
+		
+		{
+			//BUG: 在命令队列执行渲染命令前，Material属性被多次改变，导致仅有最后一次更改被实际使用
+			CascadeData cascades[4];
+			CalculateCascades(cascades, directionalLights[0].Direction);
+			for (int i = 0; i < 4; i++)
+			{
+				glm::mat4 shadowMapVP = cascades[i].ViewProjection;
+				Renderer::BeginRenderPass(s_Data->m_ShadowMapPasses[i]);
+				for (auto& dc : s_Data->m_ShadowPassDrawList)
+				{
+					
+					auto& material = s_Data->m_ShadowMapMaterial;
+					//material->Set("u_ViewProjectionMatrix", shadowMapVP);
+					auto mi = MaterialInstance::Create(material);
+					mi->Set("u_ViewProjectionMatrix", shadowMapVP);
+
+					Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data->m_ShadowMapPipeline, mi);
+				}
+				Renderer::EndRenderPass();
+			}
+		}
+		
 	}
 
 	void SceneRenderer::GeometryPass()

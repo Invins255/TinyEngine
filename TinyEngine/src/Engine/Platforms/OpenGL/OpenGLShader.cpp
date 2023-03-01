@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "OpenGLShader.h"
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Core/Math/Matrix.h"
 #include <glad/glad.h>
 
 namespace Engine 
@@ -155,6 +156,7 @@ namespace Engine
 	{
 		Renderer::Submit([this, buffer]()
 			{
+				SHADER_TRACE("Shader '{0}' upload vertex shader uniform buffer", m_Name);
 				glUseProgram(m_RendererID);
 				ResolveAndSetUniforms(m_VSMaterialUniformBuffer, buffer);
 			}
@@ -168,6 +170,7 @@ namespace Engine
 	{
 		Renderer::Submit([this, buffer]()
 			{
+				SHADER_TRACE("Shader '{0}' upload fragment shader uniform buffer", m_Name);
 				glUseProgram(m_RendererID);
 				ResolveAndSetUniforms(m_PSMaterialUniformBuffer, buffer);
 			}
@@ -265,6 +268,7 @@ namespace Engine
 
 	void OpenGLShader::UploadUniformMat4(uint32_t location, const glm::mat4& matrix)
 	{
+		//SHADER_TRACE("Shader '{0}' uniform '{1}':\n{2}", m_Name, location, Math::MatrixToString(matrix));
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 
@@ -859,6 +863,8 @@ namespace Engine
 		for (uint32_t i = 0; i < uniforms.size(); i++)
 		{
 			OpenGLShaderUniform* uniform = (OpenGLShaderUniform*)uniforms[i];
+			SHADER_TRACE("Shader '{0}' resolve uniform '{1}'({2})", m_Name, uniform->GetName(), uniform->GetLocation());
+
 			if (uniform->IsArray())
 				ResolveAndSetUniformArray(uniform, buffer);
 			else
