@@ -206,15 +206,11 @@ namespace Engine
 	uint32_t SceneRenderer::GetFinalColorBufferRendererID()
 	{
 		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer->GetColorAttachmentID();
-		//return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer->GetDepthAttachmentID();
-		//return s_Data->m_ShadowMapPasses[1]->GetSpecification().TargetFramebuffer->GetDepthAttachmentID();
 	}
 
 	Ref<FrameBuffer> SceneRenderer::GetFinalFrameBuffer()
 	{
 		return s_Data->m_CompositePass->GetSpecification().TargetFramebuffer;
-		//return s_Data->m_ShadowMapPass->GetSpecification().TargetFramebuffer;
-		//return s_Data->m_ShadowMapPasses[1]->GetSpecification().TargetFramebuffer;
 	}
 
 	struct FrustumBounds
@@ -332,6 +328,7 @@ namespace Engine
 			cascadeSplits[i] = (d - nearClip) / clipRange;
 		}
 
+		//Static cascade split
 		//cascadeSplits[0] = 0.05f;
 		//cascadeSplits[1] = 0.15f;
 		//cascadeSplits[2] = 0.3f;
