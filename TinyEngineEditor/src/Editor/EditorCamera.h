@@ -8,20 +8,25 @@
 
 namespace Engine
 {
+	enum class CameraMode
+	{
+		None, FLYCAM, ARCBALL
+	};
+
 	class EditorCamera : public Camera
 	{
 	public:
 		EditorCamera() = default;
-		EditorCamera(const glm::mat4& projection);
+		EditorCamera(const float degFov, const float width, const float height, const float nearP, const float farP);
 
-		void Focus();
+		void Focus(const glm::vec3& focusPoint);
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);
 
 		void SetDistance(float distance) { m_Distance = distance; }
 		float GetDistance() const { return m_Distance; }
 		
-		void SetViewportSize(uint32_t width, uint32_t height) { m_ViewportWidth = width; m_ViewportHeight = height; }
+		void SetViewportSize(uint32_t width, uint32_t height);
 
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		glm::mat4 GetViewProjection() const { return m_Projection * m_ViewMatrix; }
@@ -30,6 +35,11 @@ namespace Engine
 		glm::vec3 GetForwardDirection() const;
 		glm::vec3 GetPosition() const { return m_Position; }
 		glm::quat GetOrientation() const;
+		float GetVerticalFOV() const { return m_FOV; }
+		float GetNearClip() const { return m_NearClip; }
+		float GetFarClip() const { return m_FarClip; }
+		float GetPitch() const { return m_Pitch; }
+		float GetYaw() const { return m_Yaw; }
 
 	private:
 		void UpdateCameraView();
@@ -48,7 +58,8 @@ namespace Engine
 
 	private:
 		glm::mat4 m_ViewMatrix;
-		glm::vec3 m_Position, m_Rotation, m_FocalPoint;
+		float m_FOV, m_NearClip, m_FarClip;
+		glm::vec3 m_Position, m_Direction, m_FocalPoint;
 		bool m_Panning, m_Rotating;
 
 		glm::vec2 m_InitialMousePosition;
@@ -57,6 +68,11 @@ namespace Engine
 
 		float m_Distance;
 		float m_Pitch, m_Yaw;
+
+		float m_PitchDelta = 0.0f, m_YawDelta = 0.0f;
+		glm::vec3 m_PositionDelta = glm::vec3(0.0f);
+
+		float m_MinFocusDistance = 100.0f;
 
 		uint32_t m_ViewportWidth = 1600, m_ViewportHeight = 900;
 	};

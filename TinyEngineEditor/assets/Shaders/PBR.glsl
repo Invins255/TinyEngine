@@ -483,8 +483,8 @@ void main()
 	//Lights
 	vec3 Lo = CalculateLight();
 	//Shadows
-	//float shadow = CalculateShadow(u_ShadowMapTexture, fs_Input.LightSpacePosition);
-	float shadow = CalculateShadow_CSM();
+	float shadow = CalculateShadow(u_ShadowMapTexture, fs_Input.LightSpacePosition);
+	//float shadow = CalculateShadow_CSM();
 
 	vec3 color = ambient + Lo * max(1 - shadow, 0.0);
 	

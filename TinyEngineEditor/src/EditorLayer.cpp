@@ -26,7 +26,7 @@
 namespace Engine
 {
     EditorLayer::EditorLayer():
-	    Layer("EditorLayer"), m_EditorCamera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 1000.0f))
+	    Layer("EditorLayer"), m_EditorCamera(45.0f, 1600.0f, 900.0f, 0.1f, 1000.0f)
     {
         m_SceneHierarchyPanel.SetSelectionChangedCallback(std::bind(&EditorLayer::SelectEntity, this, std::placeholders::_1));
         m_SceneHierarchyPanel.SetEntityDeletedCallback(std::bind(&EditorLayer::OnEntityDeleted, this, std::placeholders::_1));
@@ -462,7 +462,7 @@ namespace Engine
         m_SceneHierarchyPanel.SetContext(m_EditorScene);
         m_SceneFilePath = "";
 
-        m_EditorCamera = EditorCamera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 1000.0f));
+        m_EditorCamera = EditorCamera(45.0f, 1600.0f, 900.0f, 0.1f, 1000.0f);
 
         APP_INFO("Create new scene");
     }
