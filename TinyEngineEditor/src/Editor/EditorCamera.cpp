@@ -15,6 +15,7 @@ namespace Engine
 	EditorCamera::EditorCamera(const glm::mat4& projection)
 		:Camera(projection)
 	{
+		//Initialize 
 		m_Rotation = glm::vec3(90.0f, 0.0f, 0.0f);
 		m_FocalPoint = glm::vec3(0.0f);
 
@@ -26,6 +27,15 @@ namespace Engine
 
 		UpdateCameraView();
 	}
+
+	/// <summary>
+	/// Camera operation
+	/// 
+	/// Mouse left button:		Pan
+	/// Mouse middle button:	Rotate
+	/// Mouse right button:		Zoom
+	/// Mouse scroll:			Zoom
+	/// </summary>
 
 	void EditorCamera::Focus()
 	{
@@ -53,17 +63,17 @@ namespace Engine
 		dispatcher.Dispatch<MouseScrolledEvent>(ENGINE_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
 	}
 
-	glm::vec3 EditorCamera::GetUpDirection()
+	glm::vec3 EditorCamera::GetUpDirection() const
 	{
 		return glm::rotate(GetOrientation(), glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 
-	glm::vec3 EditorCamera::GetRightDirection()
+	glm::vec3 EditorCamera::GetRightDirection() const
 	{
 		return glm::rotate(GetOrientation(), glm::vec3(1.0f, 0.0f, 0.0f));
 	}
 
-	glm::vec3 EditorCamera::GetForwardDirection()
+	glm::vec3 EditorCamera::GetForwardDirection() const
 	{
 		return glm::rotate(GetOrientation(), glm::vec3(0.0f, 0.0f, -1.0f));
 	}

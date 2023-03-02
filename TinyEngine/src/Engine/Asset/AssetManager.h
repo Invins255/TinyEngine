@@ -15,6 +15,9 @@ namespace Engine
 		static const std::unordered_map<AssetHandle, Ref<Asset>>& GetLoadedAssets() { return s_LoadedAssets; }
 		static const std::unordered_map<AssetHandle, Ref<Asset>>& GetMemoryAssets() { return s_MemoryAssets; }
 
+		/// <summary>
+		/// Create asset from file
+		/// </summary>
 		template<typename T, typename... Args>
 		static Ref<T> CreateNewAsset(Args&&... args)
 		{
@@ -27,6 +30,9 @@ namespace Engine
 			return asset;
 		}
 
+		/// <summary>
+		/// Create asset in memory
+		/// </summary>
 		template<typename T, typename... Args>
 		static Ref<T> CreateMemoryAsset(Args&&... args)
 		{
@@ -53,6 +59,9 @@ namespace Engine
 				return std::dynamic_pointer_cast<T>(s_LoadedAssets[handle]);
 		}
 
+		/// <summary>
+		/// Clear unused (refence count == 1) memory asset at the end of every frame
+		/// </summary>
 		static void ClearUnusedMemoryAsset();
 
 	private:

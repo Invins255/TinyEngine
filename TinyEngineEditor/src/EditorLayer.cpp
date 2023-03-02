@@ -20,8 +20,8 @@
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Scene/Environment.h"
 #include "Engine/Core/Math/Ray.h"
-#include "Engine/Asset/AssetManager.h"
 #include "Engine/Core/Math/Matrix.h"
+#include "Engine/Asset/AssetManager.h"
 
 namespace Engine
 {
@@ -31,6 +31,7 @@ namespace Engine
         m_SceneHierarchyPanel.SetSelectionChangedCallback(std::bind(&EditorLayer::SelectEntity, this, std::placeholders::_1));
         m_SceneHierarchyPanel.SetEntityDeletedCallback(std::bind(&EditorLayer::OnEntityDeleted, this, std::placeholders::_1));
 
+        //Load editor icons 
         m_ViewIcon = AssetManager::CreateNewAsset<Texture2D>("resources\\icons\\GizmosTools\\View.png");
         m_MoveIcon = AssetManager::CreateNewAsset<Texture2D>("resources\\icons\\GizmosTools\\Move.png");
         m_RotateIcon = AssetManager::CreateNewAsset<Texture2D>("resources\\icons\\GizmosTools\\Rotate.png");
@@ -39,6 +40,7 @@ namespace Engine
 
     void EditorLayer::OnAttach()
     {
+        //Create new scene. TODO: load a default scene file
         NewScene();
 
         //TEMP
@@ -91,7 +93,7 @@ namespace Engine
         //Update editor scene
         if(m_ViewportFocused)
             m_EditorCamera.OnUpdate(ts);
-
+        //Render editor scene
         m_EditorScene->OnRenderEditor(ts, m_EditorCamera, m_EditorCamera.GetViewMatrix());
     }
 
@@ -114,8 +116,6 @@ namespace Engine
         static ImGuiDockNodeFlags opt_flags = ImGuiDockNodeFlags_None;
         bool opt_fullscreen = opt_fullscreen_persistant;
 
-        // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-        // because it would be confusing to have two docking targets within each others.
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
         if (opt_fullscreen)
         {
@@ -128,10 +128,6 @@ namespace Engine
             window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
             window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
         }
-
-        // When using ImGuiDockNodeFlags_PassthruDockspace, DockSpace() will render our background and handle the pass-thru hole, so we ask Begin() to not render a background.
-        //if (opt_flags & ImGuiDockNodeFlags_PassthruDockspace)
-        //	window_flags |= ImGuiWindowFlags_NoBackground;
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         
@@ -150,7 +146,9 @@ namespace Engine
                 ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), opt_flags);
             }
 
-            //Begin Menu Bar
+            //ImGui::ShowDemoWindow();
+
+            //Menu Bar
             if (ImGui::BeginMenuBar())
             {
                 if (ImGui::BeginMenu("File"))
@@ -186,9 +184,7 @@ namespace Engine
                 }
 
                 ImGui::EndMenuBar();
-            }
-
-            //ImGui::ShowDemoWindow();
+            }  
 
             //Viewport----------------------------------------------------------------------
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
@@ -198,7 +194,7 @@ namespace Engine
                 m_ViewportHovered = ImGui::IsWindowHovered();
                 Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
                 
-                //Resize
+                //Resize viewport and editor camera
                 ImVec2 viewportSize = ImGui::GetContentRegionAvail();
                 SceneRenderer::SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
                 m_EditorScene->SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
@@ -277,7 +273,7 @@ namespace Engine
             ImGui::End();
             ImGui::PopStyleVar();         
             
-            //GizmosPanel-------------------------------------------------------------------
+            //GizmosToolBar-------------------------------------------------------------------
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
             ImGui::Begin("##Gizmos", (bool*)0, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDocking);
 
@@ -319,6 +315,7 @@ namespace Engine
 
             ImGui::End();
             ImGui::PopStyleVar();
+
             //Material----------------------------------------------------------------------
             if (!m_SelectionContext.empty())
             {
@@ -327,7 +324,6 @@ namespace Engine
             }
             else
                 m_MaterialEditorPanel.SetSelectedEntity({});
-
 
             //Panels------------------------------------------------------------------------ 
             m_SceneHierarchyPanel.OnImGuiRender();
@@ -341,6 +337,10 @@ namespace Engine
     bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& e)
     {
         //Gizmos
+        //Key Q: None
+        //Key W: Translate
+        //Key E: Rotate
+        //Key R: Scale
         if (GImGui->ActiveId == 0)
         {
             if (m_ViewportFocused)
@@ -363,7 +363,11 @@ namespace Engine
             }
         }
 
-        //New, open, save scene
+        //Scene edit
+        //LeftCtrl + N: New
+        //LeftCtrl + O: Open
+        //LeftCtrl + S: Save
+        //LShift + LCtrl + N: Save as
         if (Input::IsKeyPressed(ENGINE_KEY_LEFT_CONTROL))
         {
             switch (e.GetKeyCode())
@@ -395,9 +399,10 @@ namespace Engine
 
     bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
     {
-        //Mouse pick 
+        //Mouse left button: Mouse pick entity or submesh   
         if (e.GetMouseButton() == ENGINE_MOUSE_BUTTON_LEFT && m_ViewportHovered)
         {
+            // Mouse Pick: 基于屏幕空间射线碰撞           
             auto [mouseX, mouseY] = GetMouseViewportSpace();
             if (mouseX > -1.0f && mouseX < 1.0f && mouseY > -1.0f && mouseY < 1.0f)
             {
@@ -440,7 +445,7 @@ namespace Engine
                     }
                 }
 
-                //根据最小距离排序
+                //根据最小距离排序, 选择最近的Entity
                 std::sort(m_SelectionContext.begin(), m_SelectionContext.end(), [](auto& a, auto& b) { return a.Distance < b.Distance; });
                 if (m_SelectionContext.size())
                     OnEntitySelected(m_SelectionContext[0]);
@@ -507,6 +512,8 @@ namespace Engine
 
             m_SceneFilePath = filepath;
         }
+
+        APP_INFO("Save scene '{0}'", m_Name);
     }
 
     void EditorLayer::SelectEntity(Entity entity)

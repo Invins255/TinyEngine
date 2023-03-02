@@ -67,8 +67,9 @@ namespace Engine
 					}
 				);
 
-				//Ö´ÐÐRenderCommand
+				//Excute render commands
 				Renderer::WaitAndRender();
+				//Clear memory asset
 				AssetManager::ClearUnusedMemoryAsset();
 			}
 			m_Window->OnUpdate();

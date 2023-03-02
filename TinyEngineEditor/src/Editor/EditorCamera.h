@@ -4,6 +4,8 @@
 #include "Engine/Renderer/Camera.h"
 #include "Engine/Events/MouseEvent.h"
 
+//TODO: Add Camera mode, such as free perspective
+
 namespace Engine
 {
 	class EditorCamera : public Camera
@@ -23,11 +25,10 @@ namespace Engine
 
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		glm::mat4 GetViewProjection() const { return m_Projection * m_ViewMatrix; }
-
-		glm::vec3 GetUpDirection();
-		glm::vec3 GetRightDirection();
-		glm::vec3 GetForwardDirection();
-		const glm::vec3& GetPosition() const { return m_Position; }
+		glm::vec3 GetUpDirection() const;
+		glm::vec3 GetRightDirection() const;
+		glm::vec3 GetForwardDirection() const;
+		glm::vec3 GetPosition() const { return m_Position; }
 		glm::quat GetOrientation() const;
 
 	private:
@@ -48,8 +49,8 @@ namespace Engine
 	private:
 		glm::mat4 m_ViewMatrix;
 		glm::vec3 m_Position, m_Rotation, m_FocalPoint;
-
 		bool m_Panning, m_Rotating;
+
 		glm::vec2 m_InitialMousePosition;
 		glm::vec3 m_InitialFocalPoint;
 		glm::vec3 m_InitialRotation;

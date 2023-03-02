@@ -46,6 +46,7 @@ namespace Engine
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 
+		//Set theme color
 		SetDarkThemeColors();
 
 		Application& app = Application::Get();

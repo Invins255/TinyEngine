@@ -7,6 +7,10 @@
 
 namespace Engine::UI {
 
+	/// <summary>
+	/// Some basic ImGui UI. TODO: Add more UI widgets
+	/// </summary>
+
 	static int s_UIContextID = 0;
 	static uint32_t s_Counter = 0;
 	static char s_IDBuffer[16];

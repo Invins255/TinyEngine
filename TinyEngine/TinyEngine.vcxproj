@@ -160,7 +160,6 @@
     <ClInclude Include="src\Engine\Core\TimeStep.h" />
     <ClInclude Include="src\Engine\Core\UUID.h" />
     <ClInclude Include="src\Engine\Core\Window.h" />
-    <ClInclude Include="src\Engine\Debug\Instrumentation.h" />
     <ClInclude Include="src\Engine\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Engine\Events\Event.h" />
     <ClInclude Include="src\Engine\Events\KeyEvent.h" />
