@@ -343,7 +343,7 @@ namespace Engine
         //Key R: Scale
         if (GImGui->ActiveId == 0)
         {
-            if (m_ViewportFocused)
+            if (m_ViewportFocused && Input::IsKeyPressed(ENGINE_KEY_LEFT_SHIFT))
             {
                 switch (e.GetKeyCode())
                 {

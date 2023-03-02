@@ -51,4 +51,16 @@ namespace Engine
 
 		return { (float)xpos, (float)ypos };
 	}
+
+	void Input::SetCursorMode(CursorMode mode)
+	{
+		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL + (int)mode);
+	}
+
+	CursorMode Input::GetCursorMode()
+	{
+		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		return (CursorMode)(window, GLFW_CURSOR - GLFW_CURSOR_NORMAL);
+	}
 }

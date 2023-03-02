@@ -41,6 +41,7 @@ namespace Engine
 	void EditorCamera::Focus(const glm::vec3& focusPoint)
 	{
 		m_FocalPoint = focusPoint;
+		m_CameraMode = CameraMode::Flycam;
 		if (m_Distance > m_MinFocusDistance)
 		{
 			m_Distance -= m_Distance - m_MinFocusDistance;
@@ -54,21 +55,58 @@ namespace Engine
 	{
 		const glm::vec2& mouse{ Input::GetMouseX(), Input::GetMouseY() };
 		glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
-		
-
-		if (Input::IsMouseButtonPressed(ENGINE_MOUSE_BUTTON_MIDDLE))
-			MousePan(delta);
-		else if (Input::IsMouseButtonPressed(ENGINE_MOUSE_BUTTON_LEFT))
-			MouseRotate(delta);
-		else if (Input::IsMouseButtonPressed(ENGINE_MOUSE_BUTTON_RIGHT))
-			MouseZoom(delta.y);
-
 		m_InitialMousePosition = mouse;
-		m_Position += m_PositionDelta;
-		m_Yaw += m_YawDelta;
-		m_Pitch += m_PitchDelta;
 
-		m_Position = CalculatePosition();
+		if(m_CameraMode == CameraMode::Arcball)
+		{
+			if (Input::IsMouseButtonPressed(ENGINE_MOUSE_BUTTON_MIDDLE))
+				MousePan(delta);
+			else if (Input::IsMouseButtonPressed(ENGINE_MOUSE_BUTTON_LEFT))
+				MouseRotate(delta);
+			else if (Input::IsMouseButtonPressed(ENGINE_MOUSE_BUTTON_RIGHT))
+				MouseZoom(delta.y);
+
+			m_Position += m_PositionDelta;
+			m_Yaw += m_YawDelta;
+			m_Pitch += m_PitchDelta;
+
+			m_Position = CalculatePosition();
+		}
+		else if (m_CameraMode == CameraMode::Flycam)
+		{
+			const float yawSign = GetUpDirection().y < 0 ? -1.0f : 1.0f;
+			const float speed = GetCameraSpeed();
+
+			if (Input::IsKeyPressed(ENGINE_KEY_Q))
+				m_PositionDelta -= ts.GetMilliseconds() * speed * glm::vec3{ 0.f, yawSign, 0.f };
+			if (Input::IsKeyPressed(ENGINE_KEY_E))
+				m_PositionDelta += ts.GetMilliseconds() * speed * glm::vec3{ 0.f, yawSign, 0.f };
+			if (Input::IsKeyPressed(ENGINE_KEY_S))
+				m_PositionDelta -= ts.GetMilliseconds() * speed * m_Direction;
+			if (Input::IsKeyPressed(ENGINE_KEY_W))
+				m_PositionDelta += ts.GetMilliseconds() * speed * m_Direction;
+			if (Input::IsKeyPressed(ENGINE_KEY_A))
+				m_PositionDelta -= ts.GetMilliseconds() * speed * m_RightDirection;
+			if (Input::IsKeyPressed(ENGINE_KEY_D))
+				m_PositionDelta += ts.GetMilliseconds() * speed * m_RightDirection;
+
+			constexpr float maxRate{ 0.12f };
+			m_YawDelta += glm::clamp(yawSign * delta.x * RotationSpeed(), -maxRate, maxRate);
+			m_PitchDelta += glm::clamp(delta.y * RotationSpeed(), -maxRate, maxRate);
+
+			m_RightDirection = glm::cross(m_Direction, glm::vec3{ 0.f, yawSign, 0.f });
+
+			m_Direction = glm::rotate(glm::normalize(glm::cross(glm::angleAxis(-m_PitchDelta, m_RightDirection),
+				glm::angleAxis(-m_YawDelta, glm::vec3{ 0.f, yawSign, 0.f }))), m_Direction);
+
+			const float distance = glm::distance(m_FocalPoint, m_Position);
+			m_FocalPoint = m_Position + GetForwardDirection() * distance;
+			m_Distance = distance;
+
+			m_Position += m_PositionDelta;
+			m_Yaw += m_YawDelta;
+			m_Pitch += m_PitchDelta;
+		}
 
 		UpdateCameraView();
 	}
@@ -76,6 +114,7 @@ namespace Engine
 	void EditorCamera::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<KeyPressedEvent>(ENGINE_BIND_EVENT_FN(EditorCamera::OnKeyPressed));
 		dispatcher.Dispatch<MouseScrolledEvent>(ENGINE_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
 	}
 
@@ -108,6 +147,17 @@ namespace Engine
 		return glm::quat(glm::vec3(-m_Pitch - m_PitchDelta, -m_Yaw - m_YawDelta, 0.0f));
 	}
 
+	float EditorCamera::GetCameraSpeed() const
+	{
+		float speed = m_NormalSpeed;
+		if (Input::IsKeyPressed(ENGINE_KEY_LEFT_CONTROL))
+			speed /= 2 - glm::log(m_NormalSpeed);
+		if (Input::IsKeyPressed(ENGINE_KEY_LEFT_SHIFT))
+			speed *= 2 - glm::log(m_NormalSpeed);
+
+		return glm::clamp(speed, MIN_SPEED, MAX_SPEED);
+	}
+
 	void EditorCamera::UpdateCameraView()
 	{
 		const float yawSign = GetUpDirection().y < 0 ? -1.0f : 1.0f;
@@ -124,6 +174,20 @@ namespace Engine
 		m_YawDelta *= 0.6f;
 		m_PitchDelta *= 0.6f;
 		m_PositionDelta *= 0.8f;
+	}
+
+	bool EditorCamera::OnKeyPressed(KeyPressedEvent& e)
+	{
+		if (Input::IsKeyPressed(ENGINE_KEY_LEFT_CONTROL) && Input::IsKeyPressed(ENGINE_KEY_LEFT_ALT))
+		{
+			if (m_CameraMode == CameraMode::Flycam)
+				m_CameraMode = CameraMode::Arcball;
+			else
+				m_CameraMode = CameraMode::Flycam;
+
+			APP_TRACE("Camera mode: {0}", m_CameraMode == CameraMode::Arcball ? "Arcball" : "Flycam");
+		}
+		return false;
 	}
 
 	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)

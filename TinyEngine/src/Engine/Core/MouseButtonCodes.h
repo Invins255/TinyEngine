@@ -1,5 +1,12 @@
 #pragma once
 
+enum class CursorMode
+{
+	Normal = 0,
+	Hidden = 1,
+	Locked = 2
+};
+
 //From Glfw
 #define ENGINE_MOUSE_BUTTON_1         0
 #define ENGINE_MOUSE_BUTTON_2         1
