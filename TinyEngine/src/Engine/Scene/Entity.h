@@ -6,6 +6,7 @@
 #include "Engine/Scene/Scene.h"
 #include "Engine/Scene/Entity.h"
 #include "Engine/Scene/Component.h"
+#include <glm/glm.hpp>
 
 namespace Engine
 {
@@ -48,9 +49,12 @@ namespace Engine
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
 
-		IDComponent& ID() { return GetComponent<IDComponent>(); }
-		TagComponent& Tag() { return GetComponent<TagComponent>(); }
-		TransformComponent& Transform() { return GetComponent<TransformComponent>(); }
+		UUID ID() { return GetIDComponent().ID; }
+		std::string Tag() { return GetTagComponent().Tag; }
+		glm::mat4 Transform() { return GetTransformComponent().GetTransform(); }
+		IDComponent& GetIDComponent() { return GetComponent<IDComponent>(); }
+		TagComponent& GetTagComponent() { return GetComponent<TagComponent>(); }
+		TransformComponent& GetTransformComponent() { return GetComponent<TransformComponent>(); }
 
 		operator bool() const { return m_EntityHandle != entt::null; }
 		operator uint32_t() const { return (uint32_t)m_EntityHandle; }

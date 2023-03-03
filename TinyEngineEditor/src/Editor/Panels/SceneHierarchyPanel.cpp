@@ -31,6 +31,8 @@ namespace Engine
 	{
 		ImGui::Begin("Scene Hierarchy");
 		{
+			ImRect windowRect = { ImGui::GetWindowContentRegionMin(), ImGui::GetWindowContentRegionMax() };
+
 			auto& sceneName = m_Context->GetName();
 			char buffer[256];
 			memset(buffer, 0, sizeof(buffer));
@@ -140,7 +142,12 @@ namespace Engine
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
-		auto& tag = entity.GetComponent<TagComponent>().Tag;
+		if (entity.HasComponent<SceneComponent>())
+			return;
+
+		std::string tag;
+		if (entity.HasComponent<TagComponent>())
+			tag = entity.GetComponent<TagComponent>().Tag;
 
 		ImGuiTreeNodeFlags flags = (m_SelectionContext == entity ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());

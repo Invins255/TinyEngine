@@ -17,6 +17,11 @@ namespace Engine
 	class Entity;
 	using EntityMap = std::unordered_map<UUID, Entity>;
 
+	struct SceneComponent
+	{
+		UUID SceneID;
+	};
+
 	class Scene
 	{
 		friend class Entity;
@@ -25,8 +30,15 @@ namespace Engine
 		friend class SceneSerializer;
 
 	public:
+		static Ref<Scene> Scene::GetScene(UUID uuid);
+
+	public:
 		Scene(const std::string& name = "Untitled Scene");
 		~Scene();
+
+		void Init();
+
+		UUID GetUUID() const { return m_SceneID; }
 
 		//Entity operations
 		Entity CreateEntity(const std::string& name = "Empty Entity");
@@ -39,6 +51,9 @@ namespace Engine
 		{
 			return m_Registry.view<T>();
 		}
+		Entity GetEntityWithUUID(UUID id) const;
+		Entity TryGetEntityWithUUID(UUID id) const;
+		Entity TryGetEntityWithTag(const std::string& tag);
 
 		void OnUpdate(Timestep ts);
 		void OnRenderRuntime(Timestep ts);
@@ -65,8 +80,15 @@ namespace Engine
 		void OnComponentAdded(Entity entity, T& component);
 	
 	private:
+		static std::unordered_map<UUID, Scene*> s_ActiveScenes;
+
+	private:
 		std::string m_Name;
 		entt::registry m_Registry;
+		
+		UUID m_SceneID;
+		entt::entity m_SceneEntity;
+
 		uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 
 		entt::entity m_SelectedEntityHandle = entt::null;

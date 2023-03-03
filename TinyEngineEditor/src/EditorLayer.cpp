@@ -229,7 +229,7 @@ namespace Engine
 
                     bool snap = Input::IsKeyPressed(ENGINE_KEY_LEFT_CONTROL);
 
-                    auto& entityTransform = selection.Entity.Transform();
+                    auto& entityTransform = selection.Entity.GetTransformComponent();
                     glm::mat4 transform = entityTransform.GetTransform();
                     float snapValue = GetSnapValue();
                     float snapValues[3] = { snapValue, snapValue, snapValue };
@@ -343,7 +343,7 @@ namespace Engine
         //Key R: Scale
         if (GImGui->ActiveId == 0)
         {
-            if (m_ViewportFocused && Input::IsKeyPressed(ENGINE_KEY_LEFT_SHIFT))
+            if (m_ViewportFocused && Input::IsKeyPressed(ENGINE_KEY_LEFT_CONTROL) && Input::IsKeyPressed(ENGINE_KEY_LEFT_SHIFT))
             {
                 switch (e.GetKeyCode())
                 {
@@ -424,8 +424,8 @@ namespace Engine
                     {
                         auto& submesh = submeshes[i];
                         Ray ray(
-                            glm::inverse(entity.Transform().GetTransform() * submesh.Transform) * glm::vec4(origin, 1.0f),
-                            glm::inverse(glm::mat3(entity.Transform().GetTransform()) * glm::mat3(submesh.Transform)) * direction
+                            glm::inverse(entity.GetTransformComponent().GetTransform() * submesh.Transform) * glm::vec4(origin, 1.0f),
+                            glm::inverse(glm::mat3(entity.GetTransformComponent().GetTransform()) * glm::mat3(submesh.Transform)) * direction
                         );
 
                         float t;

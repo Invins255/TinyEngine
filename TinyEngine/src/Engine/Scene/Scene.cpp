@@ -12,18 +12,39 @@
 
 namespace Engine
 {
+	std::unordered_map<UUID, Scene*> Scene::s_ActiveScenes;
+
+	Ref<Scene> Scene::GetScene(UUID uuid)
+	{
+		if (s_ActiveScenes.find(uuid) != s_ActiveScenes.end())
+			return Ref<Scene>(s_ActiveScenes.at(uuid));
+		return {};
+	}
+
 	Scene::Scene(const std::string& name)
 		:m_Name(name)
 	{
-		//Skybox material
-		auto& skyboxShader = Renderer::GetShaderLibrary().Get("Skybox");
-		m_SkyboxMaterial = MaterialInstance::Create(Material::Create(skyboxShader), "Skybox");
-		m_SkyboxMaterial->SetFlag(MaterialFlag::DepthTest, false);
+		m_SceneID = UUID();
+		m_SceneEntity = m_Registry.create();
+		m_Registry.emplace<SceneComponent>(m_SceneEntity, m_SceneID);
+
+		s_ActiveScenes[m_SceneID] = this;
+
+		Init();
 	}
 
 	Scene::~Scene()
 	{
 		m_Registry.clear();
+		s_ActiveScenes.erase(m_SceneID);
+	}
+
+	void Scene::Init()
+	{
+		//Skybox material
+		auto& skyboxShader = Renderer::GetShaderLibrary().Get("Skybox");
+		m_SkyboxMaterial = MaterialInstance::Create(Material::Create(skyboxShader), "Skybox");
+		m_SkyboxMaterial->SetFlag(MaterialFlag::DepthTest, false);
 	}
 	 
 	Entity Scene::CreateEntity(const std::string& name)
@@ -165,6 +186,30 @@ namespace Engine
 	{
 		m_Environment.SkyboxMap = skybox;
 		m_SkyboxMaterial->Set("u_Skybox", skybox);
+	}
+
+	Entity Scene::GetEntityWithUUID(UUID id) const
+	{
+		ENGINE_ASSERT(m_EntityIDMap.find(id) != m_EntityIDMap.end(), "Invalid entity ID or entity doesn't exist in scene!");
+		return m_EntityIDMap.at(id);
+	}
+
+	Entity Scene::TryGetEntityWithUUID(UUID id) const
+	{
+		if (const auto iter = m_EntityIDMap.find(id); iter != m_EntityIDMap.end())
+			return iter->second;
+		return Entity{};
+	}
+
+	Entity Scene::TryGetEntityWithTag(const std::string& tag)
+	{
+		auto entities = GetAllEntitiesWith<TagComponent>();
+		for (auto e : entities)
+		{
+			if (entities.get<TagComponent>(e).Tag == tag)
+				return Entity(e, this);
+		}
+		return Entity{};
 	}
 
 	Entity Scene::GetSelectedEntity()
