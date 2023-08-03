@@ -1,0 +1,14 @@
+SandBox filter=lfs diff=lfs merge=lfs -text
+Sandbox.sln filter=lfs diff=lfs merge=lfs -text
+TinyEngine filter=lfs diff=lfs merge=lfs -text
+TinyEngineEditor filter=lfs diff=lfs merge=lfs -text
+bin-int filter=lfs diff=lfs merge=lfs -text
+premake5.lua filter=lfs diff=lfs merge=lfs -text
+vendor filter=lfs diff=lfs merge=lfs -text
+Engine-ScriptCore filter=lfs diff=lfs merge=lfs -text
+README.md filter=lfs diff=lfs merge=lfs -text
+TODO.md filter=lfs diff=lfs merge=lfs -text
+TinyEngine.sln filter=lfs diff=lfs merge=lfs -text
+bin filter=lfs diff=lfs merge=lfs -text
+scripts filter=lfs diff=lfs merge=lfs -text
+. filter=lfs diff=lfs merge=lfs -text

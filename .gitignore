@@ -1,0 +1,20 @@
+# Binaries
+bin/
+bin-int/
+obj/
+
+# Visual Studio files and folder
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
+**.csproj
+
+# Save
+!vendor/bin/
+!TinyEngine/vendor/assimp/bin
+!TinyEngine/vendor/yaml-cpp/bin
+
+#Asset
+TinyEngineEditor/assets

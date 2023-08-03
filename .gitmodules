@@ -1,0 +1,6 @@
+[submodule "TinyEngine/vendor/GLFW"]
+	path = TinyEngine/vendor/GLFW
+	url = https://github.com/TheCherno/glfw
+[submodule "TinyEngine/vendor/imgui"]
+	path = TinyEngine/vendor/imgui
+	url = https://github.com/TheCherno/imgui
