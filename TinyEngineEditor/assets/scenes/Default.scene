@@ -1,0 +1,62 @@
+Scene: Default Scene
+Environment:
+  Skybox:
+    AssetPath: assets\environment\InDoor.hdr
+Entities:
+  - Entity: 10148443918290794182
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Position: [0, 20, 30]
+      Rotation: [-0.34906584, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: Perspective
+        Orthographic:
+          Size: 10
+          Near: 45
+          Far: 1
+        Perspective:
+          FOV: 45
+          Near: 0.00999999978
+          Far: 1000
+        AspectRatio: 0
+      Primary: true
+  - Entity: 8751174126253621609
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [-3.14159274, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Radiance: [1, 1, 1]
+      Intensity: 1
+      CastShadows: true
+  - Entity: 8962151439333895562
+    TagComponent:
+      Tag: Plane
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+    MeshComponent:
+      AssetPath: assets\models\Plane\Plane.fbx
+  - Entity: 6354575649837620316
+    TagComponent:
+      Tag: Sphere
+    TransformComponent:
+      Position: [0, 10, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\Sphere\Sphere.fbx
+    ScriptComponent:
+      ModuleName: SandBox.BasicController
+      StoredFields:
+        - Name: Speed
+          Type: 1
+          Data: 0
+PhysicsLayers:
+  []

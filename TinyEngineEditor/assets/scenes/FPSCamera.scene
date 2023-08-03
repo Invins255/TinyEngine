@@ -1,0 +1,92 @@
+Scene: Untitled Scene
+Environment:
+  Skybox:
+    AssetPath: assets\environment\InDoor.hdr
+Entities:
+  - Entity: 7467547749813279955
+    TagComponent:
+      Tag: CameraController
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    RigidBodyComponent:
+      BodyType: 1
+      Mass: 1
+      LinearDrag: 0
+      AngularDrag: 0.0500000007
+      IsKinematic: false
+      Layer: 0
+      Constraints:
+        LockPositionX: false
+        LockPositionY: false
+        LockPositionZ: false
+        LockRotationX: false
+        LockRotationY: false
+        LockRotationZ: false
+    ScriptComponent:
+      ModuleName: SandBox.FPSCamera
+      StoredFields:
+        - Name: CameraForwardOffset
+          Type: 1
+          Data: 0
+        - Name: Speed
+          Type: 1
+          Data: 0
+        - Name: CameraYOffset
+          Type: 1
+          Data: 0
+        - Name: MouseSensitivity
+          Type: 1
+          Data: 0
+  - Entity: 3877861237346047634
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Position: [0, 20, 30]
+      Rotation: [-0.34906584, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: Perspective
+        Orthographic:
+          Size: 10
+          Near: -1
+          Far: 1
+        Perspective:
+          FOV: 45
+          Near: 0.00999999978
+          Far: 1000
+        AspectRatio: 0
+      Primary: true
+  - Entity: 16089011411803389363
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [-3.14159274, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Radiance: [1, 1, 1]
+      Intensity: 1
+      CastShadows: true
+  - Entity: 3073682137414955129
+    TagComponent:
+      Tag: Plane
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+    MeshComponent:
+      AssetPath: assets\models\Plane\Plane.fbx
+  - Entity: 16787034468984019892
+    TagComponent:
+      Tag: Sphere
+    TransformComponent:
+      Position: [0, 10, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\Sphere\Sphere.fbx
+PhysicsLayers:
+  []

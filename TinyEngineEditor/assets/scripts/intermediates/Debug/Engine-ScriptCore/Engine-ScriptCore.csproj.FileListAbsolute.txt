@@ -1,0 +1,6 @@
+D:\ProjectFiles\TinyEngine\TinyEngineEditor\assets\scripts\intermediates\Debug\Engine-ScriptCore\Engine-ScriptCore.csproj.AssemblyReference.cache
+D:\ProjectFiles\TinyEngine\TinyEngineEditor\assets\scripts\intermediates\Debug\Engine-ScriptCore\Engine-ScriptCore.csproj.CoreCompileInputs.cache
+D:\ProjectFiles\TinyEngine\TinyEngineEditor\assets\scripts\intermediates\Debug\Engine-ScriptCore\Engine-ScriptCore.dll
+D:\ProjectFiles\TinyEngine\TinyEngineEditor\assets\scripts\intermediates\Debug\Engine-ScriptCore\Engine-ScriptCore.pdb
+D:\ProjectFiles\TinyEngine\TinyEngineEditor\assets\scripts\Engine-ScriptCore.dll
+D:\ProjectFiles\TinyEngine\TinyEngineEditor\assets\scripts\Engine-ScriptCore.pdb

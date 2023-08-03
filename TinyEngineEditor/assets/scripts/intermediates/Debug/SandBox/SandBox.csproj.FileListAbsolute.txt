@@ -1,0 +1,7 @@
+D:\ProjectFiles\TinyEngine\TinyEngineEditor\assets\scripts\intermediates\Debug\SandBox\SandBox.csproj.AssemblyReference.cache
+D:\ProjectFiles\TinyEngine\TinyEngineEditor\assets\scripts\intermediates\Debug\SandBox\SandBox.csproj.CoreCompileInputs.cache
+D:\ProjectFiles\TinyEngine\TinyEngineEditor\assets\scripts\intermediates\Debug\SandBox\SandBox.csproj.CopyComplete
+D:\ProjectFiles\TinyEngine\TinyEngineEditor\assets\scripts\intermediates\Debug\SandBox\SandBox.dll
+D:\ProjectFiles\TinyEngine\TinyEngineEditor\assets\scripts\intermediates\Debug\SandBox\SandBox.pdb
+D:\ProjectFiles\TinyEngine\TinyEngineEditor\assets\scripts\SandBox.dll
+D:\ProjectFiles\TinyEngine\TinyEngineEditor\assets\scripts\SandBox.pdb
